@@ -1,0 +1,11 @@
+# python - venv
+.venv
+
+# pychache
+__pycache__
+
+# env
+.env
+
+# database
+vectorstore
