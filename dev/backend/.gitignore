@@ -1,6 +1,6 @@
-/DiscussPlanner_venv
 # python - venv
 .venv
+/DiscussPlanner_venv
 
 # pychache
 __pycache__
