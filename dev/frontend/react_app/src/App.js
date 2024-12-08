@@ -2,6 +2,7 @@ import logo from './logo.svg';
 import './App.css';
 import { DescriptionDP } from './components/DescriptionDP';
 import MainAppBar from './components/MainAppBar';
+import { DetailDescriptionDP } from './components/DetailDescriptionDP';
 
 function App() {
   return (
@@ -23,6 +24,7 @@ function App() {
        */}
       <MainAppBar></MainAppBar>
       <DescriptionDP></DescriptionDP>
+      <DetailDescriptionDP></DetailDescriptionDP>
       
     </div>
   );
