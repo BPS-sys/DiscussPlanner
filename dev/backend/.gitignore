@@ -1,1 +1,12 @@
+# python - venv
+.venv
 /DiscussPlanner_venv
+
+# pychache
+__pycache__
+
+# env
+.env
+
+# database
+vectorstore
