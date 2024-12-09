@@ -1,18 +1,18 @@
-export const DetailDescriptionDPLetter = () =>{
+export const DetailDescriptionDPVisualLetter = () =>{
     return (
         <div>
             <h1 
             style={{
                 position:"absolute",
                 fontWeight:600,
-                color:"#2463eb",
+                color:"#4294FF",
                 fontSize:35,
-                left:150,
-                top:800,
+                right:400,
+                top:1300,
                 textAlign:'left'
 
             }}>
-                1. 議事録の作成
+                2. 意見のビジュアル化
             </h1>
             <p 
             style={{
@@ -20,14 +20,14 @@ export const DetailDescriptionDPLetter = () =>{
                 fontWeight:600,
                 color:"#8E8E8E",
                 fontSize:25,
-                left:150,
-                top:880,
+                right:320,
+                top:1380,
                 textAlign:'left'
 
             }}>
                 ここで機能の説明を記載します。<br></br>
-                AIが会議中の会話から議事録を自動生成します。<br></br>
-                後から確認・編集することも可能です。
+                会議中に挙がった意見を記録します。<br></br>
+                ノンストレスな会議進行ができます。
             </p>
         </div>
     );

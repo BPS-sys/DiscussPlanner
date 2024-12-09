@@ -1,12 +1,16 @@
 
-import { DetailDescriptionDPLetter } from "./DetailDescriptionDPLetter";
+import { DetailDescriptionDPRecordLetter } from "./DetailDescriptionDPRecordLetter";
 import { DetailDescriptionDPRecordImage } from "./DetailDescriptionDPRecordImage";
+import { DetailDescriptionDPVisualImage } from "./DetailDescriptionDPVisualImage";
+import { DetailDescriptionDPVisualLetter } from "./DetailDescriptionDPVisualLetter";
 
 export const DetailDescriptionDP = () => {
     return(
         <div>
-            <DetailDescriptionDPLetter></DetailDescriptionDPLetter>
+            <DetailDescriptionDPRecordLetter></DetailDescriptionDPRecordLetter>
             <DetailDescriptionDPRecordImage></DetailDescriptionDPRecordImage>
+            <DetailDescriptionDPVisualImage></DetailDescriptionDPVisualImage>
+            <DetailDescriptionDPVisualLetter></DetailDescriptionDPVisualLetter>
         </div>
     );
 };
