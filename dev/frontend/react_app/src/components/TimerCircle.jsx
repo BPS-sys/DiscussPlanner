@@ -4,7 +4,7 @@ import CircularProgress from '@mui/material/CircularProgress';
 
 export default function GradientCircularProgress(props) {
   return (
-    <Box sx={{ position: 'relative', top:430, left:-670}}>
+    <Box sx={{ position: 'absolute', top:500, left:100}}>
       {/* SVG でグラデーションを定義 */}
       <svg width={0} height={0}>
         <defs>
@@ -18,11 +18,11 @@ export default function GradientCircularProgress(props) {
       <CircularProgress
         variant="determinate"
         value={100}
-        size={200}
+        size={180}
         thickness={3}
         sx={{
-          position:'relative',
-          left:200,
+          position:'absolute',
+          left:0,
           color: (theme) =>
             theme.palette.mode === 'dark' ? theme.palette.grey[800] : theme.palette.grey[200],
         }}
@@ -31,11 +31,11 @@ export default function GradientCircularProgress(props) {
       <CircularProgress
         variant="indeterminate"
         disableShrink
-        size={200}
+        size={180}
         thickness={3}
         sx={{
           animationDuration: '800ms',
-          position: 'relative',
+          position: 'absolute',
           left: 0,
           '& .MuiCircularProgress-circle': {
             stroke: 'url(#gradientColors)', // グラデーションを適用
