@@ -1,8 +1,8 @@
 import logo from './logo.svg';
 import './App.css';
-import { DescriptionDP } from './components/DescriptionDP';
-import MainAppBar from './components/MainAppBar';
-import { DetailDescriptionDP } from './components/DetailDescriptionDP';
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+import DiscussPage from './pages/DiscussPage';
+import HomePage from './pages/HomePage';
 
 function App() {
   return (
@@ -22,10 +22,12 @@ function App() {
         </a>
       </header>
        */}
-      <MainAppBar></MainAppBar>
-      <DescriptionDP></DescriptionDP>
-      <DetailDescriptionDP></DetailDescriptionDP>
-      
+      <BrowserRouter>
+        <Routes>
+          <Route path={`/`} element={<HomePage />} />
+          <Route path={`/DiscussPage`} element={<DiscussPage />} />
+        </Routes>
+      </BrowserRouter>
     </div>
   );
 }

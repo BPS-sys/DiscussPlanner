@@ -1,7 +1,13 @@
 
 import { Button } from "@mui/material";
 
+import { useNavigate } from "react-router-dom";
+
 export const TryUseButton = () => {
+    const navigate = useNavigate();
+    const GotoDiscussPage = () =>{
+      navigate("/DiscussPage")
+    }
     return (
       <div>
         <Button
@@ -16,8 +22,9 @@ export const TryUseButton = () => {
                 fontSize: "2rem",
                 fontWeight: "bold",
                 fontFamily: "'Inter', Helvetica",
-                top:500
+                top:500,
               }}
+              onClick={GotoDiscussPage}
             >
               使ってみる
             </Button>
