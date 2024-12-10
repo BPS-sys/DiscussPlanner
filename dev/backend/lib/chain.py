@@ -1,6 +1,5 @@
 import os
 from dotenv import load_dotenv
-from pydantic import BaseModel, Field
 from typing import Optional
 
 # langchain
@@ -17,38 +16,16 @@ from langchain_core.tools import tool
 from langchain_openai.chat_models import ChatOpenAI
 from langchain_openai.embeddings import OpenAIEmbeddings
 
-# from tools.search import SearchContext, searching_context
+# local
+from lib.vectorstore import VectorStore
+from lib.schema import FilePath, SearchContext, RetrieverConfig, TextSplitConfig
 
 # load environment variables
-load_dotenv("../")
-
-class RetrieverConfig(BaseModel):
-    """
-    リトリーバの設定
-
-    Args:
-        BaseModel (_type_): ベースモデル（Pydantic）
-    """
-
-    search_type: str = "similarity_score_threshold"  # 類似度を閾値で検索
-    search_kwargs: Optional[dict] = {
-        "score_threshold": 0.6,  # 類似度の閾値（以上）
-        "k": 2,  # 検索結果の上位n件を返す
-    }
+load_dotenv("../.env")
 
 
-class SearchContext(BaseModel):
-    """
-    tool用のスキーマ
-    Args:
-        BaseModel (_type_): べースモデル（Pydantic）
-    """
-
-    query: str = Field(..., discription="質問")
-
-
-@tool
-def searching_context(query: str) -> str:
+@tool("search-context", args_schema=SearchContext, return_direct=True)
+def searching_context(query: str, path: Optional[FilePath] = FilePath()) -> str:
     """
     質問に対応するコンテキストを検索する
     Args:
@@ -56,12 +33,12 @@ def searching_context(query: str) -> str:
     Returns:
         str: コンテキスト
     """
-    vectorstore_manager = VectorStore()
-    vectorstore = vectorstore_manager.load("../data/vectorstore") # 保存先のパス
+    config = TextSplitConfig()  # テキスト分割手法の設定
+    vectorstore_manager = VectorStore(path=path, split_config=config)
+    vectorstore = vectorstore_manager.load()  # 保存先のパス
     retriever = vectorstore.as_retriever(**vars(RetrieverConfig))
     # search context
     context = ",".join([content.page_content for content in retriever.invoke(query)])
-    # print(context)  # debug
     return context
 
 
@@ -85,16 +62,14 @@ class LangchainBot:
 
         # model
         self.compose_llm = ChatOpenAI(
-            openai_api_key = os.getenv("OPENAI_API_KEY"),
-            model = os.getenv("LLM_MODEL"),
+            openai_api_key=os.getenv("OPENAI_API_KEY"),
+            model=os.getenv("LLM_MODEL"),
         )
         self.stream_llm = ChatOpenAI(
-            openai_api_key = os.getenv("OPENAI_API_KEY"),
-            model = os.getenv("LLM_MODEL"),
+            openai_api_key=os.getenv("OPENAI_API_KEY"),
+            model=os.getenv("LLM_MODEL"),
         )
-        self.embeddings = OpenAIEmbeddings(
-            openai_api_key=os.getenv("OPENAI_API_KEY")
-        )
+        self.embeddings = OpenAIEmbeddings(openai_api_key=os.getenv("OPENAI_API_KEY"))
 
         # # vectorstore
         # self.vectorstore_manager = VectorStore()
@@ -150,11 +125,9 @@ class LangchainBot:
 
         # generate context
         res = llm_with_tools.invoke(question).tool_calls
-        # print(res)  # debug
         contexts = []
         for r in res:
             args = r["args"]
-            # input(args)  # debug
             contexts.append(searching_context.invoke(args))
         context = ",".join(contexts)  # ここで結合している
         return context
@@ -185,11 +158,8 @@ class LangchainBot:
 
 
 if __name__ == "__main__":
-    # local
-    from vectorstore import VectorStore
-    
     bot = LangchainBot()
-    res = bot.invoke("大阪国際工科専門職大学はどんな大学ですか？")
-    
+    res = bot.invoke("どんな大学ですか？")
+
     print("● チャットボットの応答")
     print(res)
