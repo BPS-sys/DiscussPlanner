@@ -71,7 +71,7 @@ class VectorStore:
                 embeddings=self.embeddings,
                 allow_dangerous_deserialization=True,
             )
-        except FileNotFoundError:
+        except:
             print("VectorStoreが見つかりません。新規生成します。")
             try:
                 input_text = self.open_file(self.path.input_document)

@@ -8,16 +8,16 @@ from lib.schema import FilePath, TextSplitConfig
 load_dotenv()
 
 if __name__ == "__main__":
-    path = FilePath()
+    # path = FilePath()
 
-    with open(path.input_document, "r", encoding="utf-8") as f:
-        text = f.read()
+    # with open(path.input_document, "r", encoding="utf-8") as f:
+    #     text = f.read()
 
-    # create vectorstore
-    config = TextSplitConfig()  # テキスト分割手法の設定
+    # # create vectorstore
+    # config = TextSplitConfig()  # テキスト分割手法の設定
 
-    vs = VectorStore(path=path, split_config=config)
-    vs.load()
+    # vs = VectorStore(path=path, split_config=config)
+    # vs.load()
 
     # execute chatbot
     bot = LangchainBot()
