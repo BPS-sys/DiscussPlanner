@@ -17,9 +17,6 @@ from langchain_core.tools import tool
 from langchain_openai.chat_models import ChatOpenAI
 from langchain_openai.embeddings import OpenAIEmbeddings
 
-# local
-from lib.vectorstore import VectorStore
-
 # from tools.search import SearchContext, searching_context
 
 # load environment variables
@@ -88,12 +85,12 @@ class LangchainBot:
 
         # model
         self.compose_llm = ChatOpenAI(
-            openai_api_key=os.getenv("OPENAI_API_KEY"),
-            model="gpt-4o-mini",
+            openai_api_key = os.getenv("OPENAI_API_KEY"),
+            model = os.getenv("LLM_MODEL"),
         )
         self.stream_llm = ChatOpenAI(
-            openai_api_key=os.getenv("OPENAI_API_KEY"),
-            model="gpt-4o-mini",
+            openai_api_key = os.getenv("OPENAI_API_KEY"),
+            model = os.getenv("LLM_MODEL"),
         )
         self.embeddings = OpenAIEmbeddings(
             openai_api_key=os.getenv("OPENAI_API_KEY")
@@ -188,6 +185,9 @@ class LangchainBot:
 
 
 if __name__ == "__main__":
+    # local
+    from vectorstore import VectorStore
+    
     bot = LangchainBot()
     res = bot.invoke("大阪国際工科専門職大学はどんな大学ですか？")
     
