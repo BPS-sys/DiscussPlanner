@@ -16,6 +16,10 @@ from langchain_core.tools import tool
 from langchain_openai.chat_models import ChatOpenAI
 from langchain_openai.embeddings import OpenAIEmbeddings
 
+# gemini
+from langchain_google_genai.chat_models import ChatGoogleGenerativeAI
+from langchain_google_genai.embeddings import GoogleGenerativeAIEmbeddings
+
 # local
 from lib.vectorstore import VectorStore
 from lib.schema import FilePath, SearchContext, RetrieverConfig, TextSplitConfig
@@ -61,15 +65,18 @@ class LangchainBot:
         self.retriever_config = retriever_config
 
         # model
-        self.compose_llm = ChatOpenAI(
-            openai_api_key=os.getenv("OPENAI_API_KEY"),
-            model=os.getenv("LLM_MODEL"),
+        self.compose_llm = ChatGoogleGenerativeAI(
+            model="gemini-1.5-flash-latest",
+            google_api_key=os.getenv("GOOGLE_API_KEY"),
         )
-        self.stream_llm = ChatOpenAI(
-            openai_api_key=os.getenv("OPENAI_API_KEY"),
-            model=os.getenv("LLM_MODEL"),
+        self.stream_llm = ChatGoogleGenerativeAI(
+            model="gemini-1.5-flash-latest",
+            google_api_key=os.getenv("GOOGLE_API_KEY"),
         )
-        self.embeddings = OpenAIEmbeddings(openai_api_key=os.getenv("OPENAI_API_KEY"))
+        self.embeddings = GoogleGenerativeAIEmbeddings(
+            google_api_key=os.getenv("GOOGLE_API_KEY"),
+            model="models/text-embedding-004",
+        )
 
         # # vectorstore
         # self.vectorstore_manager = VectorStore()
@@ -125,6 +132,7 @@ class LangchainBot:
 
         # generate context
         res = llm_with_tools.invoke(question).tool_calls
+        input(res)
         contexts = []
         for r in res:
             args = r["args"]

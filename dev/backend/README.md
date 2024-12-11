@@ -24,5 +24,9 @@ main.pyと同一ディレクトリに.envを作成。
 内容は下記の通り。
 
 ```bash
-OPENAI_API_KEY = "xxxxxxxxxx"
+GEMINI_API_KEY = "xxxxxxxxxx"
 ```
+
+※ GeminiのAPIを発行したい場合
+下記URLからAPIの発行を行う事ができます。
+https://aistudio.google.com/apikey

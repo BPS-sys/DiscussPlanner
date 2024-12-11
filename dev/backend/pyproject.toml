@@ -57,6 +57,7 @@ dependencies = [
     "urllib3==2.2.3",
     "yarl==1.18.3",
     "numpy==1.26.4",
+    "langchain-google-genai>=2.0.6",
 ]
 readme = "README.md"
 requires-python = ">= 3.8"

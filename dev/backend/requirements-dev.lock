@@ -33,6 +33,8 @@ async-timeout==4.0.3
 attrs==24.2.0
     # via aiohttp
     # via backend
+cachetools==5.5.0
+    # via google-auth
 certifi==2024.8.30
     # via backend
     # via httpcore
@@ -51,16 +53,47 @@ exceptiongroup==1.2.2
     # via anyio
 faiss-cpu==1.9.0.post1
     # via backend
+filetype==1.2.0
+    # via langchain-google-genai
 frozenlist==1.5.0
     # via aiohttp
     # via aiosignal
     # via backend
+google-ai-generativelanguage==0.6.10
+    # via google-generativeai
+google-api-core==2.24.0
+    # via google-ai-generativelanguage
+    # via google-api-python-client
+    # via google-generativeai
+google-api-python-client==2.154.0
+    # via google-generativeai
+google-auth==2.36.0
+    # via google-ai-generativelanguage
+    # via google-api-core
+    # via google-api-python-client
+    # via google-auth-httplib2
+    # via google-generativeai
+google-auth-httplib2==0.2.0
+    # via google-api-python-client
+google-generativeai==0.8.3
+    # via langchain-google-genai
+googleapis-common-protos==1.66.0
+    # via google-api-core
+    # via grpcio-status
+grpcio==1.68.1
+    # via google-api-core
+    # via grpcio-status
+grpcio-status==1.68.1
+    # via google-api-core
 h11==0.14.0
     # via backend
     # via httpcore
 httpcore==1.0.7
     # via backend
     # via httpx
+httplib2==0.22.0
+    # via google-api-python-client
+    # via google-auth-httplib2
 httpx==0.28.0
     # via backend
     # via langsmith
@@ -92,8 +125,11 @@ langchain-core==0.3.21
     # via backend
     # via langchain
     # via langchain-community
+    # via langchain-google-genai
     # via langchain-openai
     # via langchain-text-splitters
+langchain-google-genai==2.0.6
+    # via backend
 langchain-openai==0.2.11
     # via backend
 langchain-text-splitters==0.3.2
@@ -134,10 +170,27 @@ propcache==0.2.1
     # via aiohttp
     # via backend
     # via yarl
+proto-plus==1.25.0
+    # via google-ai-generativelanguage
+    # via google-api-core
+protobuf==5.29.1
+    # via google-ai-generativelanguage
+    # via google-api-core
+    # via google-generativeai
+    # via googleapis-common-protos
+    # via grpcio-status
+    # via proto-plus
+pyasn1==0.6.1
+    # via pyasn1-modules
+    # via rsa
+pyasn1-modules==0.4.1
+    # via google-auth
 pydantic==2.10.3
     # via backend
+    # via google-generativeai
     # via langchain
     # via langchain-core
+    # via langchain-google-genai
     # via langsmith
     # via openai
     # via pydantic-settings
@@ -147,6 +200,8 @@ pydantic-core==2.27.1
 pydantic-settings==2.6.1
     # via backend
     # via langchain-community
+pyparsing==3.2.0
+    # via httplib2
 python-dotenv==1.0.1
     # via backend
     # via pydantic-settings
@@ -160,6 +215,7 @@ regex==2024.11.6
     # via tiktoken
 requests==2.32.3
     # via backend
+    # via google-api-core
     # via langchain
     # via langchain-community
     # via langsmith
@@ -168,6 +224,8 @@ requests==2.32.3
 requests-toolbelt==1.0.0
     # via backend
     # via langsmith
+rsa==4.9
+    # via google-auth
 sniffio==1.3.1
     # via anyio
     # via backend
@@ -186,10 +244,12 @@ tiktoken==0.8.0
     # via langchain-openai
 tqdm==4.67.1
     # via backend
+    # via google-generativeai
     # via openai
 typing-extensions==4.12.2
     # via anyio
     # via backend
+    # via google-generativeai
     # via langchain-core
     # via multidict
     # via openai
@@ -200,6 +260,8 @@ typing-extensions==4.12.2
 typing-inspect==0.9.0
     # via backend
     # via dataclasses-json
+uritemplate==4.1.1
+    # via google-api-python-client
 urllib3==2.2.3
     # via backend
     # via requests

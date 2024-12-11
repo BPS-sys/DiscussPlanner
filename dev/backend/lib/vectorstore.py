@@ -3,11 +3,16 @@ from typing import Optional
 from dotenv import load_dotenv
 from langchain_core.documents import Document
 from langchain_community.vectorstores.faiss import FAISS
-from langchain_openai.embeddings import OpenAIEmbeddings
 from langchain.text_splitter import CharacterTextSplitter
 
+# openai
+from langchain_openai.embeddings import OpenAIEmbeddings
+
+# gemini
+from langchain_google_genai.embeddings import GoogleGenerativeAIEmbeddings
+
 # local
-from lib.schema import FilePath, TextSplitConfig
+from lib.schema import FilePath, TextSplitConfig, RetrieverConfig
 
 # load environment variables
 load_dotenv("../.env")
@@ -29,7 +34,10 @@ class VectorStore:
         self.path = path
         self.split_config = split_config
         self.vectorstore = Optional[FAISS]
-        self.embeddings = OpenAIEmbeddings(openai_api_key=os.getenv("OPENAI_API_KEY"))
+        self.embeddings = GoogleGenerativeAIEmbeddings(
+            google_api_key=os.getenv("GOOGLE_API_KEY"),
+            model="models/text-embedding-004",
+        )
 
     def create(
         self,
@@ -132,18 +140,15 @@ class VectorStore:
 
 
 if __name__ == "__main__":
-    vs = VectorStore()
+    path = FilePath()
+    path.input_document = "../data/test.txt"
+    path.vectorstore_path = "../data/vectorstore"
     config = TextSplitConfig(separator="。", chunk_size=140, chunk_overlap=0)
 
-    file_path = input("ファイルのパスを入力: ")  # ../data/test.txt
-    try:
-        with open(file_path, "r", encoding="utf-8") as f:
-            text = f.read()
-    except FileNotFoundError:
-        print("ファイルが見つかりません")
-        exit()
-
-    vs.create(split_config=config, input_text=text)
-    vs.save("../data/vectorstore")  # 保存先のパス
+    vs = VectorStore(path=path, split_config=config)
+    vectorstore = vs.load()
+    retriever = vectorstore.as_retriever(**vars(RetrieverConfig))
+    res = retriever.invoke("大学はどんな大学ですか？")
+    print(res)
 
     print("Vector store created and saved.")
