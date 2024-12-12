@@ -94,7 +94,7 @@ langchain-core==0.3.21
     # via langchain-community
     # via langchain-openai
     # via langchain-text-splitters
-langchain-openai==0.2.11
+langchain-openai==0.2.12
     # via backend
 langchain-text-splitters==0.3.2
     # via backend
