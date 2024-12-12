@@ -8,33 +8,48 @@ import uvicorn
 from lib.vectorstore import VectorStore
 from lib.chain import LangchainBot
 from lib.schema import FilePath, TextSplitConfig
+from api.schema import *
 
 load_dotenv()
 app = FastAPI()
 
-
-class Chat(BaseModel):
-    message: str
-
-    class Config:
-        json_schema_extra = {"chat": {"message": "アイデアを考えてください。"}}
-
-
-class InputItem(BaseModel):
-    chat: Chat
-
-
 bot = LangchainBot()
 
 
-@app.post("/chat/")
-async def create_chat(input_item: InputItem):
-    input_message = str(input_item.chat.message)
-    print(f"input_message: {input_message}")
-    res = bot.invoke(input_message)
+@app.post("/chat/{meeting_id}")
+async def create_chat(meeting_id: str, input_item: ChatItem) -> ChatItem:
+    """
+    質問に対してチャットボットが応答するエンドポイント
 
-    results = {"chat": {"message": res}}
-    return results
+    Args:
+        input_item (InputItem): チャットに対するリクエストの入力データ
+
+    Returns:
+        dict: チャットに対するリクエストの出力データ
+    """
+    print("session: ", meeting_id)
+    input_message = str(input_item.chat.message)
+    ans = bot.invoke(input_message)
+
+    output_item = ChatItem(chat=Chat(message=ans))
+    return output_item
+
+
+@app.post("/minutes/{meeting_id}")
+async def create_minutes(meeting_id: str, input_item: MinutesItem) -> AssistantState:
+    """
+    議事録を受取るエンドポイント
+
+    Args:
+        input_item (MinutesItem): 議事録を受取るリクエストの入力データ
+
+    Returns:
+        AssistantState: アシスタントの状態
+    """
+    print("session: ", meeting_id)
+    minits = len(input_item.text)
+    result = AssistantState(face="angry", timer=TimerState(flag=True, time=minits))
+    return result
 
 
 if __name__ == "__main__":
