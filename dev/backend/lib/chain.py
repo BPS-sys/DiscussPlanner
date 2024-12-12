@@ -17,8 +17,9 @@ from langchain_openai.chat_models import ChatOpenAI
 from langchain_openai.embeddings import OpenAIEmbeddings
 
 # local
-from lib.vectorstore import VectorStore
 from lib.schema import FilePath, SearchContext, RetrieverConfig, TextSplitConfig
+from lib.models import AzureModels, OpenAIModels
+from lib.vectorstore import VectorStore
 
 # load environment variables
 load_dotenv("../.env")
@@ -61,20 +62,10 @@ class LangchainBot:
         self.retriever_config = retriever_config
 
         # model
-        self.compose_llm = ChatOpenAI(
-            openai_api_key=os.getenv("OPENAI_API_KEY"),
-            model=os.getenv("LLM_MODEL"),
-        )
-        self.stream_llm = ChatOpenAI(
-            openai_api_key=os.getenv("OPENAI_API_KEY"),
-            model=os.getenv("LLM_MODEL"),
-        )
-        self.embeddings = OpenAIEmbeddings(openai_api_key=os.getenv("OPENAI_API_KEY"))
-
-        # # vectorstore
-        # self.vectorstore_manager = VectorStore()
-        # self.vectorstore = self.vectorstore_manager.load("../../data/vectorstore")
-        # self.retriever = self.vectorstore.as_retriever(**vars(self.retriever_config))
+        self.models = AzureModels()  # モデルの初期化
+        self.compose_llm = self.models.compose_model
+        self.stream_llm = self.models.stream_model
+        self.embeddings = self.models.embeddings
 
         # stream_llm prompt
         self.system_prompt = SystemMessagePromptTemplate.from_template(

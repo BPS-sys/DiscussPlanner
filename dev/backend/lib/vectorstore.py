@@ -8,6 +8,7 @@ from langchain.text_splitter import CharacterTextSplitter
 
 # local
 from lib.schema import FilePath, TextSplitConfig
+from lib.models import AzureModels, OpenAIModels
 
 # load environment variables
 load_dotenv("../.env")
@@ -29,7 +30,8 @@ class VectorStore:
         self.path = path
         self.split_config = split_config
         self.vectorstore = Optional[FAISS]
-        self.embeddings = OpenAIEmbeddings(openai_api_key=os.getenv("OPENAI_API_KEY"))
+        self.models = AzureModels()
+        self.embeddings = self.models.embeddings
 
     def create(
         self,
@@ -72,7 +74,7 @@ class VectorStore:
                 allow_dangerous_deserialization=True,
             )
         except:
-            print("VectorStoreが見つかりません。新規生成します。")
+            print("[sys] VectorStoreが見つかりません。新規生成します。")
             try:
                 input_text = self.open_file(self.path.input_document)
                 create_res = self.create(
