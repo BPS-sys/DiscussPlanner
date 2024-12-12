@@ -11,7 +11,7 @@ import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 export default function MainAppBar() {
   return (
     <Box sx={{ flexGrow: 1 }}>
-      <AppBar position="static">
+      <AppBar position="static" style={{background: 'rgba(27, 129, 241, 0.9)'}}>
         <Toolbar>
           <Typography variant="h5" component="div" sx={{ flexGrow: 1, textAlign:'left' }}>
             DiscussPlanner
