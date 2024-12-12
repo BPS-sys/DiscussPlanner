@@ -5,41 +5,25 @@ import uvicorn
 
 app = FastAPI()
 
+class Chat(BaseModel):
+    message: str
 
-class Item(BaseModel):
-    name: str
-    description: Optional[str] = None
-    price: float
-    tax: Union[float, None] = None
-
-    model_config = {
-        "json_schema_extra": {
-            "examples": [
-                {
-                    "name": "Foo",
-                    "description": "A very nice Item",
-                    "price": 35.4,
-                    "tax": 3.2,
-                }
-            ]
+    class Config:
+        json_schema_extra = {
+            "chat": {
+                "message": "アイデアを考えてください。"
+            }
         }
-    }
 
+class InputItem(BaseModel):
+    chat: Chat
 
-@app.get("/")
-async def status():
-    return "OK"
-
-
-@app.post("/items/")
-async def create_item(item: Item):
+@app.post("/chat/")
+async def create_chat(chat: InputItem):
     results = {
-        "item": {
-            "name": item.name,
-            "description": item.description,
-            "price": item.price,
-            "tax": item.tax,
-        },
+        "chat": {
+            "message": chat.message
+        }
     }
     return results
 
