@@ -1,29 +1,34 @@
-export const DescriptionDPLetter = () => {
-    return (
-      <div>
-        <h1
-        style={{
-            position:"absolute",
-            color:"#2463eb",
-            fontSize:60,
-            right:230,
-            top:160
-        }}>
-            DiscussPlanner
-        </h1>
-        <p 
-        style={{
-            position:"absolute",
-            fontWeight:600,
-            color:"#4294ff",
-            fontSize:35,
-            right:195,
-            top:270,
-            textAlign:'left'
+import { width } from "@mui/system";
 
-        }}>
-            もう会議進行に<br></br>失敗することはありません！
-        </p>
-      </div>
-    );
+export const DescriptionDPLetter = () => {
+  const divstyle = {
+    height: '36vw', 
+    width:'50vw',
   };
+
+  const h1style = {
+    marginTop:'8vw',
+    display:'flex',
+    color: "#2463eb",
+    fontSize: '6vw'
+  };
+
+  const pstyle = {
+    display:'flex',
+    color: "#4294ff",
+    fontSize: '3vw',
+    fontWeight: '600',
+    textAlign: 'left'
+  };
+
+  return (
+    <div style={divstyle}>
+      <h1 style={h1style}>
+        DiscussPlanner
+      </h1>
+      <p style={pstyle}>
+        もう会議進行に<br></br>失敗することはありません！
+      </p>
+    </div>
+  );
+};
