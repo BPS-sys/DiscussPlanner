@@ -24,5 +24,9 @@ main.pyと同一ディレクトリに.envを作成。
 内容は下記の通り。
 
 ```bash
-OPENAI_API_KEY = "xxxxxxxxxx"
+AZURE_OPENAI_ENDPOINT = "xxxxxxxxxx"
+AZURE_OPENAI_API_KEY = "xxxxxxxxxx"
+AZURE_OPENAI_API_VERSION = "xxxxxxxxxx"
+
+OPENAI_API_KEY = "xxxxxxxxxx" # なくてもOK
 ```
