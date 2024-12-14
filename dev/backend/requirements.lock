@@ -27,6 +27,7 @@ anyio==4.7.0
     # via backend
     # via httpx
     # via openai
+    # via starlette
 async-timeout==4.0.3
     # via aiohttp
     # via langchain
@@ -41,6 +42,8 @@ certifi==2024.8.30
 charset-normalizer==3.4.0
     # via backend
     # via requests
+click==8.1.7
+    # via uvicorn
 dataclasses-json==0.6.7
     # via backend
     # via langchain-community
@@ -51,6 +54,8 @@ exceptiongroup==1.2.2
     # via anyio
 faiss-cpu==1.9.0.post1
     # via backend
+fastapi==0.115.6
+    # via backend
 frozenlist==1.5.0
     # via aiohttp
     # via aiosignal
@@ -58,6 +63,7 @@ frozenlist==1.5.0
 h11==0.14.0
     # via backend
     # via httpcore
+    # via uvicorn
 httpcore==1.0.7
     # via backend
     # via httpx
@@ -136,6 +142,7 @@ propcache==0.2.1
     # via yarl
 pydantic==2.10.3
     # via backend
+    # via fastapi
     # via langchain
     # via langchain-core
     # via langsmith
@@ -176,6 +183,8 @@ sqlalchemy==2.0.36
     # via backend
     # via langchain
     # via langchain-community
+starlette==0.41.3
+    # via fastapi
 tenacity==9.0.0
     # via backend
     # via langchain
@@ -190,6 +199,7 @@ tqdm==4.67.1
 typing-extensions==4.12.2
     # via anyio
     # via backend
+    # via fastapi
     # via langchain-core
     # via multidict
     # via openai
@@ -197,12 +207,15 @@ typing-extensions==4.12.2
     # via pydantic-core
     # via sqlalchemy
     # via typing-inspect
+    # via uvicorn
 typing-inspect==0.9.0
     # via backend
     # via dataclasses-json
 urllib3==2.2.3
     # via backend
     # via requests
+uvicorn==0.32.1
+    # via backend
 yarl==1.18.3
     # via aiohttp
     # via backend

@@ -39,7 +39,7 @@ dependencies = [
     "orjson==3.10.12",
     "packaging==24.2",
     "propcache==0.2.1",
-    "pydantic==2.10.3",
+    "pydantic>=2.10.3",
     "pydantic-settings==2.6.1",
     "pydantic-core==2.27.1",
     "python-dotenv==1.0.1",
@@ -57,6 +57,8 @@ dependencies = [
     "urllib3==2.2.3",
     "yarl==1.18.3",
     "numpy==1.26.4",
+    "fastapi>=0.115.6",
+    "uvicorn>=0.32.1",
 ]
 readme = "README.md"
 requires-python = ">= 3.8"
