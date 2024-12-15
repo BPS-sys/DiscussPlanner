@@ -1,6 +1,7 @@
 # python - venv
 .venv
 /DiscussPlanner_venv
+/fastapi_test_venv
 
 # pychache
 __pycache__
