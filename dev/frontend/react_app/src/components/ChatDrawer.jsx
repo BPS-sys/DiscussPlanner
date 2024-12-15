@@ -1,12 +1,12 @@
 import { React, useState, useEffect, useRef } from 'react';
 import Box from '@mui/material/Box';
 import Drawer from '@mui/material/Drawer';
-import { doc, getDoc } from "firebase/firestore"; 
+import { doc, getDoc } from "firebase/firestore";
 import db from '../firebase';
 import { useDrawerContext } from './DrawerContext';
 import { Typography, Paper } from '@mui/material';
 
-export default function ChatDrawer({ transcript }) {
+export default function ChatDrawer({ transcript, resetTranscript, ailisteningnow }) {
   const { chatopen, toggleDrawer, responsecheck, SetResponseCheck } = useDrawerContext();
   const [documents, setDocuments] = useState([]);
   const scrollRef = useRef(null);  // スクロール位置を管理するためのref
@@ -14,6 +14,16 @@ export default function ChatDrawer({ transcript }) {
   const addDocuments = (newdoc) => {
     setDocuments(prevdoc => [...prevdoc, newdoc]);
   };
+
+  const addDocumentsRealtime = (doc) => {
+    let updatedDocs = [...documents];  // 新しい配列を作成
+    if (updatedDocs.length === 0) {
+      updatedDocs = [doc];  // 配列が空なら新しいドキュメントで初期化
+    } else {
+      updatedDocs[updatedDocs.length - 1] = doc;  // 最後の要素を新しいdocに置き換え
+    }
+    setDocuments(updatedDocs);
+  }
 
   const GetFirebase = async () => {
     try {
@@ -24,9 +34,9 @@ export default function ChatDrawer({ transcript }) {
 
       // messageMapをid順にソート
       const sortedMessages = Object.entries(messageMap)
-        .map(([key, value]) => ({ id: value.id, content: value.content })) // idとcontentを含むオブジェクトの配列を作成
-        .sort((a, b) => a.id - b.id); // id順にソート
-
+        .map(([key, value]) => ({ id: value.id, content: value.content }))
+        .sort((a, b) => a.id - b.id);
+      await setDocuments([])
       // ソートされたメッセージをdocumentsに追加
       sortedMessages.forEach(message => {
         addDocuments(message.content);
@@ -40,7 +50,6 @@ export default function ChatDrawer({ transcript }) {
     if (responsecheck) {
       SetResponseCheck(false);
       GetFirebase();
-      console.log(documents);
     }
   }, [responsecheck]);
 
@@ -50,6 +59,12 @@ export default function ChatDrawer({ transcript }) {
       scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
     }
   }, [documents]);
+
+  // useEffect(() => {
+  //   if (transcript) {
+  //     addDocumentsRealtime(transcript); // ユーザーの発言をdocumentsに追加
+  //   }
+  // }, [transcript]);
 
   // チャットログを表示する
   const DrawerList = (
@@ -65,10 +80,10 @@ export default function ChatDrawer({ transcript }) {
               marginBottom: 2,
             }}
           >
-            <Paper 
+            <Paper
               sx={{
-                padding: 1, 
-                backgroundColor: index % 2 === 0 ? '#f0f0f0' : '#e0e0e0', 
+                padding: 1,
+                backgroundColor: index % 2 === 0 ? '#f0f0f0' : '#e0e0e0',
                 maxWidth: '80%',
                 borderRadius: 2,
                 display: 'inline-block',
@@ -83,6 +98,27 @@ export default function ChatDrawer({ transcript }) {
       ) : (
         <Typography variant="body2" color="textSecondary">No documents found.</Typography>
       )}
+      <Box
+          sx={{
+            display: 'flex',
+            justifyContent: 'flex-end', // ユーザーは右側、AIは左側
+            marginBottom: 2,
+          }}
+        >
+          <Paper
+            sx={{
+              padding: 1,
+              backgroundColor: '#f0f0f0', // ユーザーの発言と同じデザイン
+              maxWidth: '80%',
+              borderRadius: 2,
+              display: 'inline-block',
+              wordBreak: 'break-word',
+              boxShadow: 2,
+            }}
+          >
+            {ailisteningnow? <Typography variant="body1">{transcript}</Typography> : <div></div>}
+          </Paper>
+        </Box>
     </Box>
   );
 

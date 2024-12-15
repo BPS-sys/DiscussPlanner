@@ -36,6 +36,10 @@ export default function AIAgentsImage() {
 
     };
 
+    const Resetchat = async () => {
+        await resetTranscript();
+    };
+
     const sendToAPI = async (transcript) => {
         try {
             const response = await fetch("http://127.0.0.1:8000/send-chatdata", {
@@ -55,6 +59,7 @@ export default function AIAgentsImage() {
             };
 
             const data = await response.json();
+            Resetchat();
             console.log("Response from server:", data);
         } catch (error) {
             SetResponseCheck(false);
@@ -66,11 +71,11 @@ export default function AIAgentsImage() {
         Setfaceclicked(true);
         const uttr = new SpeechSynthesisUtterance("どうされましたか？")
         speechSynthesis.speak(uttr)
-        resetTranscript()
+        resetTranscript();
         SetMute(false);
         setTimeout(() => {
             questionstartListening();
-        }, 500); // 500ms 後に実行
+        }, 100); // 500ms 後に実行
 
     };
 
@@ -82,14 +87,19 @@ export default function AIAgentsImage() {
             sendToAPI(transcript);
             setTimeout(() => {
                 gijiroku_restartListening();
-            }, 500); // 500ms 後に実行
+            }, 100); // 500ms 後に実行
+            setTimeout(() => {
+                Resetchat();
+            }, 100); // 500ms 後に実行
+            
         }
     }, [transcript]);
+
 
     return (
         <div>
             <img src="./images/AIAgentImage.svg" style={imgstyle} onClick={FaceClick}></img>
-            <ChatDrawer transcript={transcript}/>
+            <ChatDrawer transcript={transcript} resetTranscript={resetTranscript} ailisteningnow={faceclicked} />
         </div>
     );
 };

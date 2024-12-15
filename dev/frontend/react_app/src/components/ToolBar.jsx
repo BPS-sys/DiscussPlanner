@@ -71,6 +71,7 @@ export default function ToolBar() {
                     <SettingsIcon style={{ color: 'white' }} />
                 </IconButton></Item>
             </Stack>
+            {/* 議事録 */}
             <p>{transcript}</p>
         </div>
     );
