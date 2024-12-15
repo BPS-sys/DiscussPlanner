@@ -11,9 +11,9 @@ import { useDrawerContext } from './DrawerContext';
 
 
 export default function AIAgentsImage() {
-    const { micmute, SetMute, toggleListening, _ } = useMicContext();
-    const [ faceclicked, Setfaceclicked ] = useState(false);
-    const { chatopen, toggleDrawer, responsecheck, SetResponseCheck} = useDrawerContext();
+    const { micmute, SetMute, toggleListening, questionstartListening, stopListening } = useMicContext();
+    const [faceclicked, Setfaceclicked] = useState(false);
+    const { chatopen, toggleDrawer, responsecheck, SetResponseCheck } = useDrawerContext();
 
     const imgstyle = {
         position: "absolute",
@@ -28,20 +28,12 @@ export default function AIAgentsImage() {
         browserSupportsSpeechRecognition,
     } = useSpeechRecognition();
 
-    const startListening = () => {
-        SpeechRecognition.startListening({ language: "ja-JP" });
-    };
 
     const gijiroku_restartListening = () => {
-        SetMute(micmute);
         setTimeout(() => {
             toggleListening();
         }, 500); // 500ms 後に実行
-        
-    };
 
-    const stopListening = () => {
-        SpeechRecognition.stopListening();
     };
 
     const sendToAPI = async (transcript) => {
@@ -54,12 +46,12 @@ export default function AIAgentsImage() {
                 body: JSON.stringify({ transcript }),
             });
 
-            if (!response.ok) {
-                SetResponseCheck(false);
-                throw new Error(`Error: ${response.status}`);
+            if (response.ok) {
+                SetResponseCheck(true);
             }
             else {
-                SetResponseCheck(true);
+                SetResponseCheck(false);
+                throw new Error(`Error: ${response.status}`);
             };
 
             const data = await response.json();
@@ -77,14 +69,14 @@ export default function AIAgentsImage() {
         resetTranscript()
         SetMute(false);
         setTimeout(() => {
-            startListening();
+            questionstartListening();
         }, 500); // 500ms 後に実行
-        
+
     };
 
     // 音声認識が終了したら transcript を送信
     useEffect(() => {
-        if (transcript.includes('以上です') && faceclicked) {
+        if (transcript.includes('質問は以上です') && faceclicked) {
             Setfaceclicked(false);
             stopListening();
             sendToAPI(transcript);
@@ -97,8 +89,7 @@ export default function AIAgentsImage() {
     return (
         <div>
             <img src="./images/AIAgentImage.svg" style={imgstyle} onClick={FaceClick}></img>
-            <h1>{transcript}</h1>
-            <ChatDrawer />
+            <ChatDrawer transcript={transcript}/>
         </div>
     );
 };
