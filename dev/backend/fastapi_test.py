@@ -22,3 +22,7 @@ async def process_transcript(request: Request):
     # ここでtranscriptを処理
     print(f"Received transcript: {transcript}")
     return {"message": "Transcript received", "transcript": transcript}
+
+if __name__ == "__main__":
+    import uvicorn
+    uvicorn.run(app, host="127.0.0.1", port=8000, reload=True)
