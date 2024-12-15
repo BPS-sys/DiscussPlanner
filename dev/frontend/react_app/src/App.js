@@ -4,6 +4,9 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import DiscussPage from './pages/DiscussPage';
 import HomePage from './pages/HomePage';
 
+import { MicProvider } from './components/MicContext';
+import { DrawerProvider } from './components/DrawerContext';
+
 function App() {
   return (
     <div className="App">
@@ -22,12 +25,16 @@ function App() {
         </a>
       </header>
        */}
-      <BrowserRouter>
-        <Routes>
-          <Route path={`/`} element={<HomePage />} />
-          <Route path={`/DiscussPage`} element={<DiscussPage />} />
-        </Routes>
-      </BrowserRouter>
+      <MicProvider>
+        <DrawerProvider>
+          <BrowserRouter>
+            <Routes>
+              <Route path={`/`} element={<HomePage />} />
+              <Route path={`/DiscussPage`} element={<DiscussPage />} />
+            </Routes>
+          </BrowserRouter>
+        </DrawerProvider>
+      </MicProvider>
     </div>
   );
 }

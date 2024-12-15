@@ -11,8 +11,9 @@ import SettingsIcon from '@mui/icons-material/Settings';
 import CommentsDisabledIcon from '@mui/icons-material/CommentsDisabled';
 import MicOffIcon from '@mui/icons-material/MicOff';
 
-import ChatDrawer from './ChatDrawer';
 
+import { useMicContext } from './MicContext';
+import { useDrawerContext } from './DrawerContext';
 
 const Item = styled(Paper)(({ theme }) => ({
     backgroundColor: '#fff',
@@ -27,14 +28,12 @@ const Item = styled(Paper)(({ theme }) => ({
 
 
 export default function ToolBar() {
-    const [chatopen, setOpen] = useState(false);
-    const toggleDrawer = (newOpen) => () => {
-        setOpen(newOpen);
-    };
-    const [micmute, SetMute] = useState(false);
+    const { micmute, SetMute, toggleListening, transcript } = useMicContext();
+    const { chatopen, toggleDrawer, responsecheck, SetResponseCheck} = useDrawerContext();
     const toggleMute = () => {
         SetMute((prev) => !prev);
     };
+    toggleListening();
     return (
         <div>
             <Stack
@@ -44,7 +43,7 @@ export default function ToolBar() {
                 style={{ position: 'absolute', bottom: 10, right: 200, background: "linear-gradient(90deg, rgb(34, 102, 235) 0%, rgb(2, 203, 254) 100%)", borderRadius: 100 }}
             >
                 <Item style={{ backgroundColor: 'transparent', boxShadow: 'None', marginLeft: '10px' }}><IconButton onClick={toggleMute}>
-                    {micmute ? <MicIcon style={{ color: 'white' }} /> : <MicOffIcon style={{ color: 'white' }} />}
+                    {micmute ?  <MicOffIcon style={{ color: 'white' }} /> : <MicIcon style={{ color: 'white' }} />}
                 </IconButton></Item>
                 <div
                     style={{
@@ -71,8 +70,8 @@ export default function ToolBar() {
                 <Item style={{ backgroundColor: 'transparent', boxShadow: 'None', marginRight: '10px' }}><IconButton>
                     <SettingsIcon style={{ color: 'white' }} />
                 </IconButton></Item>
-                <ChatDrawer open={chatopen} toggleDrawer={toggleDrawer} />
             </Stack>
+            <p>{transcript}</p>
         </div>
     );
 };
