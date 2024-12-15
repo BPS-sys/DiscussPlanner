@@ -29,12 +29,18 @@ export const MicProvider = ({ children }) => {
         SpeechRecognition.startListening({ continuous: true, language: "ja-JP" });
     };
 
+    const questionstartListening = () => {
+        SpeechRecognition.startListening({ language: "ja-JP" });
+    };
+
     const stopListening = () => {
         SpeechRecognition.stopListening();
     };
 
+
+
     return (
-        <MicContext.Provider value={{ micmute, SetMute, toggleListening, transcript }}>
+        <MicContext.Provider value={{ micmute, SetMute, toggleListening, transcript, questionstartListening, stopListening }}>
             {children}
         </MicContext.Provider>
     );
