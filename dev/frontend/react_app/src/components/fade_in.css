@@ -1,0 +1,12 @@
+/* CSSで下からスライドインするアニメーションを定義 */
+.slide-in {
+    opacity: 0;
+    transform: translateY(4vw); /* 画面外からスライドしてくる */
+    transition: transform 1s ease, opacity 1s ease;
+  }
+  
+  .slide-in.visible {
+    opacity: 1;
+    transform: translateY(0); /* 元の位置に戻る */
+  }
+  

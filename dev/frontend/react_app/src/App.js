@@ -1,0 +1,42 @@
+import logo from './logo.svg';
+import './App.css';
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+import DiscussPage from './pages/DiscussPage';
+import HomePage from './pages/HomePage';
+
+import { MicProvider } from './components/MicContext';
+import { DrawerProvider } from './components/DrawerContext';
+
+function App() {
+  return (
+    <div className="App">
+      {/* <header className="App-header">
+        <img src={logo} className="App-logo" alt="logo" />
+        <p>
+          Edit <code>src/App.js</code> and save to reload.
+        </p>
+        <a
+          className="App-link"
+          href="https://reactjs.org"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          Learn React
+        </a>
+      </header>
+       */}
+      <MicProvider>
+        <DrawerProvider>
+          <BrowserRouter>
+            <Routes>
+              <Route path={`/`} element={<HomePage />} />
+              <Route path={`/DiscussPage`} element={<DiscussPage />} />
+            </Routes>
+          </BrowserRouter>
+        </DrawerProvider>
+      </MicProvider>
+    </div>
+  );
+}
+
+export default App;
