@@ -15,7 +15,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-@app.post("/send-chatdata")
+@app.post("/test")
 async def process_transcript(request: Request):
     data = await request.json()
     transcript = data.get("transcript", "")
