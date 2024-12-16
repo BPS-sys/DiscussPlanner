@@ -42,6 +42,7 @@ async def create_chat(meeting_id: str, input_item: ChatItem) -> ChatItem:
     ans = bot.invoke(input_message)
 
     output_item = ChatItem(chat=Chat(message=ans))
+    print(output_item)
     return output_item
 
 
