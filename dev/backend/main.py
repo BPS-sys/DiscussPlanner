@@ -13,8 +13,6 @@ from api.schema import *
 load_dotenv()
 app = FastAPI()
 
-bot = LangchainBot()
-
 
 @app.post("/chat/{meeting_id}")
 async def create_chat(meeting_id: str, input_item: ChatItem) -> ChatItem:
@@ -28,6 +26,8 @@ async def create_chat(meeting_id: str, input_item: ChatItem) -> ChatItem:
         dict: チャットに対するリクエストの出力データ
     """
     print("session: ", meeting_id)
+
+    bot = LangchainBot()
     input_message = str(input_item.chat.message)
     ans = bot.invoke(input_message)
 
@@ -47,6 +47,13 @@ async def create_minutes(meeting_id: str, input_item: MinutesItem) -> AssistantS
         AssistantState: アシスタントの状態
     """
     print("session: ", meeting_id)
+
+    # vectorstoreの更新
+    input_text = input_item.text
+    vs = VectorStore(path=FilePath(), split_config=TextSplitConfig())
+    vs.load()
+    vs.update(input_text=input_text)  # データベースの更新と保存を行う
+    # タイマー処理
     minits = len(input_item.text)
     result = AssistantState(face="angry", timer=TimerState(flag=True, time=minits))
     return result

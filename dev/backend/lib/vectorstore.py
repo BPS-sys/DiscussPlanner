@@ -132,6 +132,22 @@ class VectorStore:
             text = f.read()
         return text
 
+    def update(self, input_text: str) -> FAISS:
+        """
+        VectorStore を更新と保存を行う
+
+        Args:
+            input_text (str): 更新するテキスト
+
+        Returns:
+            FAISS: VectorStore
+        """
+        texts = self.text_split(
+            input_text, self.split_config
+        )  # 量が多い場合は分割（既存要素と異なる為）
+        self.vectorstore.add_documents([Document(page_content=txt) for txt in texts])
+        self.save(self.path.vectorstore_path)  # 保存
+
 
 if __name__ == "__main__":
     vs = VectorStore()
