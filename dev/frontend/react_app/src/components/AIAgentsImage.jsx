@@ -8,12 +8,14 @@ import SpeechRecognition, {
 import { useMicContext } from "./MicContext";
 import ChatDrawer from './ChatDrawer';
 import { useDrawerContext } from './DrawerContext';
+import { useFastAPIContext } from "./FastAPIContext";
 
 
 export default function AIAgentsImage() {
     const { micmute, SetMute, toggleListening, questionstartListening, stopListening } = useMicContext();
     const [faceclicked, Setfaceclicked] = useState(false);
     const { chatopen, toggleDrawer, responsecheck, SetResponseCheck } = useDrawerContext();
+    const { UserMessage, SetUserMessage, AIMessage, SetAIMessage, documents, setDocuments, addDocuments } = useFastAPIContext();
 
     const imgstyle = {
         position: "absolute",
@@ -42,25 +44,30 @@ export default function AIAgentsImage() {
 
     const sendToAPI = async (transcript) => {
         try {
-            const response = await fetch("http://127.0.0.1:8000/send-chatdata", {
+            const response = await fetch("http://127.0.0.1:8000/chat/111", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
                 },
-                body: JSON.stringify({ transcript }),
+                body: JSON.stringify({
+                    "chat": {
+                      "message": transcript
+                    }
+                  }),
             });
 
             if (response.ok) {
+                const data = await response.json();
+                const ResponseMessage = data.message;
                 SetResponseCheck(true);
+                SetAIMessage(ResponseMessage);
+                addDocuments(AIMessage);
             }
             else {
                 SetResponseCheck(false);
                 throw new Error(`Error: ${response.status}`);
             };
-
-            const data = await response.json();
             Resetchat();
-            console.log("Response from server:", data);
         } catch (error) {
             SetResponseCheck(false);
             console.error("Failed to send transcript to API:", error);
@@ -84,14 +91,13 @@ export default function AIAgentsImage() {
         if (transcript.includes('質問は以上です') && faceclicked) {
             Setfaceclicked(false);
             stopListening();
+            SetUserMessage(transcript);
+            addDocuments(UserMessage);
             sendToAPI(transcript);
-            setTimeout(() => {
-                gijiroku_restartListening();
-            }, 100); // 500ms 後に実行
             setTimeout(() => {
                 Resetchat();
             }, 100); // 500ms 後に実行
-            
+            gijiroku_restartListening();
         }
     }, [transcript]);
 
