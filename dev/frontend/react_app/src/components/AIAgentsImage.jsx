@@ -60,6 +60,9 @@ export default function AIAgentsImage() {
                 SetAIMessage(ResponseMessage);
                 console.log('Response from API:', ResponseMessage);
                 addDocuments(ResponseMessage);
+                // 回答を発言
+                const uttr = new SpeechSynthesisUtterance(ResponseMessage);
+                speechSynthesis.speak(uttr);
             } else {
                 SetResponseCheck(false);
                 throw new Error(`Error: ${response.status}`);
