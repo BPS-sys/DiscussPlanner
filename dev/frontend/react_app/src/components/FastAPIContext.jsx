@@ -8,8 +8,6 @@ export const FastAPIProvider = ({ children }) => {
     const [documents, setDocuments] = useState([]);
     const addDocuments = (newdoc) => {
         setDocuments(prevdoc => [...prevdoc, newdoc]);
-        console.log("AI",AIMessage);
-        console.log("user",UserMessage);
       };
     const SetUserMessage = async (doc) => {
         await setUserMessage(doc);

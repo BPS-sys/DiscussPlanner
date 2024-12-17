@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 
 import SpeechRecognition, {
     useSpeechRecognition,
@@ -14,6 +14,8 @@ export default function AIAgentsImage() {
     const [faceclicked, Setfaceclicked] = useState(false);
     const { chatopen, toggleDrawer, responsecheck, SetResponseCheck } = useDrawerContext();
     const { AIMessage, SetAIMessage, addDocuments } = useFastAPIContext();
+    const [finalTranscript, setFinalTranscript] = useState(""); // 確定した文章
+    const timerRef = useRef(null); // タイマーを格納
 
     const imgstyle = {
         position: "absolute",
@@ -28,7 +30,7 @@ export default function AIAgentsImage() {
         browserSupportsSpeechRecognition,
     } = useSpeechRecognition();
 
-    const gijiroku_restartListening = () => {
+    const Minutes_restartListening = () => {
         setTimeout(() => {
             toggleListening();
         }, 500); // 500ms 後に再開
@@ -38,7 +40,7 @@ export default function AIAgentsImage() {
         await resetTranscript();
     };
 
-    const sendToAPI = async (transcript) => {
+    const UseFastAPITosendUserMessage = async (message) => {
         try {
             const response = await fetch("http://127.0.0.1:8080/chat/111", {
                 method: "POST",
@@ -47,7 +49,7 @@ export default function AIAgentsImage() {
                 },
                 body: JSON.stringify({
                     "chat": {
-                        "message": transcript
+                        "message": message
                     }
                 }),
             });
@@ -73,6 +75,30 @@ export default function AIAgentsImage() {
         }
     };
 
+    const UseFastAPITosendMinutes = async (message) => {
+        try {
+            const response = await fetch("http://127.0.0.1:8080/minutes/111", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    "text": message
+                  }),
+            });
+
+            if (response.ok) {
+                const data = await response.json();
+                const ResponseMessage = data;
+                console.log("議事録送信しました。resp==>", ResponseMessage);
+            } else {
+                throw new Error(`Error: ${response.status}`);
+            }
+        } catch (error) {
+            console.error("Failed to send minutes to API:", error);
+        }
+    };
+
     const FaceClick = () => {
         Setfaceclicked(true);
         const uttr = new SpeechSynthesisUtterance("どうされましたか？")
@@ -86,22 +112,37 @@ export default function AIAgentsImage() {
 
     // 音声認識が終了したら transcript を送信
     useEffect(() => {
-        if (transcript.includes('質問は以上です') && faceclicked) {
+        if (transcript.includes("質問は以上です") && faceclicked) {
             console.log("Transcript detected:", transcript);
             Setfaceclicked(false);
             stopListening();
 
             // 最新の transcript を直接使用してドキュメントに追加
             addDocuments(transcript);
-            sendToAPI(transcript);
-
+            UseFastAPITosendUserMessage(transcript);
             // Transcript をリセットし、再度リスニングを開始
             setTimeout(() => {
                 Resetchat();
-                gijiroku_restartListening();
+                Minutes_restartListening();
             }, 100);
         }
     }, [transcript, faceclicked]);
+
+    useEffect(() => {
+        // transcriptが変わるたびにタイマーをリセット
+        if (transcript.length > 0) {
+            if (timerRef.current) clearTimeout(timerRef.current);
+            if (!faceclicked) {
+                // 3秒間何も発言がなければ実行
+                timerRef.current = setTimeout(() => {
+                    console.log("3秒間発言がなかったので確定:", transcript);
+                    setFinalTranscript(transcript); // 確定した文章を保存
+                    UseFastAPITosendMinutes(finalTranscript);
+                    resetTranscript(); // transcriptをリセット
+                }, 1000); // 3秒
+            };
+        }
+    }, [transcript, resetTranscript]);
 
     return (
         <div>

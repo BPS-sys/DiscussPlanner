@@ -71,7 +71,7 @@ class LangchainBot:
         self.system_prompt = SystemMessagePromptTemplate.from_template(
             """
             以下の`context`の情報に基づいて、質問に回答してください。
-            また`context`に関係のない質問は無視してください。
+            
 
             context:
             {context}

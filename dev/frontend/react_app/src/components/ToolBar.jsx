@@ -34,6 +34,7 @@ export default function ToolBar() {
         SetMute((prev) => !prev);
     };
     toggleListening();
+
     return (
         <div>
             <Stack
