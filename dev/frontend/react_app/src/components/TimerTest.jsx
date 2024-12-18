@@ -8,7 +8,7 @@ export function TimerTest() {
   const [timeLeft, setTimeLeft] = useState(25 * 60); // 25 minutes in seconds
   const [circleDashOffset, setCircleDashOffset] = useState(0);
 
-  const totalTime = 25 * 60; // Total time for the Pomodoro timer (in seconds)
+  const totalTime = mode === 'pomo' ? 25 * 60 : mode === 'short' ? 5 * 60 : 15 * 60;
 
   // Start/Pause timer
   const toggleTimer = () => {
