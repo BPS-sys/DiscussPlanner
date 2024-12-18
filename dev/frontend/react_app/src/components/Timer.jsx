@@ -2,13 +2,15 @@
 import { TimerStringLetter } from "./TimerStringLetter";
 import FacebookCircularProgress from "./TimerCircle";
 import { TimerValue } from "./TimerValue";
+import { TimerTest } from "./TimerTest";
 
 export const Timer = () => {
     return (
         <div>
-            <TimerStringLetter></TimerStringLetter>
+            {/* <TimerStringLetter></TimerStringLetter>
             <FacebookCircularProgress></FacebookCircularProgress>
-            <TimerValue></TimerValue>
+            <TimerValue></TimerValue> */}
+            <TimerTest></TimerTest>
         </div>
     );
 };
