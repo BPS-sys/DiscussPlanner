@@ -3,35 +3,30 @@ import './TimerTest_01.css';
 import './TimerTest_02.css';
 
 export function TimerTest() {
-  const [mode, setMode] = useState('pomo'); // 'pomo', 'short', 'long'
+  const [mode, setMode] = useState('pomo');
   const [isTimerRunning, setIsTimerRunning] = useState(false);
-  const [timeLeft, setTimeLeft] = useState(25 * 60); // 25 minutes in seconds
+  const [timeLeft, setTimeLeft] = useState(25 * 60);
   const [circleDashOffset, setCircleDashOffset] = useState(0);
 
   const totalTime = mode === 'pomo' ? 25 * 60 : mode === 'short' ? 5 * 60 : 15 * 60;
 
-  // Start/Pause timer
   const toggleTimer = () => {
     setIsTimerRunning(prevState => !prevState);
   };
 
-  // Mode change
   const handleModeChange = (event) => {
     setMode(event.target.value);
-    // Reset timer based on selected mode
     if (event.target.value === 'pomo') setTimeLeft(25 * 60);
     if (event.target.value === 'short') setTimeLeft(5 * 60);
     if (event.target.value === 'long') setTimeLeft(15 * 60);
   };
 
-  // Format time in MM:SS format
   const formatTime = (seconds) => {
     const minutes = Math.floor(seconds / 60);
     const remainingSeconds = seconds % 60;
     return `${minutes.toString().padStart(2, '0')}:${remainingSeconds.toString().padStart(2, '0')}`;
   };
 
-  // Timer countdown effect
   useEffect(() => {
     if (isTimerRunning && timeLeft > 0) {
       const timerId = setInterval(() => {
@@ -41,9 +36,8 @@ export function TimerTest() {
     }
   }, [isTimerRunning, timeLeft]);
 
-  // Update the circular progress bar dash offset based on remaining time
   useEffect(() => {
-    const offset = (1 - timeLeft / totalTime) * 301.593; // 301.593 is the total length of the circle path
+    const offset = (1 - timeLeft / totalTime) * 301.593;
     setCircleDashOffset(offset);
   }, [timeLeft]);
 
