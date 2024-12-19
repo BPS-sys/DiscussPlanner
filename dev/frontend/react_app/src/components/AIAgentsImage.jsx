@@ -1,9 +1,9 @@
 export const AIAgentsImage = () => {
     const imgstyle = {
-        position: "absolute",
-        top: 100,
-        left: 50,
-        width: 300
+        display:'flex',
+        width:'16vw',
+        marginTop:'2vw',
+        marginLeft:'2vw'
     };
 
     return (
