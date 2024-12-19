@@ -14,7 +14,7 @@ export const TimerValue = () => {
   }, [timeLeft]);
 
   return (
-    <div style={{ textAlign: 'center', color:'#2463EB', position:'absolute', top:520, left:160, fontSize:'100px', fontWeight:30}}>
+    <div style={{ textAlign: 'center', color:'#2463EB', position:'', top:520, left:160, fontSize:'100px', fontWeight:30}}>
       {timeLeft > 0 ? `${timeLeft}` : '0'}
     </div>
   );

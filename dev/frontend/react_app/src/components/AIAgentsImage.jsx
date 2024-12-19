@@ -18,10 +18,10 @@ export default function AIAgentsImage() {
     const timerRef = useRef(null); // タイマーを格納
 
     const imgstyle = {
-        position: "absolute",
-        top: 100,
-        left: 50,
-        width: 300
+        display:'flex',
+        width:'16vw',
+        marginTop:'2vw',
+        marginLeft:'2vw'
     };
     const {
         transcript,
