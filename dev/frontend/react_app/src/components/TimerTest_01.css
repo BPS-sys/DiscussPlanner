@@ -1,0 +1,121 @@
+body {
+    margin: 0;
+}
+
+* {
+    padding: 0;
+    margin: 0;
+}
+
+body {
+    justify-content: center;
+}
+
+.pomodoro-app {
+    display: flex;
+    flex-direction: column;
+    align-items: Left;
+}
+
+
+.controls {
+    display: flex;
+    justify-content: space-between;
+    background: linear-gradient(90deg, rgb(34, 102, 235) 0%, rgb(2, 203, 254) 100%);
+    border-radius: 31.5px;
+    width: 300px;
+    min-height: 50px;
+    padding: 8px 6px;
+    margin: 20px 0 16px;
+    z-index: 100;
+    box-sizing: border-box
+}
+
+.controls input[type=radio] {
+    opacity: 0;
+    position: fixed;
+    width: 0
+}
+
+.controls__button {
+    display: flex;
+    align-items: center;
+    height: 36px;
+    border: none;
+    border-radius: 26.5px;
+    background: #2f2f2f;
+    padding: 0 15px;
+    font-style: normal;
+    font-weight: 700;
+    font-size: 12px;
+    text-align: center;
+    color: #ffffff;
+    mix-blend-mode: normal;
+    opacity: .4;
+    cursor: pointer
+}
+
+.controls input[type=radio]:checked+label {
+    color: #1e213f;
+    opacity: 1;
+    background: #ffffff;
+    animation-name: fade;
+    animation-timing-function: ease-in;
+    animation-duration: .05s
+}
+
+.timer {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-shrink: 0;
+    width: 300px;
+    height: 300px;
+    border-radius: 90%;
+    cursor: pointer;
+}
+
+.timer:active {
+    transform: scale(.98)
+}
+
+.timer__display {
+    height: 89.26%;
+    width: 89.26%;
+    padding: 11px;
+    border-radius: 90%;
+    box-sizing: border-box
+}
+
+button.display__mute {
+    width: 25px;
+    height: 25px;
+    border: 0;
+    background-color: transparent;
+    color: #000000;
+    transition: color .3s ease-in-out;
+    cursor: pointer
+}
+
+button.display__mute:hover {
+    color: #000000
+}
+
+button:focus:not(:focus-visible) {
+    outline: 0
+}
+
+.display__start-pause {
+    margin-top: 50%;
+    font-weight: 700;
+    font-size: 16px;
+    border: 0;
+    color: #000000;
+    line-height: 16px;
+    letter-spacing: 15px;
+    margin-right: -15px;
+    transition: transform .2s ease-in-out;
+    cursor: pointer;
+    background: #ffffff;
+}
+

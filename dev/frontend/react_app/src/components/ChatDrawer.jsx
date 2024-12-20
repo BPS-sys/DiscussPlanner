@@ -5,51 +5,50 @@ import { doc, getDoc } from "firebase/firestore";
 import db from '../firebase';
 import { useDrawerContext } from './DrawerContext';
 import { Typography, Paper } from '@mui/material';
+import { useFastAPIContext } from './FastAPIContext';
+
 
 export default function ChatDrawer({ transcript, resetTranscript, ailisteningnow }) {
   const { chatopen, toggleDrawer, responsecheck, SetResponseCheck } = useDrawerContext();
-  const [documents, setDocuments] = useState([]);
+  const { UserMessage, SetUserMessage, AIMessage, SetAIMessage, documents, setDocuments, addDocuments } = useFastAPIContext();
   const scrollRef = useRef(null);  // スクロール位置を管理するためのref
 
-  const addDocuments = (newdoc) => {
-    setDocuments(prevdoc => [...prevdoc, newdoc]);
-  };
+  
 
-  const addDocumentsRealtime = (doc) => {
-    let updatedDocs = [...documents];  // 新しい配列を作成
-    if (updatedDocs.length === 0) {
-      updatedDocs = [doc];  // 配列が空なら新しいドキュメントで初期化
-    } else {
-      updatedDocs[updatedDocs.length - 1] = doc;  // 最後の要素を新しいdocに置き換え
-    }
-    setDocuments(updatedDocs);
-  }
+  // const addDocumentsRealtime = (doc) => {
+  //   let updatedDocs = [...documents];  // 新しい配列を作成
+  //   if (updatedDocs.length === 0) {
+  //     updatedDocs = [doc];  // 配列が空なら新しいドキュメントで初期化
+  //   } else {
+  //     updatedDocs[updatedDocs.length - 1] = doc;  // 最後の要素を新しいdocに置き換え
+  //   }
+  //   setDocuments(updatedDocs);
+  // }
 
-  const GetFirebase = async () => {
-    try {
-      // Firestoreからメッセージデータを取得
-      const docRef = doc(db, "testuser", "b01ADn1oC6B41T57lqP6", "log", "XCWdWHX1f536cqBsgcpU");
-      const docSnap = await getDoc(docRef);
-      const messageMap = docSnap.data().Message;
+  // const GetFirebase = async () => {
+  //   try {
+  //     // Firestoreからメッセージデータを取得
+  //     const docRef = doc(db, "testuser", "b01ADn1oC6B41T57lqP6", "log", "XCWdWHX1f536cqBsgcpU");
+  //     const docSnap = await getDoc(docRef);
+  //     const messageMap = docSnap.data().Message;
 
-      // messageMapをid順にソート
-      const sortedMessages = Object.entries(messageMap)
-        .map(([key, value]) => ({ id: value.id, content: value.content }))
-        .sort((a, b) => a.id - b.id);
-      await setDocuments([])
-      // ソートされたメッセージをdocumentsに追加
-      sortedMessages.forEach(message => {
-        addDocuments(message.content);
-      });
-    } catch (error) {
-      console.error("Error getting documents: ", error);
-    }
-  };
+  //     // messageMapをid順にソート
+  //     const sortedMessages = Object.entries(messageMap)
+  //       .map(([key, value]) => ({ id: value.id, content: value.content }))
+  //       .sort((a, b) => a.id - b.id);
+  //     await setDocuments([])
+  //     // ソートされたメッセージをdocumentsに追加
+  //     sortedMessages.forEach(message => {
+  //       addDocuments(message.content);
+  //     });
+  //   } catch (error) {
+  //     console.error("Error getting documents: ", error);
+  //   }
+  // };
 
   useEffect(() => {
     if (responsecheck) {
       SetResponseCheck(false);
-      GetFirebase();
     }
   }, [responsecheck]);
 

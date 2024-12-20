@@ -6,6 +6,7 @@ import HomePage from './pages/HomePage';
 
 import { MicProvider } from './components/MicContext';
 import { DrawerProvider } from './components/DrawerContext';
+import { FastAPIProvider } from './components/FastAPIContext';
 
 function App() {
   return (
@@ -27,12 +28,14 @@ function App() {
        */}
       <MicProvider>
         <DrawerProvider>
-          <BrowserRouter>
-            <Routes>
-              <Route path={`/`} element={<HomePage />} />
-              <Route path={`/DiscussPage`} element={<DiscussPage />} />
-            </Routes>
-          </BrowserRouter>
+          <FastAPIProvider>
+            <BrowserRouter>
+              <Routes>
+                <Route path={`/`} element={<HomePage />} />
+                <Route path={`/DiscussPage`} element={<DiscussPage />} />
+              </Routes>
+            </BrowserRouter>
+          </FastAPIProvider>
         </DrawerProvider>
       </MicProvider>
     </div>

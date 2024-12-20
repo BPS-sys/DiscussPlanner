@@ -1,7 +1,7 @@
 export const TimerStringLetter = () => {
     return(
         <p style={{
-            position:"absolute",
+            position:"",
             fontWeight:600,
             color:"#8E8E8E",
             fontSize:35,

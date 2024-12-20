@@ -42,6 +42,7 @@ async def create_chat(meeting_id: str, input_item: ChatItem) -> ChatItem:
     ans = bot.invoke(input_message)
 
     output_item = ChatItem(chat=Chat(message=ans))
+    print(output_item)
     return output_item
 
 
@@ -71,3 +72,4 @@ async def create_minutes(meeting_id: str, input_item: MinutesItem) -> AssistantS
 
 if __name__ == "__main__":
     uvicorn.run("main:app", host="0.0.0.0", port=8080, reload=True, log_level="debug")
+
