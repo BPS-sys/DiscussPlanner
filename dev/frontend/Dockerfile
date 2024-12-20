@@ -1,9 +1,12 @@
 FROM node:20-alpine
+ENV NODE_ENV=development
 
-# 作業ディレクトリを設定
+# ファイルをコピー
+RUN mkdir -p /app
+COPY ./react_app /app
+
 WORKDIR /app
 
-# パッケージファイルをインストール
 RUN npm install
 
 # アプリケーションを起動

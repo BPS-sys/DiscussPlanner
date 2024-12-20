@@ -42,7 +42,7 @@ export default function AIAgentsImage() {
 
     const UseFastAPITosendUserMessage = async (message) => {
         try {
-            const response = await fetch("http://127.0.0.1:8080/chat/111", {
+            const response = await fetch("http://localhost:8080/chat/111", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
@@ -77,7 +77,7 @@ export default function AIAgentsImage() {
 
     const UseFastAPITosendMinutes = async (message) => {
         try {
-            const response = await fetch("http://127.0.0.1:8080/minutes/111", {
+            const response = await fetch("http://localhost:8080/minutes/111", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
