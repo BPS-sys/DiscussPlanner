@@ -84,7 +84,7 @@ export default function AIAgentsImage() {
                 },
                 body: JSON.stringify({
                     "text": message
-                  }),
+                }),
             });
 
             if (response.ok) {
