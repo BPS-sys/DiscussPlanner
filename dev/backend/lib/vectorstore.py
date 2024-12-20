@@ -1,61 +1,41 @@
 import os
 from typing import Optional
 from dotenv import load_dotenv
-from pydantic import BaseModel
 from langchain_core.documents import Document
 from langchain_community.vectorstores.faiss import FAISS
-
-# from langchain_openai.embeddings.azure import AzureOpenAIEmbeddings
-# from langchain_community.embeddings import HuggingFaceEmbeddings  # test
-
 from langchain_openai.embeddings import OpenAIEmbeddings
-
-# from langchain_community.embeddings
 from langchain.text_splitter import CharacterTextSplitter
+
+# local
+from lib.schema import FilePath, TextSplitConfig
+from lib.models import AzureModels, OpenAIModels
 
 # load environment variables
 load_dotenv("../.env")
 
-# print(os.getenv("OPENAI_API_KEY"))
-
-# emb = OpenAIEmbeddings(
-#     openai_api_key=os.getenv("OPENAI_API_KEY")
-#     )
-
-# print(emb.embed_documents(["hello world"]))
-
-# exit()
 
 class VectorStore:
     """
     VectorStore を生成するクラス
     """
 
-    def __init__(self):
+    def __init__(
+        self,
+        path: Optional[FilePath] = FilePath(),
+        split_config: Optional[TextSplitConfig] = TextSplitConfig(),
+    ):
         """
         初期化
         """
-        print(os.getenv("AZURE_OPENA_ENDPOINT"))
+        self.path = path
+        self.split_config = split_config
         self.vectorstore = Optional[FAISS]
-        self.embeddings = OpenAIEmbeddings(
-            openai_api_key=os.getenv("OPENAI_API_KEY")
-        )
-
-    class TextSplitConfig(BaseModel):
-        """
-        テキストを分割する際の設定
-
-        Args:
-            BaseModel (_type_): ベースモデル（Pydantic）
-        """
-
-        separator: str = "。"
-        chunk_size: int = 140
-        chunk_overlap: int = 0
+        self.models = AzureModels()
+        self.embeddings = self.models.embeddings
 
     def create(
         self,
-        split_config: Optional[TextSplitConfig] = None,
+        split_config: Optional[TextSplitConfig] = TextSplitConfig(),
         input_text: str = None,
     ) -> FAISS:
         """
@@ -71,14 +51,13 @@ class VectorStore:
         texts = self.text_split(input_text, split_config)  # split text into chunks
         docs = [Document(page_content=txt) for txt in texts]
 
-        input(len(docs))
-
         self.vectorstore = FAISS.from_documents(
             documents=docs, embedding=self.embeddings
         )
+        self.save(self.path.vectorstore_path)  # save vectorstore
         return self.vectorstore
 
-    def load(self, load_path: str) -> FAISS:
+    def load(self) -> FAISS:
         """
         VectorStore をロードする
 
@@ -90,12 +69,21 @@ class VectorStore:
         """
         try:
             self.vectorstore = FAISS.load_local(
-                folder_path=load_path,
+                folder_path=self.path.vectorstore_path,
                 embeddings=self.embeddings,
                 allow_dangerous_deserialization=True,
             )
-        except FileNotFoundError:
-            return None
+        except:
+            print("[sys] VectorStoreが見つかりません。新規生成します。")
+            try:
+                input_text = self.open_file(self.path.input_document)
+                create_res = self.create(
+                    split_config=self.split_config,
+                    input_text=input_text,
+                )
+            except Exception as e:
+                return e
+            return create_res
         return self.vectorstore
 
     def text_split(
@@ -130,12 +118,42 @@ class VectorStore:
         """
         self.vectorstore.save_local(folder_path=save_path)
 
+    def open_file(self, file_path: str) -> str:
+        """
+        ファイルを開く
+
+        Args:
+            file_path (str): ファイルのパス
+
+        Returns:
+            str: ファイルの中身
+        """
+        with open(file_path, "r", encoding="utf-8") as f:
+            text = f.read()
+        return text
+
+    def update(self, input_text: str) -> FAISS:
+        """
+        VectorStore を更新と保存を行う
+
+        Args:
+            input_text (str): 更新するテキスト
+
+        Returns:
+            FAISS: VectorStore
+        """
+        texts = self.text_split(
+            input_text, self.split_config
+        )  # 量が多い場合は分割（既存要素と異なる為）
+        self.vectorstore.add_documents([Document(page_content=txt) for txt in texts])
+        self.save(self.path.vectorstore_path)  # 保存
+
 
 if __name__ == "__main__":
     vs = VectorStore()
-    config = vs.TextSplitConfig()
+    config = TextSplitConfig(separator="。", chunk_size=140, chunk_overlap=0)
 
-    file_path = input("ファイルのパスを入力: ") # ../data/test.txt
+    file_path = input("ファイルのパスを入力: ")  # ../data/test.txt
     try:
         with open(file_path, "r", encoding="utf-8") as f:
             text = f.read()
@@ -144,6 +162,6 @@ if __name__ == "__main__":
         exit()
 
     vs.create(split_config=config, input_text=text)
-    vs.save("../data/vectorstore") # 保存先のパス
+    vs.save("../data/vectorstore")  # 保存先のパス
 
     print("Vector store created and saved.")
