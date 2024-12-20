@@ -4,7 +4,7 @@ import CircularProgress from '@mui/material/CircularProgress';
 
 export default function GradientCircularProgress(props) {
   return (
-    <Box sx={{ position: 'absolute', top:500, left:100}}>
+    <Box sx={{ position: '', top:500, left:100}}>
       {/* SVG でグラデーションを定義 */}
       <svg width={0} height={0}>
         <defs>
