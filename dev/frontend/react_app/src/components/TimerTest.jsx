@@ -52,7 +52,7 @@ export function TimerTest() {
           checked={mode === 'pomo'}
           onChange={handleModeChange}
         />
-        <label htmlFor="pomo" className="controls__button">Pomodoro</label>
+        <label htmlFor="pomo" className="controls__button">Discussion</label>
 
         <input
           type="radio"

@@ -6,14 +6,51 @@ import db from '../firebase';
 import { useDrawerContext } from './DrawerContext';
 import { Typography, Paper } from '@mui/material';
 import { useFastAPIContext } from './FastAPIContext';
-
+import { Avatar } from '@mui/material';
 
 export default function ChatDrawer({ transcript, resetTranscript, ailisteningnow }) {
   const { chatopen, toggleDrawer, responsecheck, SetResponseCheck } = useDrawerContext();
   const { UserMessage, SetUserMessage, AIMessage, SetAIMessage, documents, setDocuments, addDocuments } = useFastAPIContext();
   const scrollRef = useRef(null);  // スクロール位置を管理するためのref
 
-  
+
+  useEffect(() => {
+    const dummyData = [
+      "こんにちは、AIです。どうぞよろしくお願いします。",
+      "こんにちは、ユーザーです。こちらこそよろしくお願いします。",
+      "今日はどんなことをお手伝いできますか？",
+      "今日の天気を教えてください。",
+      "今日は晴れです。気温は25度です。",
+      "こんにちは、AIです。どうぞよろしくお願いします。",
+      "こんにちは、ユーザーです。こちらこそよろしくお願いします。",
+      "今日はどんなことをお手伝いできますか？",
+      "今日の天気を教えてください。",
+      "今日は晴れです。気温は25度です。",
+      "こんにちは、AIです。どうぞよろしくお願いします。",
+      "こんにちは、ユーザーです。こちらこそよろしくお願いします。",
+      "今日はどんなことをお手伝いできますか？",
+      "今日の天気を教えてください。",
+      "こんにちは、AIです。どうぞよろしくお願いします。",
+      "こんにちは、ユーザーです。こちらこそよろしくお願いします。",
+      "今日はどんなことをお手伝いできますか？",
+      "今日の天気を教えてください。",
+      "今日は晴れです。気温は25度です。",
+      "こんにちは、AIです。どうぞよろしくお願いします。",
+      "こんにちは、ユーザーです。こちらこそよろしくお願いします。",
+      "今日はどんなことをお手伝いできますか？",
+      "今日の天気を教えてください。",
+      "今日は晴れです。気温は25度です。",
+      "こんにちは、AIです。どうぞよろしくお願いします。",
+      "こんにちは、ユーザーです。こちらこそよろしくお願いします。",
+      "今日はどんなことをお手伝いできますか？",
+      "今日の天気を教えてください。",
+      "今日は晴れです。気温は25度です。"
+    ];
+    setDocuments(dummyData);
+  }, [setDocuments]);
+
+
+
 
   // const addDocumentsRealtime = (doc) => {
   //   let updatedDocs = [...documents];  // 新しい配列を作成
@@ -67,7 +104,29 @@ export default function ChatDrawer({ transcript, resetTranscript, ailisteningnow
 
   // チャットログを表示する
   const DrawerList = (
-    <Box sx={{ width: 550, padding: 2, maxHeight: '400px', overflowY: 'auto' }} role="presentation" ref={scrollRef}>
+    <Box 
+    sx={{
+      width: 550, 
+      padding: 2, 
+      maxHeight: '100%', 
+      overflowY: 'auto', 
+      '&::-webkit-scrollbar': {
+        width: '8px', // スクロールバーの幅
+      },
+      '&::-webkit-scrollbar-track': {
+        background: '#f1f1f1', // スクロールバーのトラック（背景）
+      },
+      '&::-webkit-scrollbar-thumb': {
+        background: 'linear-gradient(90deg, rgb(34, 102, 235) 0%, rgb(2, 157, 254) 100%)', // スクロールバーのつまみ部分
+        borderRadius: '4px', // つまみの角を丸く
+      },
+      '&::-webkit-scrollbar-thumb:hover': {
+        background: '#555', // つまみをホバーしたときの色
+      }
+    }} 
+    role="presentation" 
+    ref={scrollRef}
+  >
       <Typography variant="h6" gutterBottom>Chat</Typography>
       {documents.length > 0 ? (
         documents.map((doc, index) => (
@@ -79,45 +138,60 @@ export default function ChatDrawer({ transcript, resetTranscript, ailisteningnow
               marginBottom: 2,
             }}
           >
+            {index % 2 === 1 && (  
+              <Avatar 
+                sx={{ 
+                  marginRight: 2, 
+                  width: 40, 
+                  height: 40, 
+                  backgroundColor: 'rgb(34, 102, 235)' 
+                }}
+              >
+                <img src='./images/AIicon.svg'></img>
+              </Avatar>
+            )}
             <Paper
               sx={{
                 padding: 1,
-                backgroundColor: index % 2 === 0 ? '#f0f0f0' : '#e0e0e0',
-                maxWidth: '80%',
-                borderRadius: 2,
+                background: index % 2 === 0 ? 'linear-gradient(90deg, rgb(34, 102, 235) 0%, rgb(2, 157, 254) 100%)' : '#f5f5f5', // ユーザーに線形グラデーションを適用
+                color: index % 2 === 0 ? '#ffffff' : '#000000', // テキストの色を変更
+                maxWidth: '70%', // 最大幅を変更
+                borderRadius: 4, // 角を丸くする
                 display: 'inline-block',
                 wordBreak: 'break-word',
-                boxShadow: 2,
+                boxShadow: 5, // ボックスシャドウを変更
+                padding: 1.2,
               }}
             >
               <Typography variant="body1">{doc}</Typography>
             </Paper>
+
           </Box>
         ))
       ) : (
         <Typography variant="body2" color="textSecondary">No documents found.</Typography>
       )}
       <Box
+        sx={{
+          display: 'flex',
+          justifyContent: 'flex-end', // ユーザーは右側、AIは左側
+          marginBottom: 2,
+        }}
+      >
+        <Paper
           sx={{
-            display: 'flex',
-            justifyContent: 'flex-end', // ユーザーは右側、AIは左側
-            marginBottom: 2,
+            padding: 1,
+            backgroundColor: '#f0f0f0', // ユーザーの発言と同じデザイン
+            maxWidth: '80%',
+            borderRadius: 2,
+            display: 'inline-block',
+            wordBreak: 'break-word',
+            boxShadow: 2,
           }}
         >
-          <Paper
-            sx={{
-              padding: 1,
-              backgroundColor: '#f0f0f0', // ユーザーの発言と同じデザイン
-              maxWidth: '80%',
-              borderRadius: 2,
-              display: 'inline-block',
-              wordBreak: 'break-word',
-              boxShadow: 2,
-            }}
-          >
-            {ailisteningnow? <Typography variant="body1">{transcript}</Typography> : <div></div>}
-          </Paper>
-        </Box>
+          {ailisteningnow ? <Typography variant="body1">{transcript}</Typography> : <div></div>}
+        </Paper>
+      </Box>
     </Box>
   );
 
