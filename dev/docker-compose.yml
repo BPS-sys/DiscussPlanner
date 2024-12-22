@@ -16,3 +16,12 @@ services:
       - '8080:8080'
     volumes:
       - ./backend:/app
+
+  docsaurus:
+    build:
+      context: ../docs
+      dockerfile: Dockerfile
+    ports:
+      - '8888:3000'
+    volumes:
+      - ../docs:/app

@@ -1,0 +1,194 @@
+---
+title: VectorStore Documentation
+---
+
+# VectorStore Documentation
+
+## 概要
+
+`VectorStore`はテキストデータを効率的に管理するためのクラスであり、FAISSを使用してベクトルストアを生成、保存、ロード、および更新を行います。このドキュメントでは、`VectorStore`クラスの構造と使用方法について説明します。
+
+---
+
+## 環境設定
+
+環境変数を読み込むために`dotenv`を使用します。
+
+```python
+from dotenv import load_dotenv
+load_dotenv("../.env")
+```
+
+---
+
+## クラス定義
+
+### VectorStore
+`VectorStore`は以下の主な機能を提供します。
+
+- **初期化 (`__init__`)**
+- **VectorStoreの生成 (`create`)**
+- **VectorStoreのロード (`load`)**
+- **テキスト分割 (`text_split`)**
+- **VectorStoreの保存 (`save`)**
+- **ファイル読み込み (`open_file`)**
+- **VectorStoreの更新 (`update`)**
+
+```python
+class VectorStore:
+    """
+    VectorStore を生成するクラス
+    """
+```
+
+---
+
+## メソッド詳細
+
+### 初期化
+
+```python
+__init__(
+    self,
+    path: Optional[FilePath] = FilePath(),
+    split_config: Optional[TextSplitConfig] = TextSplitConfig(),
+):
+```
+
+#### 引数
+- `path` (Optional[FilePath]): ファイルパスの管理用。
+- `split_config` (Optional[TextSplitConfig]): テキスト分割設定。
+
+---
+
+### VectorStoreの生成
+
+```python
+create(
+    self,
+    split_config: Optional[TextSplitConfig] = TextSplitConfig(),
+    input_text: str = None,
+) -> FAISS:
+```
+
+#### 概要
+
+新しいVectorStoreを生成し、保存します。
+
+#### 引数
+- `split_config` (Optional[TextSplitConfig]): テキスト分割設定。
+- `input_text` (str): 分割対象のテキスト。
+
+#### 戻り値
+- `FAISS`: 作成したVectorStore。
+
+---
+
+### VectorStoreのロード
+
+```python
+load(self) -> FAISS:
+```
+
+#### 概要
+
+保存されたVectorStoreをロードします。保存されたストアが存在しない場合、新規作成を試みます。
+
+#### 戻り値
+- `FAISS`: ロードしたまたは作成したVectorStore。
+
+---
+
+### テキスト分割
+
+```python
+text_split(
+    self,
+    input_text: str = None,
+    split_config: Optional[TextSplitConfig] = None,
+) -> list[str]:
+```
+
+#### 概要
+
+テキストを指定した設定に基づいて分割します。
+
+#### 引数
+- `input_text` (str): 分割対象のテキスト。
+- `split_config` (Optional[TextSplitConfig]): テキスト分割設定。
+
+#### 戻り値
+- `list[str]`: 分割後のテキストリスト。
+
+---
+
+### VectorStoreの保存
+
+```python
+save(self, save_path: str) -> None:
+```
+
+#### 概要
+
+VectorStoreを指定したパスに保存します。
+
+#### 引数
+- `save_path` (str): 保存先のフォルダパス。
+
+---
+
+### ファイル読み込み
+
+```python
+open_file(self, file_path: str) -> str:
+```
+
+#### 概要
+
+テキストファイルを開き、その内容を返します。
+
+#### 引数
+- `file_path` (str): ファイルパス。
+
+#### 戻り値
+- `str`: ファイルの内容。
+
+---
+
+### VectorStoreの更新
+
+```python
+update(self, input_text: str) -> FAISS:
+```
+
+#### 概要
+
+新しいテキストを追加してVectorStoreを更新します。
+
+#### 引数
+- `input_text` (str): 更新するテキスト。
+
+#### 戻り値
+- `FAISS`: 更新後のVectorStore。
+
+---
+
+## 使用例
+
+```python
+if __name__ == "__main__":
+    vs = VectorStore()
+    config = TextSplitConfig(separator="。", chunk_size=140, chunk_overlap=0)
+
+    file_path = input("ファイルのパスを入力: ")
+    try:
+        with open(file_path, "r", encoding="utf-8") as f:
+            text = f.read()
+    except FileNotFoundError:
+        print("ファイルが見つかりません")
+        exit()
+
+    vs.create(split_config=config, input_text=text)
+    vs.save("../data/vectorstore")  # 保存先のパス
+
+    print("Vector store created and saved.")
