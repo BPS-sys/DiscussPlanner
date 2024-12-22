@@ -11,6 +11,7 @@ from langchain.prompts.chat import (
 from langchain_core.runnables import Runnable, RunnablePassthrough
 from langchain_core.output_parsers import StrOutputParser
 from langchain_core.tools import tool
+from langfuse.callback import CallbackHandler
 
 # openai
 from langchain_openai.chat_models import ChatOpenAI
@@ -60,6 +61,13 @@ class LangchainBot:
         """
         # config
         self.retriever_config = retriever_config
+
+        # langfuse
+        self.langfuse_handler = CallbackHandler(
+            public_key=str(os.getenv("LANGFUSE_PUBLIC_KEY")),
+            secret_key=str(os.getenv("LANGFUSE_SECRET_KEY")),
+            host=str(os.getenv("LANGFUSE_ENDPOINT")),
+        )
 
         # model
         self.models = AzureModels()  # モデルの初期化
@@ -112,6 +120,7 @@ class LangchainBot:
         Returns:
             str: クエリ
         """
+
         llm_with_tools = self.compose_llm.bind_tools(self.tools)
 
         # generate context
@@ -144,7 +153,7 @@ class LangchainBot:
             | self.stream_llm
             | StrOutputParser()
         )
-        answer = chain.invoke(question)
+        answer = chain.invoke(question, config={"callbacks": [self.langfuse_handler]})
         return answer
 
 
