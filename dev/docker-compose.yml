@@ -4,7 +4,7 @@ services:
       context: ./frontend
       dockerfile: Dockerfile
     ports:
-      - '3000:3000'
+      - "3000:3000"
     volumes:
       - ./frontend/react_app:/app
     
@@ -13,15 +13,15 @@ services:
       context: ./backend
       dockerfile: Dockerfile
     ports:
-      - '8080:8080'
+      - "8080:8080"
     volumes:
       - ./backend:/app
-
-  docsaurus:
+      
+  docusaurus:
     build:
       context: ../docs
       dockerfile: Dockerfile
     ports:
-      - '8888:3000'
-    volumes:
-      - ../docs:/app
+      - "8888:8888"
+    profiles:
+      - docs
