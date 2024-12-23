@@ -65,6 +65,8 @@ services:
       REDIS_AUTH: ${REDIS_AUTH:-myredissecret}
     networks:
       - default
+    profiles:
+      - langfuse
 
   langfuse-web:
     image: langfuse/langfuse:3
@@ -91,6 +93,8 @@ services:
       LANGFUSE_RETURN_FROM_CLICKHOUSE: ${LANGFUSE_RETURN_FROM_CLICKHOUSE:-true}
     networks:
       - default
+    profiles:
+      - langfuse
 
   clickhouse:
     image: clickhouse/clickhouse-server
@@ -116,6 +120,8 @@ services:
       start_period: 1s
     networks:
       - default
+    profiles:
+      - langfuse
 
   minio:
     image: minio/minio
@@ -140,6 +146,8 @@ services:
       start_period: 1s
     networks:
       - default
+    profiles:
+      - langfuse
 
   redis:
     image: redis:7
@@ -155,6 +163,8 @@ services:
       retries: 10
     networks:
       - default
+    profiles:
+      - langfuse
 
   postgres:
     image: postgres:${POSTGRES_VERSION:-latest}
@@ -174,16 +184,8 @@ services:
       - ./langfuse/langfuse_postgres_data/_data:/var/lib/postgresql/data
     networks:
       - default
-
-# volumes:
-#   ./langfuse/langfuse_postgres_data:
-#     driver: local
-#   ./langfuse/langfuse_clickhouse_data:
-#     driver: local
-#   ./langfuse/langfuse_clickhouse_logs:
-#     driver: local
-#   ./langfuse/langfuse_minio_data:
-#     driver: local
+    profiles:
+      - langfuse
 
 networks:
   default:
