@@ -1,0 +1,4 @@
+langfuse_clickhouse_data
+langfuse_clickhouse_logs
+langfuse_minio_data
+langfuse_postgres_data
