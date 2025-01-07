@@ -5,6 +5,8 @@ import requests
 import json
 from typing import List
 from pprint import pprint
+import firebase_admin
+from firebase_admin import credentials, firestore
 
 # local
 sys.path.append(os.path.join(os.path.dirname(__file__), "../.."))  # 2つ上の階層を指定
