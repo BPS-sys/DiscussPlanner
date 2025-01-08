@@ -102,6 +102,8 @@ google-resumable-media==2.7.2
 googleapis-common-protos==1.66.0
     # via google-api-core
     # via grpcio-status
+greenlet==3.1.1
+    # via sqlalchemy
 grpcio==1.69.0
     # via google-api-core
     # via grpcio-status

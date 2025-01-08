@@ -197,27 +197,31 @@ async def test_cors():
     """
     return {"message": "CORS is working"}
 
+firestore_api = FirestoreAPI()
 
-@app.post("/test/notion/write_db/{meeting_id}")
+@app.post("/test/notion/write_db/{user_id}/{project_id}")
 async def test_notion_write_db(
-    minutes_data: MinutesContentsElement, meeting_id: str
+    minutes_data: MinutesContentsElement, user_id: str, project_id: str
 ) -> dict:
     """
     Notionのデータをデータベースに書き込むエンドポイント
 
     Args:
-        meeting_id (str): 会議ID
+        project_id (str): プロジェクトID
         minutes_data (MinutesContentsElement): 議事録のデータ
 
     Returns:
         dict: Notion APIのレスポンス
     """
     print(minutes_data)
-
-    firestore_api = FirestoreAPI()
+    # b01ADn1oC6B41T57lqP6
     notion_item = firestore_api.get_notion_api_data(
-        meeting_id=meeting_id
-    )  # meeting_idを用いてFirestoreからNotionの認証データを取得
+        user_id=user_id,
+        project_id=project_id
+    )  # project_idを用いてFirestoreからNotionの認証データを取得
+    
+    print(notion_item)
+    
     notion_api = NotionAPI(notion_item=notion_item)
 
     # Notionにデータを送信

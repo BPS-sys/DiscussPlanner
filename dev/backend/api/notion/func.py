@@ -135,7 +135,7 @@ class NotionAPI:
         response = response.json()
 
         # 受け取れない場合はそのまま返す
-        if "object" not in response:
+        if "object" not in response or status_code != 200:
             return (
                 response,
                 status_code,
