@@ -81,8 +81,8 @@ async def create_minutes(meeting_id: str, input_item: MinutesItem) -> AssistantS
     return result
 
 
-@app.post("/auth/notion/{meeting_id}", response_model=None)
-async def notion_auth(meeting_id: str, input_item: NotionAuthItem) -> NotionItem:
+@app.post("/auth/notion/{user_id}/{project_id}", response_model=None)
+async def notion_auth(user_id: str, project_id: str, input_item: NotionAuthItem) -> NotionItem:
     """
     NotionのOAuth認証を行うエンドポイント
     受け取ったデータを記録し、後に利用できるようにする
@@ -93,7 +93,7 @@ async def notion_auth(meeting_id: str, input_item: NotionAuthItem) -> NotionItem
     Returns:
         NotionItem: Notionの認証を行うリクエストの出力データ
     """
-    print("session: ", meeting_id)
+    # print("session: ", meeting_id)
     print(input_item.code)
 
     client_id = os.getenv("NOTION_CLIENT_ID")
@@ -124,6 +124,9 @@ async def notion_auth(meeting_id: str, input_item: NotionAuthItem) -> NotionItem
     # print(res.json())
 
     res_json = res.json()
+    if res.status_code != 200:
+        raise HTTPException(status_code=500, detail="Notionの認証に失敗しました")
+    
     notion_item = NotionItem(
         access_token=res_json["access_token"],
         token_type=res_json["token_type"],
@@ -135,6 +138,15 @@ async def notion_auth(meeting_id: str, input_item: NotionAuthItem) -> NotionItem
         duplicated_template_id=res_json["duplicated_template_id"],
         request_id=res_json["request_id"],
     )
+    
+    # FirestoreにNotionの認証情報を保存
+    firestore_api = FirestoreAPI()
+    firestore_api.insert_notion_api_data(
+        user_id=user_id,
+        project_id=project_id,
+        notion_item=notion_item
+    )
+    
     return notion_item
 
 

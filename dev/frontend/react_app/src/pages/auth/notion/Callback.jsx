@@ -9,8 +9,9 @@ const NotionCallbackHandler = () => {
     const code = searchParams.get("code");
     if (code) {
       // 任意のAPIにPOSTリクエストを送信
-			let meetingId = `111`; // 会議ID(test)
-      fetch(`http://localhost:8080/auth/notion/${meetingId}`, {
+			let userId = `111`; // 会議ID(test)
+            let projectId = `111`; // 会議ID(test)
+      fetch(`http://localhost:8080/auth/notion/${userId}/${projectId}`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

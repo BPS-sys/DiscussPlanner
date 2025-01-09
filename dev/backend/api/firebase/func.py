@@ -71,3 +71,22 @@ class FirestoreAPI:
                 duplicated_template_id="xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",  # 複製されたテンプレートのID
             )
             return item
+        
+    def insert_notion_api_data(self, user_id: str, project_id: str, notion_item: NotionItem):
+        """
+        Firestore に Notion API のデータを挿入す    
+        Args:
+            user_id (str): ユーザーID
+            project_id (str): プロジェクトID
+            notion_item (NotionItem): Notion API のデータ
+        """
+        notion_item = notion_item.dict()
+        
+        data = {
+            "notion_api": notion_item
+        }
+        dic_ref = self.db.collection(user_id).document(project_id)
+        res = dic_ref.set(data) # Firestore にデータを挿入
+        
+        return res, 200
+    
