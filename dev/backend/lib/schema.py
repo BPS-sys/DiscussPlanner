@@ -34,12 +34,10 @@ class TextSplitConfig(BaseModel):
 # tool用のスキーマ
 class SearchContext(BaseModel):
     """
-    tool用のスキーマ
-    Args:
-        BaseModel (_type_): べースモデル（Pydantic）
+    この関数では、質問に対応するコンテキストを検索する事ができる。高精度な回答を行うために必須である。
     """
 
-    query: str = Field(..., discription="質問")
+    query: str = Field(..., discription="検索用クエリ")
 
 
 class RetrieverConfig(BaseModel):
