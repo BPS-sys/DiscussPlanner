@@ -32,13 +32,6 @@ class TextSplitConfig(BaseModel):
 
 
 # tool用のスキーマ
-class SearchContext(BaseModel):
-    """
-    この関数では、質問に対応するコンテキストを検索する事ができる。高精度な回答を行うために必須である。
-    """
-
-    query: str = Field(..., discription="検索用クエリ")
-
 
 class RetrieverConfig(BaseModel):
     """
