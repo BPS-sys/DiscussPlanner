@@ -47,10 +47,10 @@ class LangchainBot:
         """
         # tools
         self.compose_tools = compose_tools
-        
+
         # config
         self.retriever_config = retriever_config
-        
+
         # model
         self.models = AzureModels()  # モデルの初期化
         self.compose_llm = self.models.compose_model
@@ -93,7 +93,7 @@ class LangchainBot:
     def compose_data(self, question: str) -> str:
         """
         回答前に用意する必要があるデータを生成、処理する
-        
+
         Args:
             question (str): 質問
 
@@ -103,17 +103,26 @@ class LangchainBot:
         llm_with_tools = self.compose_llm.bind_tools(self.compose_tools.tools)
 
         # generate context
+        chain: Runnable = (
+            {
+                "question": RunnablePassthrough(),
+            }
+            | self.compose_llm_prompt
+            | llm_with_tools
+        )
+        chain_res = chain.invoke(question)
+        print("● データ生成結果")
+        print(chain_res)
+
         res = llm_with_tools.invoke(question).tool_calls
-        
+
         results: dict = {}
         for usefunc in res:
             args = usefunc["args"]
             function = self.compose_tools.functions[usefunc["name"]]
-            functon_result = {
-                usefunc["name"] : function.invoke(args)
-            }
-            results.update(functon_result) # 実行結果を追加
-            
+            functon_result = {usefunc["name"]: function.invoke(args)}
+            results.update(functon_result)  # 実行結果を追加
+
         return results
 
     def invoke(self, question: str = "こんにちは") -> str:

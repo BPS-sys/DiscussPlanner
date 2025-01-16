@@ -9,12 +9,15 @@ from langchain_core.tools import tool
 from lib.schema import FilePath, RetrieverConfig, TextSplitConfig
 from lib.vectorstore import VectorStore
 
+
 # schema
 class QueryVectorstore(BaseModel):
     """
     クエリに関する引数のスキーマ
     """
+
     query: str = Field(..., description="クエリ文")
+
 
 @tool("QueryVectorstore", args_schema=QueryVectorstore, return_direct=True)
 def query_vectorstore(query: str, path: Optional[FilePath] = FilePath()) -> str:
