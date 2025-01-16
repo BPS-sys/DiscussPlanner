@@ -19,9 +19,9 @@ export default function AIAgentsImage() {
 
     const imgstyle = {
         display:'flex',
-        width:'16vw',
-        marginTop:'2vw',
-        marginLeft:'2vw'
+        width:'180px',
+        marginTop:'40px',
+        marginLeft:'40px'
     };
     const {
         transcript,
