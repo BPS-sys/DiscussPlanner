@@ -99,7 +99,7 @@ services:
   clickhouse:
     image: clickhouse/clickhouse-server
     restart: always
-    user: "101:101"
+    user: root
     container_name: clickhouse
     hostname: clickhouse
     environment:
