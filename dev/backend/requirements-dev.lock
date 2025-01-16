@@ -44,9 +44,6 @@ charset-normalizer==3.4.0
     # via requests
 click==8.1.7
     # via uvicorn
-colorama==0.4.6
-    # via click
-    # via tqdm
 dataclasses-json==0.6.7
     # via backend
     # via langchain-community
