@@ -2,6 +2,7 @@ import os
 from dotenv import load_dotenv
 from typing import Optional
 from pydantic import BaseModel, Field
+from jsonpath_ng import parse
 
 # langchain
 from langchain.prompts.chat import (
@@ -72,7 +73,7 @@ class LangchainBot:
             
 
             context:
-            {{data.QueryVectorstore}}
+            {data}
             """
         )
         self.human_prompt = HumanMessagePromptTemplate.from_template("{question}")
@@ -118,15 +119,14 @@ class LangchainBot:
             | self.compose_llm_prompt
             | llm_with_tools
         )
-        chain_res = chain.invoke(question)
-        print("● データ生成結果")
-        print(chain_res)
-
-        res = llm_with_tools.invoke(question).tool_calls
+        chain_res = chain.invoke(question).additional_kwargs # コンテキスト生成結果を取得
+        
+        jsonpath_expr = parse('$..function') # jsonpathの式を定義
+        res = [match.value for match in jsonpath_expr.find(chain_res)]
 
         results: dict = {}
         for usefunc in res:
-            args = usefunc["args"]
+            args = usefunc["arguments"]
             function = self.compose_tools.functions[usefunc["name"]]
             functon_result = {usefunc["name"]: function.invoke(args)}
             results.update(functon_result)  # 実行結果を追加
