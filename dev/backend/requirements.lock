@@ -26,6 +26,7 @@ annotated-types==0.7.0
 anyio==4.7.0
     # via backend
     # via httpx
+    # via langfuse
     # via openai
     # via starlette
 async-timeout==4.0.3
@@ -121,6 +122,7 @@ httplib2==0.22.0
     # via google-auth-httplib2
 httpx==0.28.0
     # via backend
+    # via langfuse
     # via langsmith
     # via openai
 httpx-sse==0.4.0
@@ -130,6 +132,7 @@ idna==3.10
     # via anyio
     # via backend
     # via httpx
+    # via langfuse
     # via requests
     # via yarl
 jiter==0.8.0
@@ -157,6 +160,8 @@ langchain-openai==0.2.12
 langchain-text-splitters==0.3.2
     # via backend
     # via langchain
+langfuse==2.57.1
+    # via backend
 langsmith==0.1.147
     # via backend
     # via langchain
@@ -189,6 +194,7 @@ packaging==24.2
     # via backend
     # via faiss-cpu
     # via langchain-core
+    # via langfuse
     # via marshmallow
 propcache==0.2.1
     # via aiohttp
@@ -215,6 +221,7 @@ pydantic==2.10.3
     # via fastapi
     # via langchain
     # via langchain-core
+    # via langfuse
     # via langsmith
     # via openai
     # via pydantic-settings
@@ -246,6 +253,7 @@ requests==2.32.3
     # via google-cloud-storage
     # via langchain
     # via langchain-community
+    # via langfuse
     # via langsmith
     # via requests-toolbelt
     # via tiktoken
@@ -297,6 +305,8 @@ urllib3==2.2.3
     # via requests
 uvicorn==0.32.1
     # via backend
+wrapt==1.17.0
+    # via langfuse
 yarl==1.18.3
     # via aiohttp
     # via backend
