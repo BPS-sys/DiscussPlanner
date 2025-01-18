@@ -125,7 +125,7 @@ async def notion_auth(user_id: str, project_id: str, input_item: NotionAuthItem)
 
     res_json = res.json()
     if res.status_code != 200:
-        raise HTTPException(status_code=500, detail="Notionの認証に失敗しました")
+        raise HTTPException(status_code=500, detail=f"Notionの認証に失敗しました{res.headers}")
     
     notion_item = NotionItem(
         access_token=res_json["access_token"],

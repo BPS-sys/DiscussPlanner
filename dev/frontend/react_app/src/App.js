@@ -6,6 +6,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import DiscussPage from './pages/DiscussPage';
 import HomePage from './pages/HomePage';
 import NotionCallbackHandler from './pages/auth/notion/Callback';
+import NotionSuccess from './pages/auth/notion/Success';
 import { MicProvider } from './components/MicContext';
 import { DrawerProvider } from './components/DrawerContext';
 import { FastAPIProvider } from './components/FastAPIContext';
@@ -36,6 +37,7 @@ function App() {
                 <Route path={`/`} element={<HomePage />} />
                 <Route path={`/DiscussPage`} element={<DiscussPage />} />
                 <Route path="/auth/notion/callback" element={<NotionCallbackHandler />} />
+                <Route path="/auth/notion/success" element={<NotionSuccess />} />
               </Routes>
             </BrowserRouter>
           </FastAPIProvider>

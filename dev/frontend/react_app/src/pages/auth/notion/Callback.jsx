@@ -26,6 +26,10 @@ const NotionCallbackHandler = () => {
         })
         .then((data) => {
           console.log("API response:", data);
+          // 10秒後にlocalhost:80へリダイレクト
+        	setTimeout(() => {
+        	    window.location.href = "http://localhost:80/auth/notion/success";
+        	}, 10000);
         })
         .catch((error) => {
           console.error("Error sending code to API:", error);
