@@ -18,12 +18,13 @@ export const Whiteboard = () => {
   return (
     <div
       style={{
-        width: "1200px",
-        height: "900px",
+        width: "1000px",
+        height: "600px",
         position: "absolute",
         top: "100px",
-        left: "500px",
-        backgroundColor: "gray",
+        left: "280px",
+        backgroundColor: "#ececec",
+        overflow: "hidden"
       }}
       onDrop={(e) => {
         if (!draggingCard.id || !cards[draggingCard.id]) return;
@@ -43,7 +44,18 @@ export const Whiteboard = () => {
             position: "absolute",
             top: cards[cardId].y + "px",
             left: cards[cardId].x + "px",
-            backgroundColor:cards[cardId].backgroundColor
+            padding: "4px",
+            width: "100px",
+            height: "100px",
+            fontSize: "14px",
+            backgroundColor: cards[cardId].backgroundColor,
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            textAlign: "center",
+            overflow: "hidden",
+            boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1), 0 1px 3px rgba(0, 0, 0, 0.08)"
+  
           }}
           draggable={true}
           onDragStart={(e) =>
@@ -53,7 +65,7 @@ export const Whiteboard = () => {
               offsetY: e.clientY - cards[cardId].y,
             })
           }
-        >
+        >         
           {editMode.id === cardId ? (
             <textarea
               onBlur={() => setEditMode({ id: "" })}
@@ -65,7 +77,7 @@ export const Whiteboard = () => {
           )}
         </div>
       ))}
-      <button onClick={addCard} style={{fontSize:'40px', position:'absolute', left:0}}>add</button>
+      <button onClick={addCard} style={{fontSize:'40px', position:'absolute', left:0, width: '50px', height:'50px'}}>+</button>
     </div>
   );
 };

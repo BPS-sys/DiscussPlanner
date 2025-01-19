@@ -12,7 +12,7 @@ export default function CallEnd() {
     }
     return (
         <div>
-            <Toolbar style={{background:"linear-gradient(90deg, rgb(34, 102, 235) 0%, rgb(2, 203, 254) 100%)", borderRadius:500, width:80, height:125, position:'absolute', right:30, bottom:10}}>
+            <Toolbar style={{background:"linear-gradient(90deg, rgb(34, 102, 235) 0%, rgb(2, 203, 254) 100%)", borderRadius:500, width:80, height:125, position:'absolute', right:30, bottom:10, zIndex:10}}>
                 <IconButton onClick={GotoHome}>
                     <CallEndIcon style={{color:'white', fontSize:'65px', textAlign:'center'}} />
                 </IconButton>

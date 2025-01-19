@@ -5,6 +5,7 @@ import { useNavigate } from "react-router-dom";
 export const TryUseButton = () => {
   const navigate = useNavigate();
   const GotoDiscussPage = () => {
+    // navigate("/ProjectPage")
     navigate("/DiscussPage")
   }
   const Buttonstyle = {
