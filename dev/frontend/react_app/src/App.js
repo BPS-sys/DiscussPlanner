@@ -4,6 +4,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import DiscussPage from './pages/DiscussPage';
 import HomePage from './pages/HomePage';
 import ProjectPage from './pages/ProjectPage';
+import LoginPage from './pages/LoginPage';
 
 import { MicProvider } from './components/MicContext';
 import { DrawerProvider } from './components/DrawerContext';
@@ -33,8 +34,9 @@ function App() {
             <BrowserRouter>
               <Routes>
                 <Route path={`/`} element={<HomePage />} />
-                <Route path={`/DiscussPage`} element={<DiscussPage />} />
+                <Route path={`/LoginPage`} element={<LoginPage />} />
                 <Route path={`/ProjectPage`} element={<ProjectPage />} />
+                <Route path={`/DiscussPage`} element={<DiscussPage />} />
               </Routes>
             </BrowserRouter>
           </FastAPIProvider>
