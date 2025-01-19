@@ -113,7 +113,7 @@ class LangchainBot:
                 usefunc["name"] : function.invoke(args)
             }
             results.update(functon_result) # 実行結果を追加
-            
+        print(results)
         return results
 
     def invoke(self, question: str = "こんにちは") -> str:
