@@ -3,8 +3,11 @@ from typing import Optional
 from dotenv import load_dotenv
 from langchain_core.documents import Document
 from langchain_community.vectorstores.faiss import FAISS
-from langchain_openai.embeddings import OpenAIEmbeddings
 from langchain.text_splitter import CharacterTextSplitter
+
+from langchain_qdrant import QdrantVectorStore
+from qdrant_client import QdrantClient
+from qdrant_client.http.models import Distance, VectorParams
 
 # local
 from lib.schema import FilePath, TextSplitConfig
@@ -13,7 +16,118 @@ from lib.models import AzureModels, OpenAIModels
 # load environment variables
 load_dotenv("../.env")
 
+class VectorStoreQdrant:
+    """
+    VectorStore を生成するクラス
+    """
 
+    def __init__(
+        self,
+        split_config: Optional[TextSplitConfig] = TextSplitConfig()
+    ):
+        """
+        初期化
+        """
+        self.split_config = split_config
+        self.vectorstore = None
+        self.models = AzureModels()
+        self.embeddings = self.models.embeddings # Azure OpenAI のEmbeddingsを使用
+        
+        self.client = QdrantClient(
+            host = os.getenv("QDRANT_ENDPOINT"),
+            port = os.getenv("QDRANT_PORT"),
+            prefer_grpc = True, # gRPCを優先して使用するか
+            timeout = 3.0, # timeout(秒)
+        )
+    
+    def create(self, meeting_id: str) -> QdrantVectorStore:
+        """
+        Qdrant Collection を新規生成する
+
+        Args:
+            config (TextSplitConfig): テキストを分割する際の設定. Defaults to None.
+            text (str): 分割するテキスト. Defaults to None.
+
+        Returns:
+            None
+        """
+        self.client.create_collection(
+            collection_name = meeting_id, # コレクション名 = meeting_id として管理
+            vectors_config=VectorParams(
+                dim = self.embeddings.params.dimension, # ベクトルの次元数
+                distance = Distance.Cosine, # 距離計算方法 : cosine similarity
+            )
+        )
+        self.vectorstore = self.load(meeting_id) # ロード
+        return self.vectorstore
+    
+    def load(self, meeting_id: str) -> QdrantVectorStore:
+        """
+        meeting_id に対応する
+        Qdrant Collection をロードする
+
+        Args:
+            load_path (str): ロードするフォルダのパス
+
+        Returns:
+            None
+        """
+        self.vectorstore = QdrantVectorStore(
+            client = self.client,
+            collection_name = meeting_id, # コレクション名 = meeting_id として管理
+            embeddings = self.embeddings
+        )
+        return self.vectorstore
+    
+    def update(self, meeting_id: str, input_text: str) -> None:
+        """
+        Qdrant Collection を更新する
+
+        Args:
+            meeting_id (str): 更新するコレクション名
+            input_text (str): 更新するテキスト
+
+        Returns:
+            None
+        """
+        texts = self.text_split(input_text = input_text) # 量が多い場合は分割（既存要素と異なる為）
+        self.vectorstore.add_documents([Document(page_content=txt) for txt in texts])
+        return None
+    
+    # sub functions
+    def split_text(self, input_text: str) -> list[str]:
+        """
+        テキストを分割する
+
+        Args:
+            input_text (str): 分割するテキスト
+
+        Returns:
+            list[str]: 分割されたテキストのリスト
+        """
+        splitter = CharacterTextSplitter(
+            separator=self.split_config.separator,
+            chunk_size=self.split_config.chunk_size,
+            chunk_overlap=self.split_config.chunk_overlap,
+        )
+        texts = splitter.split_text(input_text)
+        return texts
+    
+    def add_testdata(self, meeting_id: str = "111", datapath: str = "../data/test.txt") -> None:
+        """
+        テストデータを追加する
+
+        Args:
+            meeting_id (str): 追加するコレクション名
+
+        Returns:
+            None
+        """
+        with open(datapath, "r", encoding="utf-8") as f:
+            text = f.read()
+        self.update(meeting_id, text)
+        return None
+    
 class VectorStore:
     """
     VectorStore を生成するクラス

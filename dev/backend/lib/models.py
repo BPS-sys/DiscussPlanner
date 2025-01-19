@@ -9,7 +9,9 @@ from langchain_openai.embeddings import AzureOpenAIEmbeddings, OpenAIEmbeddings
 # 環境変数の読み込み
 load_dotenv("../.env")
 
-
+#
+# OpenAI モデルの設定
+#
 class OpenAIModels(BaseModel):
     """
     Azure OpenAI モデルの設定を一括管理するクラス
@@ -42,6 +44,24 @@ class OpenAIModels(BaseModel):
             model="text-embedding-3-small",
         )
 
+#
+# Azure OpenAI モデルの設定
+#
+class AzureModelsParams(BaseModel):
+    dimension: int = Field(
+        1536, description="ベクトルの次元数"
+    )
+    max_tokens: int = Field(
+        4096, description="最大トークン数"
+    )
+    temperatures: dict = Field(
+        {
+            "compose": 0.5,
+            "stream": 0.5,
+            "embeddings": 0.0,
+        },
+        description="モデルのtemperature",
+    )
 
 class AzureModels(BaseModel):
     """
@@ -57,6 +77,10 @@ class AzureModels(BaseModel):
     embeddings: AzureOpenAIEmbeddings = Field(
         None, description="埋め込みモデルのインスタンス"
     )
+    
+    params: AzureModelsParams = Field(
+        AzureModelsParams(), description="Azure OpenAI モデルのパラメータ"
+    )
 
     def __init__(self, **data):
         super().__init__(**data)
@@ -67,6 +91,11 @@ class AzureModels(BaseModel):
             azure_endpoint=os.getenv("AZURE_OPENAI_ENDPOINT"),
             openai_api_key=os.getenv("AZURE_OPENAI_API_KEY"),
             openai_api_version=os.getenv("AZURE_OPENAI_API_VERSION"),
+            temperature=self.params.temperatures["compose"],
+            max_tokens=self.params.max_tokens,
+            model_kwargs = {
+                "dimension": self.params.dimension,
+            },
         )
 
         self.stream_model = AzureChatOpenAI(
@@ -74,6 +103,11 @@ class AzureModels(BaseModel):
             azure_endpoint=os.getenv("AZURE_OPENAI_ENDPOINT"),
             openai_api_key=os.getenv("AZURE_OPENAI_API_KEY"),
             openai_api_version=os.getenv("AZURE_OPENAI_API_VERSION"),
+            temperature=self.params.temperatures["stream"],
+            max_tokens=self.params.max_tokens,
+            model_kwargs = {
+                "dimension": self.params.dimension,
+            },
         )
 
         self.embeddings = AzureOpenAIEmbeddings(
@@ -81,8 +115,12 @@ class AzureModels(BaseModel):
             azure_endpoint=os.getenv("AZURE_OPENAI_ENDPOINT"),
             openai_api_key=os.getenv("AZURE_OPENAI_API_KEY"),
             openai_api_version=os.getenv("AZURE_OPENAI_API_VERSION"),
+            temperature=self.params.temperatures["embeddings"],
+            max_tokens=self.params.max_tokens,
+            model_kwargs = {
+                "dimension": self.params.dimension,
+            },
         )
-
 
 if __name__ == "__main__":
     # 環境変数から設定を読み込み
