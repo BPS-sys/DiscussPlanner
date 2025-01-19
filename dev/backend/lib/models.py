@@ -7,7 +7,7 @@ from langchain_openai.chat_models import AzureChatOpenAI, ChatOpenAI
 from langchain_openai.embeddings import AzureOpenAIEmbeddings, OpenAIEmbeddings
 
 # 環境変数の読み込み
-load_dotenv("../.env")
+load_dotenv("../.env", override=True)
 
 
 class OpenAIModels(BaseModel):
@@ -25,7 +25,6 @@ class OpenAIModels(BaseModel):
 
     def __init__(self, **data):
         super().__init__(**data)
-
         # モデルの初期化
         self.compose_model = ChatOpenAI(
             openai_api_key=os.getenv("OPENAI_API_KEY"),
