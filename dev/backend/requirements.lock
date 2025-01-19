@@ -105,6 +105,8 @@ jiter==0.8.0
 jsonpatch==1.33
     # via backend
     # via langchain-core
+jsonpath-ng==1.7.0
+    # via backend
 jsonpointer==3.0.0
     # via backend
     # via jsonpatch
@@ -164,6 +166,8 @@ packaging==24.2
     # via marshmallow
 portalocker==2.10.1
     # via qdrant-client
+ply==3.11
+    # via jsonpath-ng
 propcache==0.2.1
     # via aiohttp
     # via backend

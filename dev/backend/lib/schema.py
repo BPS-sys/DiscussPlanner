@@ -32,15 +32,6 @@ class TextSplitConfig(BaseModel):
 
 
 # tool用のスキーマ
-class SearchContext(BaseModel):
-    """
-    tool用のスキーマ
-    Args:
-        BaseModel (_type_): べースモデル（Pydantic）
-    """
-
-    query: str = Field(..., discription="質問")
-
 
 class RetrieverConfig(BaseModel):
     """
