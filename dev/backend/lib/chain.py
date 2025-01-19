@@ -2,6 +2,7 @@ import os
 from dotenv import load_dotenv
 from typing import Optional
 from pydantic import BaseModel, Field
+from jsonpath_ng import parse
 
 # langchain
 from langchain.prompts.chat import (
@@ -12,6 +13,7 @@ from langchain.prompts.chat import (
 from langchain_core.runnables import Runnable, RunnablePassthrough
 from langchain_core.output_parsers import StrOutputParser
 from langchain_core.tools import tool
+from langfuse.callback import CallbackHandler
 
 # openai
 from langchain_openai.chat_models import ChatOpenAI
@@ -47,10 +49,17 @@ class LangchainBot:
         """
         # tools
         self.compose_tools = compose_tools
-        
+
         # config
         self.retriever_config = retriever_config
-        
+
+        # langfuse
+        self.langfuse_handler = CallbackHandler(
+            public_key=str(os.getenv("LANGFUSE_PUBLIC_KEY")),
+            secret_key=str(os.getenv("LANGFUSE_SECRET_KEY")),
+            host=str(os.getenv("LANGFUSE_ENDPOINT")),
+        )
+
         # model
         self.models = AzureModels()  # モデルの初期化
         self.compose_llm = self.models.compose_model
@@ -64,7 +73,7 @@ class LangchainBot:
             
 
             context:
-            {{data.QueryVectorstore}}
+            {data}
             """
         )
         self.human_prompt = HumanMessagePromptTemplate.from_template("{question}")
@@ -93,7 +102,7 @@ class LangchainBot:
     def compose_data(self, question: str) -> str:
         """
         回答前に用意する必要があるデータを生成、処理する
-        
+
         Args:
             question (str): 質問
 
@@ -103,17 +112,25 @@ class LangchainBot:
         llm_with_tools = self.compose_llm.bind_tools(self.compose_tools.tools)
 
         # generate context
-        res = llm_with_tools.invoke(question).tool_calls
+        chain: Runnable = (
+            {
+                "question": RunnablePassthrough(),
+            }
+            | self.compose_llm_prompt
+            | llm_with_tools
+        )
+        chain_res = chain.invoke(question).additional_kwargs # コンテキスト生成結果を取得
         
+        jsonpath_expr = parse('$..function') # jsonpathの式を定義
+        res = [match.value for match in jsonpath_expr.find(chain_res)]
+
         results: dict = {}
         for usefunc in res:
-            args = usefunc["args"]
+            args = usefunc["arguments"]
             function = self.compose_tools.functions[usefunc["name"]]
-            functon_result = {
-                usefunc["name"] : function.invoke(args)
-            }
-            results.update(functon_result) # 実行結果を追加
-        print(results)
+            functon_result = {usefunc["name"]: function.invoke(args)}
+            results.update(functon_result)  # 実行結果を追加
+
         return results
 
     def invoke(self, question: str = "こんにちは") -> str:
@@ -137,7 +154,7 @@ class LangchainBot:
             | self.stream_llm
             | StrOutputParser()
         )
-        answer = chain.invoke(question)
+        answer = chain.invoke(question, config={"callbacks": [self.langfuse_handler]})
         return answer
 
 
