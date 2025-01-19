@@ -198,6 +198,8 @@ services:
     environment:
       - QDRANT_ALLOW_RECOVERY=true
       - QDRANT__STORAGE__MEMORY_LIMIT=2048MB
+    networks:
+      - default
 
 networks:
   default:

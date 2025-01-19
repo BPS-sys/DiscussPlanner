@@ -90,35 +90,25 @@ class AzureModels(BaseModel):
             azure_endpoint=os.getenv("AZURE_OPENAI_ENDPOINT"),
             openai_api_key=os.getenv("AZURE_OPENAI_API_KEY"),
             openai_api_version=os.getenv("AZURE_OPENAI_API_VERSION"),
-            temperature=self.params.temperatures["compose"],
-            max_tokens=self.params.max_tokens,
-            model_kwargs = {
-                "dimension": self.params.dimension,
-            },
+            # temperature=self.params.temperatures["compose"],
+            # max_tokens=self.params.max_tokens,
+            # model_kwargs = {
+            #     "dimension": self.params.dimension,
+            # },
         )
 
         self.stream_model = AzureChatOpenAI(
             deployment_name="gpt-4o-mini",
             azure_endpoint=os.getenv("AZURE_OPENAI_ENDPOINT"),
             openai_api_key=os.getenv("AZURE_OPENAI_API_KEY"),
-            openai_api_version=os.getenv("AZURE_OPENAI_API_VERSION"),
-            temperature=self.params.temperatures["stream"],
-            max_tokens=self.params.max_tokens,
-            model_kwargs = {
-                "dimension": self.params.dimension,
-            },
+            openai_api_version=os.getenv("AZURE_OPENAI_API_VERSION")
         )
 
         self.embeddings = AzureOpenAIEmbeddings(
             deployment="text-embedding-3-small",
             azure_endpoint=os.getenv("AZURE_OPENAI_ENDPOINT"),
             openai_api_key=os.getenv("AZURE_OPENAI_API_KEY"),
-            openai_api_version=os.getenv("AZURE_OPENAI_API_VERSION"),
-            temperature=self.params.temperatures["embeddings"],
-            max_tokens=self.params.max_tokens,
-            model_kwargs = {
-                "dimension": self.params.dimension,
-            },
+            openai_api_version=os.getenv("AZURE_OPENAI_API_VERSION")
         )
 
 if __name__ == "__main__":

@@ -164,10 +164,10 @@ packaging==24.2
     # via langchain-core
     # via langfuse
     # via marshmallow
-portalocker==2.10.1
-    # via qdrant-client
 ply==3.11
     # via jsonpath-ng
+portalocker==2.10.1
+    # via qdrant-client
 propcache==0.2.1
     # via aiohttp
     # via backend
