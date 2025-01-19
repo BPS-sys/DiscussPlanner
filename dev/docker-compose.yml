@@ -192,7 +192,6 @@ services:
     ports:
       - "6333:6333"  # REST API(:6333) と  Web UI(:6333/dashboard)
       - "6334:6334"  # gRPC API
-      - "6335:6335"  # monitoring
     volumes:
       - ./qdrant:/qdrant/storage
     environment:
