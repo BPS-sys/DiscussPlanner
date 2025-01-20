@@ -41,9 +41,10 @@ async def create_chat(meeting_id: str, input_item: ChatItem) -> ChatItem:
     input_message = str(input_item.chat.message)
     ans = bot.invoke(input_message)
 
-    output_item = ChatItem(chat=Chat(message=ans))
+    output_item = ChatItem(chat=Chat(message=ans), details=Idea(ideas=[]))
     print(output_item)
     return output_item
+
 
 
 @app.post("/minutes/{meeting_id}")
