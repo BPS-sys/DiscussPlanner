@@ -5,8 +5,9 @@ import { useNavigate } from "react-router-dom";
 export const TryUseButton = () => {
   const navigate = useNavigate();
   const GotoDiscussPage = () => {
+    navigate("/LoginPage")
     // navigate("/ProjectPage")
-    navigate("/DiscussPage")
+    // navigate("/DiscussPage")
   }
   const Buttonstyle = {
     width: "30%",
