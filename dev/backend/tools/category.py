@@ -24,17 +24,24 @@ class ChoiceIntent(BaseModel):
         BaseModel(_type_): ベースモデル(Pydantic)
    
     """
-    divergence_idea: bool = Field(..., description="アイデアの発散の場合はTrueが入る")
-    convergence_idea: bool = Field(..., description="アイデアの収束の場合はTrueが入る")
-    summary: bool = Field(..., description="要約の場合はTrueが入る")
-    answer_to_question: bool = Field(..., description="質問への回答の場合はTrueが入る")
+    divergence_idea: bool = Field(False, description="アイデアの発散の場合はTrueが入る")
+    convergence_idea: bool = Field(False, description="アイデアの収束の場合はTrueが入る")
+    summary: bool = Field(False, description="要約の場合はTrueが入る")
+    answer_to_question: bool = Field(False, description="質問への回答の場合はTrueが入る")
 
 
 @tool("ChoiceIntent", args_schema=ChoiceIntent, return_direct=True)
-def query_category(divergence_idea: bool, convergence_idea: bool, summary: bool, answer_to_question: bool) -> str:
+def query_category(
+    divergence_idea: bool = False,
+    convergence_idea: bool = False,
+    summary: bool = False,
+    answer_to_question: bool = False
+    ) -> str:
     """
     カテゴリ情報から適切なプロンプトを返す
     """
+    print("カテゴリ情報")
+    
     from tools.tools import DivergenceIdeaTools, ConvergenceIdeaTools, SummaryInformationTools, AnswerToQuestionTools
     print("発散：", divergence_idea)
     print("収束：", convergence_idea)

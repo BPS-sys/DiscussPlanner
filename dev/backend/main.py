@@ -38,8 +38,11 @@ async def create_chat(meeting_id: str, input_item: ChatItem) -> ChatItem:
     print("session: ", meeting_id)
 
     bot = LangchainBot()
-    input_message = str(input_item.chat.message)
-    ans = bot.invoke(input_message)
+    ans = bot.invoke(
+        question = str(input_item.chat.message),
+        meeting_id = meeting_id,
+        ideas = input_item.details.ideas
+    )
 
     output_item = ChatItem(chat=Chat(message=ans), details=Idea(ideas=[]))
     print(output_item)

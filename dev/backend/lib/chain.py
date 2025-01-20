@@ -3,6 +3,7 @@ from dotenv import load_dotenv
 from typing import Optional
 from pydantic import BaseModel, Field
 from jsonpath_ng import parse
+import json
 
 # langchain
 from langchain.prompts.chat import (
@@ -10,7 +11,7 @@ from langchain.prompts.chat import (
     SystemMessagePromptTemplate,
     HumanMessagePromptTemplate,
 )
-from langchain_core.runnables import Runnable, RunnablePassthrough
+from langchain_core.runnables import Runnable, RunnablePassthrough, RunnableParallel
 from langchain_core.output_parsers import StrOutputParser
 from langchain_core.tools import tool
 from langfuse.callback import CallbackHandler
@@ -40,6 +41,8 @@ class LangchainBot:
         self,
         retriever_config: Optional[RetrieverConfig] = RetrieverConfig(),
         compose_tools: Optional[BaseModel] = QandATools(),
+        stream_tools: Optional[BaseModel] = QandATools(),
+        meeting_id: Optional[str] = "111",
     ):
         """
         初期化
@@ -47,8 +50,12 @@ class LangchainBot:
         Args:
             retriever_config (Optional[RetrieverConfig], optional): リトリーバの設定. Defaults to None.
         """
+        # meeting_id
+        self.meeting_id = meeting_id
+        
         # tools
         self.compose_tools = compose_tools
+        self.stream_tools = stream_tools
 
         # config
         self.retriever_config = retriever_config
@@ -69,11 +76,13 @@ class LangchainBot:
         # stream_llm prompt
         self.system_prompt = SystemMessagePromptTemplate.from_template(
             """
+            {prompt}
+            
             以下の`context`の情報に基づいて、質問に回答してください。
             
 
             context:
-            {data}
+            {context}
             """
         )
         self.human_prompt = HumanMessagePromptTemplate.from_template("{question}")
@@ -86,6 +95,8 @@ class LangchainBot:
             [
                 SystemMessagePromptTemplate.from_template(
                     """
+                    ユーザーの意図を汲み取って、適切な回答を生成してください。
+                    
                     質問からコンテキストを検索するための文章を提供してください。
                     コンテキストに含まれる文章は説明調の文章であるる為、下記の例を参考にしてください。
                     
@@ -124,22 +135,38 @@ class LangchainBot:
         
         jsonpath_expr = parse('$..function') # jsonpathの式を定義
         res = [match.value for match in jsonpath_expr.find(chain_res)]
+        
+        print("● res")
+        print(res)
 
         results: dict = {}
         for usefunc in res:
-            args = usefunc["arguments"]
+            print("● usefunc")
+            print(usefunc)
+            print(usefunc["arguments"])
+            args = json.loads(usefunc["arguments"])
+            print("● args")
+            print(args)
+            print(type(args))
             function = self.compose_tools.functions[usefunc["name"]]
             functon_result = {usefunc["name"]: function.invoke(args)}
             results.update(functon_result)  # 実行結果を追加
 
         return results
 
-    def invoke(self, question: str = "こんにちは") -> str:
+    def invoke(
+        self,
+        question: str = "こんにちは",
+        meeting_id: Optional[str] = "111",
+        ideas: Optional[list] = ["idea a", "idea b"],
+    ) -> str:
         """
         チャットボットを起動する
 
         Args:
-            query (str, optional): ユーザーの入力. Defaults to "こんにちは".
+            question (str, optional): 質問. Defaults to "こんにちは".
+            meeting_id (Optional[str], optional): ミーティングID. Defaults to "111".
+            ideas (Optional[list], optional): アイデア. Defaults to ["idea a", "idea b"].
 
         Returns:
             str: チャットボットの応答
@@ -151,6 +178,13 @@ class LangchainBot:
                 "data": self.compose_data,
                 "question": RunnablePassthrough(),
             }
+            | RunnableParallel(
+                data=lambda x: x["data"],
+                question=RunnablePassthrough(),
+                context=lambda x: x["data"]["QueryVectorstore"],
+                prompt=lambda x: x["data"]["ChoiceIntent"]["prompt"],
+                tool=lambda x: x["data"]["ChoiceIntent"]["tool"],
+            )
             | self.prompt
             | self.stream_llm
             | StrOutputParser()

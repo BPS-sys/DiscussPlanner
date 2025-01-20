@@ -8,7 +8,7 @@ from langchain_core.tools import tool
 # --- tool functions import ---
 from tools.query import QueryVectorstore, query_vectorstore
 
-from tools.category import query_category
+from tools.category import ChoiceIntent, query_category
 from tools.divergence import DivergenceIdea, query_divergenceidea
 from tools.convergence import ConvergenceIdea, query_convergenceidea
 from tools.summaryinformation import SummaryInfomation, query_summaryinformation
@@ -21,7 +21,7 @@ class QandATools(BaseModel):
     """
     AIへ質問がされた際に回答を返す際用いるツール
     """
-    tools: list = Field([QueryVectorstore, query_category], description="ツールのリスト")
+    tools: list = Field([QueryVectorstore, ChoiceIntent], description="ツールのリスト")
     functions: dict = Field({
         "QueryVectorstore": query_vectorstore,
         "ChoiceIntent": query_category

@@ -18,10 +18,11 @@ class QueryVectorstore(BaseModel):
     """
 
     query: str = Field(..., description="クエリ文")
+    meeting_id: str = Field(..., description="会議ID")
 
 
 @tool("QueryVectorstore", args_schema=QueryVectorstore, return_direct=True)
-def query_vectorstore(query: str, path: Optional[FilePath] = FilePath()) -> str:
+def query_vectorstore(query: str, meeting_id: str, path: Optional[FilePath] = FilePath()) -> str:
     """
     質問に対応するコンテキストを検索する
     Args:
@@ -29,7 +30,7 @@ def query_vectorstore(query: str, path: Optional[FilePath] = FilePath()) -> str:
     Returns:
         str: コンテキスト
     """
-    meeting_id = "111"
+    # meeting_id = "111"
     config = TextSplitConfig()
     vectorstore_manager = VectorStoreQdrant(split_config=config)
     
