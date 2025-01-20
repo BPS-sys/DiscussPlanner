@@ -6,7 +6,7 @@ from typing import Optional, Union
 import uvicorn
 
 # local
-from lib.vectorstore import VectorStore
+from lib.vectorstore import VectorStore, VectorStoreQdrant
 from lib.chain import LangchainBot
 from lib.schema import FilePath, TextSplitConfig
 from api.schema import *
@@ -62,9 +62,20 @@ async def create_minutes(meeting_id: str, input_item: MinutesItem) -> AssistantS
 
     # vectorstoreの更新
     input_text = input_item.text
-    vs = VectorStore(path=FilePath(), split_config=TextSplitConfig())
-    vs.load()
-    vs.update(input_text=input_text)  # データベースの更新と保存を行う
+    vs = VectorStoreQdrant(split_config=TextSplitConfig())
+    
+    try:
+        vs.load(meeting_id=meeting_id)
+    except:
+        vs.create(meeting_id=meeting_id)
+        vs.add_testdata(meeting_id=meeting_id, datapath="./data/test.txt")
+        vs.load(meeting_id=meeting_id)
+
+    vs.update(
+        meeting_id=meeting_id,
+        input_text=input_text
+    )  # データベースの更新と保存を行う
+    
     # タイマー処理
     minits = len(input_item.text)
     result = AssistantState(face="angry", timer=TimerState(flag=True, time=minits))

@@ -1,6 +1,6 @@
 [project]
 name = "backend"
-version = "0.1.0"
+version = "0.2.0"
 description = "Add your description here"
 authors = [
     { name = "nogi", email = "94681885+nogikun@users.noreply.github.com" }
@@ -60,6 +60,7 @@ dependencies = [
     "fastapi>=0.115.6",
     "uvicorn>=0.32.1",
     "langfuse>=2.57.1",
+    "langchain-qdrant>=0.2.0",
     "jsonpath-ng>=1.7.0",
 ]
 readme = "README.md"

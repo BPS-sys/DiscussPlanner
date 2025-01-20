@@ -187,6 +187,19 @@ services:
     profiles:
       - langfuse
 
+  qdrant:
+    image: qdrant/qdrant:latest
+    ports:
+      - "6333:6333"  # REST API(:6333) と  Web UI(:6333/dashboard)
+      - "6334:6334"  # gRPC API
+    volumes:
+      - ./qdrant:/qdrant/storage
+    environment:
+      - QDRANT_ALLOW_RECOVERY=true
+      - QDRANT__STORAGE__MEMORY_LIMIT=2048MB
+    networks:
+      - default
+
 networks:
   default:
     driver: bridge

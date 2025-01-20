@@ -119,6 +119,7 @@ class LangchainBot:
             | self.compose_llm_prompt
             | llm_with_tools
         )
+        
         chain_res = chain.invoke(question).additional_kwargs # コンテキスト生成結果を取得
         
         jsonpath_expr = parse('$..function') # jsonpathの式を定義
