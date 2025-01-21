@@ -10,7 +10,7 @@ import uvicorn
 from logging import getLogger
 
 # local
-from lib.vectorstore import VectorStore
+from lib.vectorstore import VectorStore, VectorStoreQdrant
 from lib.chain import LangchainBot
 from lib.schema import FilePath, TextSplitConfig
 from api.schema import *
@@ -73,7 +73,19 @@ async def create_minutes(meeting_id: str, input_item: MinutesItem) -> AssistantS
 
     # vectorstoreの更新
     input_text = input_item.text
-    vs.update(input_text=input_text)  # データベースの更新と保存を行う
+    vs = VectorStoreQdrant(split_config=TextSplitConfig())
+
+    try:
+        vs.load(meeting_id=meeting_id)
+    except:
+        vs.create(meeting_id=meeting_id)
+        vs.add_testdata(meeting_id=meeting_id, datapath="./data/test.txt")
+        vs.load(meeting_id=meeting_id)
+
+    vs.update(
+        meeting_id=meeting_id, input_text=input_text
+    )  # データベースの更新と保存を行う
+
     # タイマー処理
     minits = len(input_item.text)
     result = AssistantState(face="angry", timer=TimerState(flag=True, time=minits))
@@ -82,7 +94,9 @@ async def create_minutes(meeting_id: str, input_item: MinutesItem) -> AssistantS
 
 
 @app.post("/auth/notion/{user_id}/{project_id}", response_model=None)
-async def notion_auth(user_id: str, project_id: str, input_item: NotionAuthItem) -> NotionItem:
+async def notion_auth(
+    user_id: str, project_id: str, input_item: NotionAuthItem
+) -> NotionItem:
     """
     NotionのOAuth認証を行うエンドポイント
     受け取ったデータを記録し、後に利用できるようにする
@@ -125,8 +139,10 @@ async def notion_auth(user_id: str, project_id: str, input_item: NotionAuthItem)
 
     res_json = res.json()
     if res.status_code != 200:
-        raise HTTPException(status_code=500, detail=f"Notionの認証に失敗しました{res.headers}")
-    
+        raise HTTPException(
+            status_code=500, detail=f"Notionの認証に失敗しました{res.headers}"
+        )
+
     notion_item = NotionItem(
         access_token=res_json["access_token"],
         token_type=res_json["token_type"],
@@ -138,15 +154,13 @@ async def notion_auth(user_id: str, project_id: str, input_item: NotionAuthItem)
         duplicated_template_id=res_json["duplicated_template_id"],
         request_id=res_json["request_id"],
     )
-    
+
     # FirestoreにNotionの認証情報を保存
     firestore_api = FirestoreAPI()
     firestore_api.insert_notion_api_data(
-        user_id=user_id,
-        project_id=project_id,
-        notion_item=notion_item
+        user_id=user_id, project_id=project_id, notion_item=notion_item
     )
-    
+
     return notion_item
 
 
@@ -209,7 +223,9 @@ async def test_cors():
     """
     return {"message": "CORS is working"}
 
+
 firestore_api = FirestoreAPI()
+
 
 @app.post("/test/notion/write_db/{user_id}/{project_id}")
 async def test_notion_write_db(
@@ -228,12 +244,11 @@ async def test_notion_write_db(
     print(minutes_data)
     # b01ADn1oC6B41T57lqP6
     notion_item = firestore_api.get_notion_api_data(
-        user_id=user_id,
-        project_id=project_id
+        user_id=user_id, project_id=project_id
     )  # project_idを用いてFirestoreからNotionの認証データを取得
-    
+
     print(notion_item)
-    
+
     notion_api = NotionAPI(notion_item=notion_item)
 
     # Notionにデータを送信
