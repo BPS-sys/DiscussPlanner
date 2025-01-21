@@ -1,6 +1,8 @@
 import os
 from dotenv import load_dotenv
 from typing import Optional
+from pydantic import BaseModel, Field
+from jsonpath_ng import parse
 
 # langchain
 from langchain.prompts.chat import (
@@ -11,36 +13,22 @@ from langchain.prompts.chat import (
 from langchain_core.runnables import Runnable, RunnablePassthrough
 from langchain_core.output_parsers import StrOutputParser
 from langchain_core.tools import tool
+from langfuse.callback import CallbackHandler
 
 # openai
 from langchain_openai.chat_models import ChatOpenAI
 from langchain_openai.embeddings import OpenAIEmbeddings
 
 # local
-from lib.schema import FilePath, SearchContext, RetrieverConfig, TextSplitConfig
+from lib.schema import FilePath, RetrieverConfig, TextSplitConfig
 from lib.models import AzureModels, OpenAIModels
 from lib.vectorstore import VectorStore
 
+# tools
+from tools.tools import QandATools
+
 # load environment variables
 load_dotenv("../.env")
-
-
-@tool("search-context", args_schema=SearchContext, return_direct=True)
-def searching_context(query: str, path: Optional[FilePath] = FilePath()) -> str:
-    """
-    質問に対応するコンテキストを検索する
-    Args:
-        question (str): 質問
-    Returns:
-        str: コンテキスト
-    """
-    config = TextSplitConfig()  # テキスト分割手法の設定
-    vectorstore_manager = VectorStore(path=path, split_config=config)
-    vectorstore = vectorstore_manager.load()  # 保存先のパス
-    retriever = vectorstore.as_retriever(**vars(RetrieverConfig))
-    # search context
-    context = ",".join([content.page_content for content in retriever.invoke(query)])
-    return context
 
 
 class LangchainBot:
@@ -51,6 +39,7 @@ class LangchainBot:
     def __init__(
         self,
         retriever_config: Optional[RetrieverConfig] = RetrieverConfig(),
+        compose_tools: Optional[BaseModel] = QandATools(),
     ):
         """
         初期化
@@ -58,8 +47,18 @@ class LangchainBot:
         Args:
             retriever_config (Optional[RetrieverConfig], optional): リトリーバの設定. Defaults to None.
         """
+        # tools
+        self.compose_tools = compose_tools
+
         # config
         self.retriever_config = retriever_config
+
+        # langfuse
+        self.langfuse_handler = CallbackHandler(
+            public_key=str(os.getenv("LANGFUSE_PUBLIC_KEY")),
+            secret_key=str(os.getenv("LANGFUSE_SECRET_KEY")),
+            host=str(os.getenv("LANGFUSE_ENDPOINT")),
+        )
 
         # model
         self.models = AzureModels()  # モデルの初期化
@@ -74,7 +73,7 @@ class LangchainBot:
             
 
             context:
-            {context}
+            {data}
             """
         )
         self.human_prompt = HumanMessagePromptTemplate.from_template("{question}")
@@ -100,28 +99,40 @@ class LangchainBot:
             ]
         )
 
-        self.tools = [SearchContext]
-
-    def searching_context_with_query(self, question: str) -> str:
+    def compose_data(self, question: str) -> str:
         """
-        質問からクエリを生成する
+        回答前に用意する必要があるデータを生成、処理する
 
         Args:
             question (str): 質問
 
         Returns:
-            str: クエリ
+            dict: データ
         """
-        llm_with_tools = self.compose_llm.bind_tools(self.tools)
+        llm_with_tools = self.compose_llm.bind_tools(self.compose_tools.tools)
 
         # generate context
-        res = llm_with_tools.invoke(question).tool_calls
-        contexts = []
-        for r in res:
-            args = r["args"]
-            contexts.append(searching_context.invoke(args))
-        context = ",".join(contexts)  # ここで結合している
-        return context
+        chain: Runnable = (
+            {
+                "question": RunnablePassthrough(),
+            }
+            | self.compose_llm_prompt
+            | llm_with_tools
+        )
+        
+        chain_res = chain.invoke(question).additional_kwargs # コンテキスト生成結果を取得
+        
+        jsonpath_expr = parse('$..function') # jsonpathの式を定義
+        res = [match.value for match in jsonpath_expr.find(chain_res)]
+
+        results: dict = {}
+        for usefunc in res:
+            args = usefunc["arguments"]
+            function = self.compose_tools.functions[usefunc["name"]]
+            functon_result = {usefunc["name"]: function.invoke(args)}
+            results.update(functon_result)  # 実行結果を追加
+
+        return results
 
     def invoke(self, question: str = "こんにちは") -> str:
         """
@@ -137,14 +148,14 @@ class LangchainBot:
         # generate answer
         chain: Runnable = (
             {
-                "context": self.searching_context_with_query,
+                "data": self.compose_data,
                 "question": RunnablePassthrough(),
             }
             | self.prompt
             | self.stream_llm
             | StrOutputParser()
         )
-        answer = chain.invoke(question)
+        answer = chain.invoke(question, config={"callbacks": [self.langfuse_handler]})
         return answer
 
 
