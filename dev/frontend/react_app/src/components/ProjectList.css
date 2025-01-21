@@ -38,6 +38,7 @@
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
     position: relative;
     z-index: 10;
+    animation: fadeIn 0.3s ease-in-out;
 }
 
 .close_button {
@@ -56,4 +57,24 @@
 
 .close_button:hover {
     color: #007bff;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: scale(0.95);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+@keyframes overlayFadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
 }
