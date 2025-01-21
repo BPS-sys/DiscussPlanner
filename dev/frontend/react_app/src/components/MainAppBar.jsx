@@ -10,12 +10,14 @@ import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 
 export default function MainAppBar() {
   return (
-    <Box sx={{ flexGrow: 1 }}>
-      <AppBar position="static" style={{background: 'rgba(27, 129, 241, 0.9)'}}>
+    <Box sx={{ flexGrow: 1}}>
+      <AppBar position="fixed" style={{ background: '#2463eb', zIndex:30 }}>
         <Toolbar>
-          <Typography variant="h5" component="div" sx={{ flexGrow: 1, textAlign:'left' }}>
+          <img src="/DPlogo.svg" alt="DiscussPlanner Logo" height="40" />
+          <Typography variant="h5" component="div" sx={{ flexGrow: 1, textAlign: 'left', color: '#eeeeee' }}>
             DiscussPlanner
           </Typography>
+
           <IconButton
             size="large"
             edge="start"
@@ -23,7 +25,7 @@ export default function MainAppBar() {
             aria-label="menu"
             sx={{ mr: 2 }}
           >
-            <AccountCircleIcon/>
+            <AccountCircleIcon />
           </IconButton>
           <IconButton
             size="large"
@@ -32,10 +34,11 @@ export default function MainAppBar() {
             aria-label="menu"
             sx={{ mr: 2 }}
           >
-            <MenuIcon/>
+            <MenuIcon />
           </IconButton>
         </Toolbar>
       </AppBar>
+      <Toolbar />
     </Box>
   );
 }

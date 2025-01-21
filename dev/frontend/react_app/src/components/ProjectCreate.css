@@ -1,0 +1,168 @@
+.Create_container {
+    padding: 20px 0px 0px 20px;
+    max-width: 1000px;
+    margin: auto;    
+}
+
+.Create_title input,
+.Create_details textarea,
+.Create_AI textarea {
+    width: 90%;
+    height: 100%;
+    padding: 10px;
+    margin: 8px 0;
+    border: 3px solid transparent;
+    border-image: linear-gradient(90deg, rgb(34, 102, 235) 0%, rgb(2, 203, 254) 100%);
+    border-image-slice: 1;
+    font-size: 16px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    position: relative;
+    resize: none;
+}
+
+.Create_details textarea,
+.Create_AI textarea {
+    padding-top: 20px;
+}
+
+/* ProjectCreate.css */
+.Create_title input::placeholder,
+.Create_details textarea::placeholder,
+.Create_AI textarea::placeholder {
+    color: #cccccc;
+    font-size: 14px;
+}
+
+.Create_title {
+    height: 40px;
+    width: 800px;
+    margin: auto;
+    margin-bottom: 60px;
+    position: relative;
+}
+
+.Create_content {
+    display: flex;
+}
+
+.Create_details {
+    height: 160px;
+    width: 400px;
+    margin-bottom: 60px;
+    position: relative;
+}
+
+.Create_AI {
+    height: 160px;
+    width: 400px;
+    margin-bottom: 60px;
+    position: relative;
+}
+
+.Create_title::before {
+    content: 'Title';
+    position: absolute;
+    top: -8px;
+    left: 40px;
+    padding: 0 6px;
+    background-color: #ffffff;
+    color: #505050;
+    font-size: 20px;
+    z-index: 10;
+    font-weight: 600;
+}
+
+.Create_details::before {
+    content: 'Details';
+    position: absolute;
+    top: -8px;
+    left: 20px;
+    padding: 0 6px;
+    background-color: #ffffff;
+    color: #505050;
+    font-size: 20px;
+    z-index: 10;
+    font-weight: 600;
+}
+
+.Create_AI::before {
+    content: 'AIの役割';
+    position: absolute;
+    top: -8px;
+    left: 20px;
+    padding: 0 6px;
+    background-color: #ffffff;
+    color: #505050;
+    font-size: 20px;
+    z-index: 10;
+    font-weight: 600;
+}
+
+
+.Create_title input:focus,
+.Create_details textarea:focus,
+.Create_AI textarea:focus {
+    border-color: #007bff;
+    outline: none;
+    box-shadow: 0 0 8px rgba(0, 123, 255, 0.3);
+}
+
+.Create_parameters {
+    width: 500px;
+    font-size: 18px;
+    margin-top: 16px;
+}
+
+.Create_parameters h4 {
+    text-align: left;
+    margin: 0 0 20px 50px;
+    color: #505050;
+}
+
+.AI_gauge {
+    width: 100%;
+}
+
+.AI_gauge p {
+    text-align: left;
+    margin: 0 0 0 50px;
+    color: #505050;
+}
+
+.AI_gauge input {
+    width: 400px;
+    margin-bottom: 30px;
+}
+
+.create-button {
+    width: 160px; 
+    background: linear-gradient(90deg, rgb(34, 102, 235) 0%, rgb(2, 203, 254) 100%);
+    color: #fff;
+    border: none;
+    border-radius: 6px; 
+    padding: 12px 18px; 
+    cursor: pointer;
+    margin: 20px 20px 0 0; 
+    font-weight: 600;
+    position: relative;
+}
+
+/* ゲージのスタイル */
+input[type="range"] {
+    appearance: none;
+    height: 4px;
+    background: linear-gradient(90deg, rgb(34, 102, 235) 0%, rgb(2, 203, 254) 100%);
+    border-radius: 5px;
+}
+
+input[type="range"]::-webkit-slider-thumb {
+    background: rgb(34, 102, 235);
+    border-radius: 50%;
+    cursor: pointer;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    transition: transform 0.2s ease-in-out;
+}
+
+input[type="range"]::-webkit-slider-thumb:hover {
+    transform: scale(1.2);
+}
