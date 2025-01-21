@@ -35,12 +35,12 @@ async-timeout==4.0.3
 attrs==24.2.0
     # via aiohttp
     # via backend
+backoff==2.2.1
+    # via langfuse
 cachecontrol==0.14.1
     # via firebase-admin
 cachetools==5.5.0
     # via google-auth
-backoff==2.2.1
-    # via langfuse
 certifi==2024.8.30
     # via backend
     # via httpcore
@@ -105,17 +105,15 @@ google-resumable-media==2.7.2
 googleapis-common-protos==1.66.0
     # via google-api-core
     # via grpcio-status
-greenlet==3.1.1
-    # via sqlalchemy
 grpcio==1.69.0
-    # via grpcio-tools
-    # via qdrant-client
     # via google-api-core
     # via grpcio-status
-grpcio-tools==1.69.0
+    # via grpcio-tools
     # via qdrant-client
 grpcio-status==1.69.0
     # via google-api-core
+grpcio-tools==1.69.0
+    # via qdrant-client
 h11==0.14.0
     # via backend
     # via httpcore
@@ -231,6 +229,7 @@ protobuf==5.29.2
     # via google-cloud-firestore
     # via googleapis-common-protos
     # via grpcio-status
+    # via grpcio-tools
     # via proto-plus
 pyasn1==0.6.1
     # via pyasn1-modules
@@ -239,8 +238,6 @@ pyasn1-modules==0.4.1
     # via google-auth
 pycparser==2.22
     # via cffi
-protobuf==5.29.3
-    # via grpcio-tools
 pydantic==2.10.3
     # via backend
     # via fastapi
