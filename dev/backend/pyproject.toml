@@ -59,6 +59,7 @@ dependencies = [
     "numpy==1.26.4",
     "fastapi>=0.115.6",
     "uvicorn>=0.32.1",
+    "firebase-admin>=6.6.0",
     "langfuse>=2.57.1",
     "langchain-qdrant>=0.2.0",
     "jsonpath-ng>=1.7.0",
