@@ -57,7 +57,7 @@ class Idea(BaseModel):
         BaseModel (_type_): ベースモデル
     """
 
-    ideas: list
+    ideas: list = Field(default=[], description="アイデアのリスト")
 
 
 class ChatItem(BaseModel):
@@ -69,8 +69,8 @@ class ChatItem(BaseModel):
     """
 
     chat: Chat
-    details: Idea
-    metadata: dict = Field(default_factory=dict)
+    details: Idea = Field(default=Idea(), description="アイデア")
+    metadata: dict = Field(default={}, description="メタデータ")
 
 
 #
