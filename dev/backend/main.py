@@ -31,6 +31,7 @@ app.add_middleware(
 
 logger = getLogger(__name__)
 
+firestore_api = FirestoreAPI()
 
 @app.post("/chat/{meeting_id}")
 async def create_chat(meeting_id: str, input_item: ChatItem) -> ChatItem:
@@ -224,9 +225,6 @@ async def test_cors():
     return {"message": "CORS is working"}
 
 
-firestore_api = FirestoreAPI()
-
-
 @app.post("/test/notion/write_db/{user_id}/{project_id}")
 async def test_notion_write_db(
     minutes_data: MinutesContentsElement, user_id: str, project_id: str
@@ -263,6 +261,41 @@ async def test_notion_write_db(
     )  # データが書き込めたかどうかのステータスコードを表示
 
     return res
+
+
+@app.post("/FB/WriteUserId")
+async def FBWriteUserId(user_item: UserItem):
+    if user_item.user_id:
+        firestore_api.setup_user_account(user_item.user_id)        
+
+
+@app.post("/FB/ProjectId")
+async def FBWriteProjectId(user_item: UserItem):
+    user_id = user_item.user_id
+    project_id = user_item.project_item.project_id
+    project_name = user_item.project_item.project_name
+    project_description = user_item.project_item.project_description
+    if project_id:
+        firestore_api.setup_project(user_id=user_id,
+                                    project_id=project_id,
+                                    project_name=project_name,
+                                    project_description=project_description)
+
+
+@app.post("/FB/MeetingId")
+async def FBWriteMeetingId(user_item: UserItem):
+    user_id = user_item.user_id
+    project_id = user_item.project_item.project_id
+    meeting_id = user_item.meeting_item.meeting_id
+    meeting_name = user_item.meeting_item.meeting_name
+    meeting_description = user_item.meeting_item.meeting_description
+    if meeting_id:
+        firestore_api.setup_meeting(user_id=user_id,
+                                    project_id=project_id,
+                                    meeting_id=meeting_id,
+                                    meeting_name=meeting_name,
+                                    meeting_description=meeting_description)
+        
 
 
 if __name__ == "__main__":

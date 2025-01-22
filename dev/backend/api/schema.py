@@ -172,3 +172,30 @@ class InsertDataSchema(BaseModel):
     )
     # contents
     minutes: MinutesContentsElement = Field(..., description="議事録の要素")
+
+class ProjectItem(BaseModel):
+    """
+    projectItem
+    """
+    project_id: str
+    project_name: str
+    project_description: str
+
+class MeetingItem(BaseModel):
+    """
+    meetingItem
+    """
+    meeting_id: str
+    meeting_name: str
+    meeting_description: str
+
+class UserItem(BaseModel):
+    """
+    FireBase Authentication
+
+    Args:
+        BaseModel (_type_): ベースモデル
+    """
+    user_id: str
+    project_item: ProjectItem
+    meeting_item: MeetingItem
