@@ -11,7 +11,12 @@ from langchain.prompts.chat import (
     SystemMessagePromptTemplate,
     HumanMessagePromptTemplate,
 )
-from langchain_core.runnables import Runnable, RunnablePassthrough, RunnableParallel
+from langchain_core.runnables import (
+    Runnable,
+    RunnablePassthrough,
+    RunnableParallel,
+    RunnableLambda,
+)
 from langchain_core.output_parsers import StrOutputParser
 from langchain_core.tools import tool
 from langfuse.callback import CallbackHandler
@@ -53,7 +58,7 @@ class LangchainBot:
         """
         # meeting_id
         self.meeting_id = meeting_id
-        
+
         # tools
         self.compose_tools = compose_tools
         self.stream_tools = stream_tools
@@ -115,7 +120,14 @@ class LangchainBot:
             ]
         )
 
-    def compose_data(self, question: str, meeting_id: str, ideas: list) -> dict:
+    def compose_data(
+        self,
+        question: str,
+        meeting_id: str,
+        ideas: str,
+        prompt: ChatPromptTemplate,
+        tools_model: BaseModel,
+    ) -> dict:
         """
         回答前に用意する必要があるデータを生成、処理する
 
@@ -125,47 +137,56 @@ class LangchainBot:
         Returns:
             dict: データ
         """
-        llm_with_tools = self.compose_llm.bind_tools(self.compose_tools.tools)
 
-        # generate context
-        chain: Runnable = (
-            {
-                "question": itemgetter("question"),
-                "meeting_id": itemgetter("meeting_id"),
-                "ideas": itemgetter("ideas"),
-            }
-            | self.compose_llm_prompt
-            | llm_with_tools
+        if tools_model is None:
+            return {}
+
+        llm_with_tools = self.compose_llm.bind_tools(tools_model.tools)
+
+        # contextとpromptを追加
+        compose_prompt = ChatPromptTemplate.from_messages(
+            [
+                SystemMessagePromptTemplate.from_template(
+                    "質問に対する適切なコンテキストと説明を生成してください。"
+                ),
+                HumanMessagePromptTemplate.from_template("{question}"),
+            ]
         )
-        
-        chain_res = chain.invoke(
-            {
-                "question": question,
-                "meeting_id": meeting_id,
-                "ideas": ideas
-            }
-        ).additional_kwargs # コンテキスト生成結果を取得
-        
-        jsonpath_expr = parse('$..function') # jsonpathの式を定義
-        res = [match.value for match in jsonpath_expr.find(chain_res)]
-        
-        print("● res")
-        print(res)
 
-        results: dict = {}
-        for usefunc in res:
-            print("● usefunc")
-            print(usefunc)
-            print(usefunc["arguments"])
-            args = json.loads(usefunc["arguments"])
-            print("● args")
-            print(args)
-            print(type(args))
-            function = self.compose_tools.functions[usefunc["name"]]
-            functon_result = {usefunc["name"]: function.invoke(args)}
-            results.update(functon_result)  # 実行結果を追加
+        chain = compose_prompt | llm_with_tools
 
-        return results
+        try:
+            chain_res = chain.invoke({"question": question}).additional_kwargs
+
+            jsonpath_expr = parse("$..function")
+            res = [match.value for match in jsonpath_expr.find(chain_res)]
+
+            results = {"context": "", "prompt": ""}  # デフォルト値  # デフォルト値
+
+            for usefunc in res:
+                try:
+                    args = (
+                        json.loads(usefunc["arguments"])
+                        if isinstance(usefunc["arguments"], str)
+                        else usefunc["arguments"]
+                    )
+                    args.update(
+                        {"question": question, "meeting_id": meeting_id, "ideas": ideas}
+                    )
+                    print(f"● args: {args}")
+                    print(type(args))
+
+                    function = tools_model.functions[usefunc["name"]]
+                    results[usefunc["name"]] = function.invoke(args)
+                except (KeyError, json.JSONDecodeError) as e:
+                    print(f"Error processing function {usefunc['name']}: {e}")
+                    continue
+
+            return results
+
+        except Exception as e:
+            print(f"Error in compose_data: {e}")
+            return {"context": "", "prompt": ""}
 
     def invoke(
         self,
@@ -184,37 +205,62 @@ class LangchainBot:
         Returns:
             str: チャットボットの応答
         """
-        
+
         ideas = "\n・".join(ideas)  # アイデアをリストから文字列に変換
 
         # generate answer
         chain: Runnable = (
-            RunnablePassthrough.assign(
-                composed_data=lambda x: self.compose_data(
-                    question = x['question'],
-                    meeting_id = x['meeting_id'],
-                    ideas = x['ideas']
-                )
+            {
+                "question": lambda x: x["question"],
+                "meeting_id": lambda x: x["meeting_id"],
+                "ideas": lambda x: x["ideas"],
+                "composed_data": lambda x: self.compose_data(
+                    question=x["question"],
+                    meeting_id=x["meeting_id"],
+                    ideas=x["ideas"],
+                    prompt=self.compose_llm_prompt,
+                    tools_model=self.compose_tools,
+                ),
+            }
+            | RunnableParallel(
+                context=lambda x: x["composed_data"].get("QueryVectorstore", ""),
+                prompt=lambda x: x["composed_data"]
+                .get("ChoiceIntent", {})
+                .get("prompt", ""),
+                tool=lambda x: x["composed_data"]
+                .get("ChoiceIntent", {})
+                .get("tool", None),
+                question=lambda x: x["question"],
+                tool_result=lambda x: self.compose_data(
+                    question=x["question"],
+                    meeting_id=x["meeting_id"],
+                    ideas=x["ideas"],
+                    prompt=self.prompt,
+                    tools_model=x["composed_data"]
+                    .get("ChoiceIntent", {})
+                    .get("tool", None),  # ここでtoolを指定！！
+                ),
             )
             | RunnableParallel(
-                context=lambda x: x['composed_data'].get("QueryVectorstore", ""),
-                prompt=lambda x: x['composed_data'].get("ChoiceIntent", {}).get("prompt", ""),
-                tool=lambda x: x['composed_data'].get("ChoiceIntent", {}).get("tool", None),
-                question=lambda x: x['question'],
+                context=lambda x: x["context"],
+                prompt=lambda x: x["prompt"],
+                text_response=(self.prompt | self.stream_llm | StrOutputParser()),
+                tool_result=RunnableLambda(lambda x: x["tool_result"]),
             )
-            | self.prompt
-            | self.stream_llm
-            | StrOutputParser()
         )
-        answer = chain.invoke(
-            {
-                "question": question,
-                "meeting_id": meeting_id,
-                "ideas": ideas
-            },
-            config={"callbacks": [self.langfuse_handler]}
+
+        result = chain.invoke(
+            {"question": question, "meeting_id": meeting_id, "ideas": ideas},
+            config={"callbacks": [self.langfuse_handler]},
         )
-        return answer
+
+        answer = result["text_response"]  # チャットボットの応答を取得
+        metadata = result["tool_result"]  # ツールの結果を取得
+
+        print("● ツールの結果")
+        print(metadata)
+
+        return answer, metadata
 
 
 if __name__ == "__main__":

@@ -11,17 +11,20 @@ from lib.vectorstore import VectorStore
 
 # schema
 
-class SummaryInfomation(BaseModel):
+
+class SummaryInformation(BaseModel):
     """
     情報を要約できる
 
     Args:
         BaseModel(_type_): ベースモデル(Pydantic)
     """
-    query: str = Field(..., description="要約済みの文章")
 
-@tool("SummaryInformation", args_schema=SummaryInfomation, return_direct=True)
-def query_summaryinformation(query: str) -> str:
+    summary: str = Field(..., description="要約済みの文章")
+
+
+@tool("SummaryInformation", args_schema=SummaryInformation, return_direct=True)
+def query_summaryinformation(summary: str) -> str:
     """
     与えられた情報を要約するツール
 
@@ -30,4 +33,4 @@ def query_summaryinformation(query: str) -> str:
     Returns:
         str: コンテキスト
     """
-    return query
+    return summary

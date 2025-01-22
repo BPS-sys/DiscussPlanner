@@ -38,16 +38,16 @@ async def create_chat(meeting_id: str, input_item: ChatItem) -> ChatItem:
     print("session: ", meeting_id)
 
     bot = LangchainBot()
-    ans = bot.invoke(
-        question = str(input_item.chat.message),
-        meeting_id = meeting_id,
-        ideas = input_item.details.ideas
+    ans, metadata = bot.invoke(
+        question=str(input_item.chat.message),
+        meeting_id=meeting_id,
+        ideas=input_item.details.ideas,
     )
-
-    output_item = ChatItem(chat=Chat(message=ans), details=Idea(ideas=[]))
+    output_item = ChatItem(
+        chat=Chat(message=ans), details=Idea(ideas=[]), metadata=metadata
+    )
     print(output_item)
     return output_item
-
 
 
 @app.post("/minutes/{meeting_id}")
@@ -66,7 +66,7 @@ async def create_minutes(meeting_id: str, input_item: MinutesItem) -> AssistantS
     # vectorstoreの更新
     input_text = input_item.text
     vs = VectorStoreQdrant(split_config=TextSplitConfig())
-    
+
     try:
         vs.load(meeting_id=meeting_id)
     except:
@@ -75,10 +75,9 @@ async def create_minutes(meeting_id: str, input_item: MinutesItem) -> AssistantS
         vs.load(meeting_id=meeting_id)
 
     vs.update(
-        meeting_id=meeting_id,
-        input_text=input_text
+        meeting_id=meeting_id, input_text=input_text
     )  # データベースの更新と保存を行う
-    
+
     # タイマー処理
     minits = len(input_item.text)
     result = AssistantState(face="angry", timer=TimerState(flag=True, time=minits))
@@ -87,4 +86,3 @@ async def create_minutes(meeting_id: str, input_item: MinutesItem) -> AssistantS
 
 if __name__ == "__main__":
     uvicorn.run("main:app", host="0.0.0.0", port=8080, reload=True, log_level="debug")
-

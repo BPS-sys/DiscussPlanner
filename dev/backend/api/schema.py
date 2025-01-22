@@ -48,6 +48,7 @@ class Chat(BaseModel):
 
         json_schema_extra = {"chat": {"message": "アイデアを考えてください。"}}
 
+
 class Idea(BaseModel):
     """
     アイデアスキーマ
@@ -55,7 +56,9 @@ class Idea(BaseModel):
     Args:
         BaseModel (_type_): ベースモデル
     """
+
     ideas: list
+
 
 class ChatItem(BaseModel):
     """
@@ -67,6 +70,8 @@ class ChatItem(BaseModel):
 
     chat: Chat
     details: Idea
+    metadata: dict = Field(default_factory=dict)
+
 
 #
 # /minutes/ に対するリクエストの入力データのスキーマ
