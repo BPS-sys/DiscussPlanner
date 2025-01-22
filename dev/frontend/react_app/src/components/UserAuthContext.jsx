@@ -13,11 +13,14 @@ export const UserAuthProvider = ({ children }) => {
     };
     
     const [CurrentUser, setCurrentUser] = useState(null);
+    const SetCurrentUser = async(data) => {
+        await setCurrentUser(data);
+    };
     // const [loading, setLoading] = useState(true);
 
     useEffect(() => {
         const unsubscribe = onAuthStateChanged(auth, (user) => {
-            setCurrentUser(user); // ユーザー情報をセット
+            SetCurrentUser(user); // ユーザー情報をセット
         });
 
         return () => unsubscribe(); // クリーンアップ
