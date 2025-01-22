@@ -1,8 +1,12 @@
 import logo from './logo.svg';
 import './App.css';
 import { BrowserRouter, Routes, Route } from "react-router-dom";
+
+// components
 import DiscussPage from './pages/DiscussPage';
 import HomePage from './pages/HomePage';
+import NotionCallbackHandler from './pages/auth/notion/Callback';
+import NotionSuccess from './pages/auth/notion/Success';
 import ProjectPage from './pages/ProjectPage';
 import LoginPage from './pages/LoginPage';
 
@@ -37,6 +41,8 @@ function App() {
                 <Route path={`/LoginPage`} element={<LoginPage />} />
                 <Route path={`/ProjectPage`} element={<ProjectPage />} />
                 <Route path={`/DiscussPage`} element={<DiscussPage />} />
+                <Route path="/auth/notion/callback" element={<NotionCallbackHandler />} />
+                <Route path="/auth/notion/success" element={<NotionSuccess />} />
               </Routes>
             </BrowserRouter>
           </FastAPIProvider>

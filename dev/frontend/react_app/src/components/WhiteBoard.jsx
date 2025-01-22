@@ -19,7 +19,7 @@ export const Whiteboard = () => {
     <div
       style={{
         width: "1000px",
-        height: "600px",
+        height: "580px",
         position: "absolute",
         top: "100px",
         left: "280px",
