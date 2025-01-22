@@ -40,9 +40,12 @@ export default function AIAgentsImage() {
         await resetTranscript();
     };
 
+    const currentHost = window.location.hostname;  // ホスト名（ドメイン名）
+
     const UseFastAPITosendUserMessage = async (message) => {
         try {
-            const response = await fetch("http://localhost:8080/chat/111", {
+            console.log(`hossssssssssssssssssssssssssssssssssst${currentHost}`);
+            const response = await fetch(`https://${currentHost}/api/chat/111`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
@@ -77,7 +80,7 @@ export default function AIAgentsImage() {
 
     const UseFastAPITosendMinutes = async (message) => {
         try {
-            const response = await fetch("http://localhost:8080/minutes/111", {
+            const response = await fetch(`https://${currentHost}/api/minutes/111`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
