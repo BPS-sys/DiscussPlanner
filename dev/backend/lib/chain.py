@@ -15,6 +15,7 @@ from langchain_core.runnables import Runnable, RunnablePassthrough, RunnablePara
 from langchain_core.output_parsers import StrOutputParser
 from langchain_core.tools import tool
 from langfuse.callback import CallbackHandler
+from operator import itemgetter
 
 # openai
 from langchain_openai.chat_models import ChatOpenAI
@@ -95,7 +96,7 @@ class LangchainBot:
             [
                 SystemMessagePromptTemplate.from_template(
                     """
-                    ユーザーの意図を汲み取って、適切な回答を生成してください。
+                    メタデータと質問からユーザーの意図を汲み取って、適切な回答を生成してください。
                     
                     質問からコンテキストを検索するための文章を提供してください。
                     コンテキストに含まれる文章は説明調の文章であるる為、下記の例を参考にしてください。
@@ -104,13 +105,17 @@ class LangchainBot:
                     例: 
                     質問: `A`とは何のことを示しますか？
                     output: `A`はBBBのことを示します。BBBはCCCの事です。
+                    
+                    // メタデータ //
+                    meeting_id: {meeting_id}
+                    ideas: {ideas}
                     """
                 ),
                 HumanMessagePromptTemplate.from_template("{question}"),
             ]
         )
 
-    def compose_data(self, question: str) -> str:
+    def compose_data(self, question: str, meeting_id: str, ideas: list) -> dict:
         """
         回答前に用意する必要があるデータを生成、処理する
 
@@ -125,13 +130,21 @@ class LangchainBot:
         # generate context
         chain: Runnable = (
             {
-                "question": RunnablePassthrough(),
+                "question": itemgetter("question"),
+                "meeting_id": itemgetter("meeting_id"),
+                "ideas": itemgetter("ideas"),
             }
             | self.compose_llm_prompt
             | llm_with_tools
         )
         
-        chain_res = chain.invoke(question).additional_kwargs # コンテキスト生成結果を取得
+        chain_res = chain.invoke(
+            {
+                "question": question,
+                "meeting_id": meeting_id,
+                "ideas": ideas
+            }
+        ).additional_kwargs # コンテキスト生成結果を取得
         
         jsonpath_expr = parse('$..function') # jsonpathの式を定義
         res = [match.value for match in jsonpath_expr.find(chain_res)]
@@ -171,25 +184,36 @@ class LangchainBot:
         Returns:
             str: チャットボットの応答
         """
+        
+        ideas = "\n・".join(ideas)  # アイデアをリストから文字列に変換
 
         # generate answer
         chain: Runnable = (
-            {
-                "data": self.compose_data,
-                "question": RunnablePassthrough(),
-            }
+            RunnablePassthrough.assign(
+                composed_data=lambda x: self.compose_data(
+                    question = x['question'],
+                    meeting_id = x['meeting_id'],
+                    ideas = x['ideas']
+                )
+            )
             | RunnableParallel(
-                data=lambda x: x["data"],
-                question=RunnablePassthrough(),
-                context=lambda x: x["data"]["QueryVectorstore"],
-                prompt=lambda x: x["data"]["ChoiceIntent"]["prompt"],
-                tool=lambda x: x["data"]["ChoiceIntent"]["tool"],
+                context=lambda x: x['composed_data'].get("QueryVectorstore", ""),
+                prompt=lambda x: x['composed_data'].get("ChoiceIntent", {}).get("prompt", ""),
+                tool=lambda x: x['composed_data'].get("ChoiceIntent", {}).get("tool", None),
+                question=lambda x: x['question'],
             )
             | self.prompt
             | self.stream_llm
             | StrOutputParser()
         )
-        answer = chain.invoke(question, config={"callbacks": [self.langfuse_handler]})
+        answer = chain.invoke(
+            {
+                "question": question,
+                "meeting_id": meeting_id,
+                "ideas": ideas
+            },
+            config={"callbacks": [self.langfuse_handler]}
+        )
         return answer
 
 
