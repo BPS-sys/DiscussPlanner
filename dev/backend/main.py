@@ -265,16 +265,28 @@ async def test_notion_write_db(
 
 @app.post("/FB/WriteUserId")
 async def FBWriteUserId(user_item: UserItem):
+    """
+    ユーザーIDを基にユーザー情報テンプレートをfiresotreに書き込むためのエンドポイント
+
+    args:
+        user_item(UserItem): ユーザーID階層までをみるために必要なデータ
+    """
     if user_item.user_id:
         firestore_api.setup_user_account(user_item.user_id)        
 
 
-@app.post("/FB/ProjectId")
-async def FBWriteProjectId(user_item: UserItem):
-    user_id = user_item.user_id
-    project_id = user_item.project_item.project_id
-    project_name = user_item.project_item.project_name
-    project_description = user_item.project_item.project_description
+@app.post("/FB/WriteProjectId")
+async def FBWriteProjectId(project_item: ProjectItem):
+    """
+    プロジェクトIDを基にプロジェクト情報テンプレートをfiresotreに書き込むためのエンドポイント
+
+    args:
+        project_item(ProjectItem): プロジェクトID階層までをみるために必要なデータ
+    """
+    user_id = project_item.user_id
+    project_id = project_item.project_id
+    project_name = project_item.project_name
+    project_description = project_item.project_description
     if project_id:
         firestore_api.setup_project(user_id=user_id,
                                     project_id=project_id,
@@ -282,13 +294,19 @@ async def FBWriteProjectId(user_item: UserItem):
                                     project_description=project_description)
 
 
-@app.post("/FB/MeetingId")
-async def FBWriteMeetingId(user_item: UserItem):
-    user_id = user_item.user_id
-    project_id = user_item.project_item.project_id
-    meeting_id = user_item.meeting_item.meeting_id
-    meeting_name = user_item.meeting_item.meeting_name
-    meeting_description = user_item.meeting_item.meeting_description
+@app.post("/FB/WriteMeetingId")
+async def FBWriteMeetingId(meeting_item: MeetingItem):
+    """
+    ミーティングIDを基にミーティング情報テンプレートをfiresotreに書き込むためのエンドポイント
+
+    args:
+        meeting_item(MeetingItem): ミーティングID階層までをみるために必要なデータ
+    """
+    user_id = meeting_item.user_id
+    project_id = meeting_item.project_id
+    meeting_id = meeting_item.meeting_id
+    meeting_name = meeting_item.meeting_name
+    meeting_description = meeting_item.meeting_description
     if meeting_id:
         firestore_api.setup_meeting(user_id=user_id,
                                     project_id=project_id,
@@ -296,6 +314,89 @@ async def FBWriteMeetingId(user_item: UserItem):
                                     meeting_name=meeting_name,
                                     meeting_description=meeting_description)
         
+@app.get("/FB/GetALLProjectId")
+async def FBALLProjectId(user_id: str):
+    """
+    FireStoreからユーザーIDに対応した、全プロジェクトIDを返すエンドポイント
+
+    args:
+        user_id(str): ユーザーID
+
+    returns:
+        (dict) :全プロジェクトID
+    """
+    docs = firestore_api.get_allproject_id(user_id=user_id)
+    l = []
+    for doc in docs:
+        l.append(doc.id)
+    return {"ALLProjectId":l}
+
+@app.get("/FB/GetALLMeetingId")
+async def FBALLMeetingId(user_id: str, project_id: str):
+    """
+    FireStoreからプロジェクトIDに対応した、全ミーティングIDを返すエンドポイント
+
+    args:
+        user_id(str): ユーザーID
+        project_id(str): プロジェクトID
+
+    returns:
+        (dict) :全ミーティングID
+    """
+    docs = firestore_api.get_allmeeting_id(user_id=user_id, project_id=project_id)
+    l = []
+    for doc in docs:
+        l.append(doc.id)
+    return {"ALLMeetingId":l}
+
+@app.post("/FB/GetProjectInfoFromId")
+async def FBGetProjectInfoFromId(user_id: str, project_id: str):
+    """
+    ユーザーIDとプロジェクトIDからプロジェクト情報を取得するためのエンドポイント
+
+    args:
+        user_id(str): ユーザーID
+        project_id(str): プロジェクトID
+
+    returns:
+        (dict): プロジェクト情報一覧
+    """
+    docs = firestore_api.get_project_info_from_id(user_id=user_id, project_id=project_id)
+    return docs.to_dict()
+
+@app.post("/FB/GetMeetingInfoFromId")
+async def FBGetMeetingInfoFromId(user_id: str, project_id: str, meeting_id:str):
+    """
+    ユーザーID、プロジェクトID、ミーティングIDからミーティング情報を取得するためのエンドポイント
+
+    args:
+        user_id(str): ユーザーID
+        project_id(str): プロジェクトID
+        meeting_id(str): ミーティングID
+
+    returns:
+        (dict): ミーティング情報一覧
+    """
+    docs = firestore_api.get_meeting_info_from_id(user_id=user_id, project_id=project_id, meeting_id=meeting_id)
+    return docs.to_dict()
+
+@app.post("/InitializeMeeting")
+async def InitializeMeeting(project_name: str, project_description: str, meeting_name: str, meeting_description: str, AIsRole: str):
+    """
+    会議のスケジュールを組むためのエンドポイント
+
+    args:
+        project_name(str): プロジェクト名
+        project_description(str): プロジェクトの説明
+        meeting_name(str): ミーティング名
+        meeting_description(str): ミーティングの説明
+        AIsRole(str): AIの役割
+
+    returns:
+        (dict): タスクリストと時間
+    """
+    return { "TaskList" : [{"name" : "aaa", "metadata" : { "time" : 300 }},
+                           {"name" : "aaa", "metadata" : { "time" : 300 }}]}
 
 
 if __name__ == "__main__":
