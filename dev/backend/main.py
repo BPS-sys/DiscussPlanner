@@ -33,7 +33,7 @@ logger = getLogger(__name__)
 
 
 @app.post("/chat/{meeting_id}")
-async def create_chat(meeting_id: str, input_item: ChatItem) -> ChatItem:
+async def create_chat(meeting_id: str, input_item: InputChatItem) -> OutputChatItem:
     """
     質問に対してチャットボットが応答するエンドポイント
 
@@ -51,9 +51,7 @@ async def create_chat(meeting_id: str, input_item: ChatItem) -> ChatItem:
         meeting_id=meeting_id,
         ideas=input_item.details.ideas,
     )
-    output_item = ChatItem(
-        chat=Chat(message=ans), details=Idea(ideas=[]), metadata=metadata
-    )
+    output_item = OutputChatItem(chat=Chat(message=ans), metadata=metadata)
     print(output_item)
     return output_item
 

@@ -9,7 +9,20 @@ from langchain_core.tools import tool
 from lib.schema import FilePath, RetrieverConfig, TextSplitConfig
 from lib.vectorstore import VectorStore
 
+
 # schema
+class ConvergenceIdeaItem(BaseModel):
+    """
+    ※ 現在は利用しない。
+    アイデアの収束をすることができる
+
+    Args:
+        BaseModel(_type_): ベースモデル(Pydantic)
+    """
+
+    idea_name: str = Field(..., description="アイデア名")
+    idea_detail: str = Field(..., description="アイデアの詳細")
+
 
 class ConvergenceIdea(BaseModel):
     """
@@ -18,10 +31,12 @@ class ConvergenceIdea(BaseModel):
     Args:
         BaseModel(_type_): ベースモデル(Pydantic)
     """
-    query: str = Field(..., description="収束済みアイデアのリスト")
+
+    converged_ideas: list = Field([""], description="収束済みアイデアのリスト")
+
 
 @tool("ConvergenceIdea", args_schema=ConvergenceIdea, return_direct=True)
-def query_convergenceidea(query: str) -> str:
+def query_convergenceidea(converged_ideas: list) -> str:
     """
     アイデアの収束をするツール
 
@@ -30,5 +45,5 @@ def query_convergenceidea(query: str) -> str:
     Returns:
         str: コンテキスト
     """
-    return query
-
+    # ideas = " , ".join(converged_ideas)
+    return converged_ideas

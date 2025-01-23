@@ -11,6 +11,7 @@ from lib.vectorstore import VectorStore
 
 # schema
 
+
 class DivergenceIdea(BaseModel):
     """
     アイデアの発散
@@ -18,10 +19,12 @@ class DivergenceIdea(BaseModel):
     Args:
         BaseModel(_type_): ベースモデル(Pydantic)
     """
-    query: str = Field(..., description="カンマ区切りのアイデアリスト")
+
+    divergenced_idea: list = Field([""], description="カンマ区切りのアイデアリスト")
+
 
 @tool("DivergenceIdea", args_schema=DivergenceIdea, return_direct=True)
-def query_divergenceidea(query: str) -> str:
+def query_divergenceidea(divergenced_idea: str) -> str:
     """
     質問に対応するコンテキストを検索する
     Args:
@@ -29,5 +32,4 @@ def query_divergenceidea(query: str) -> str:
     Returns:
         str: コンテキスト
     """
-    return query
-
+    return divergenced_idea

@@ -60,7 +60,7 @@ class Idea(BaseModel):
     ideas: list = Field(default=[], description="アイデアのリスト")
 
 
-class ChatItem(BaseModel):
+class InputChatItem(BaseModel):
     """
     '{host}/chat/' に対するリクエストの入力データのスキーマ
 
@@ -70,6 +70,17 @@ class ChatItem(BaseModel):
 
     chat: Chat
     details: Idea = Field(default=Idea(), description="アイデア")
+
+
+class OutputChatItem(BaseModel):
+    """
+    '{host}/chat/' に対するリクエストの入力データのスキーマ
+
+    Args:
+        BaseModel (_type_): ベースモデル
+    """
+
+    chat: Chat
     metadata: dict = Field(default={}, description="メタデータ")
 
 
