@@ -176,7 +176,11 @@ class InsertDataSchema(BaseModel):
 class ProjectItem(BaseModel):
     """
     projectItem
+
+    Args:
+        BaseModel (_type_): ベースモデル
     """
+    user_id: str
     project_id: str
     project_name: str
     project_description: str
@@ -184,7 +188,12 @@ class ProjectItem(BaseModel):
 class MeetingItem(BaseModel):
     """
     meetingItem
+
+    Args:
+        BaseModel (_type_): ベースモデル
     """
+    user_id: str
+    project_id: str
     meeting_id: str
     meeting_name: str
     meeting_description: str
@@ -197,5 +206,3 @@ class UserItem(BaseModel):
         BaseModel (_type_): ベースモデル
     """
     user_id: str
-    project_item: ProjectItem
-    meeting_item: MeetingItem
