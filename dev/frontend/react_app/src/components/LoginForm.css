@@ -19,13 +19,13 @@
     align-items: center;
 }
 
-.UserID_input,
+.UserEmail_input,
 .Password_input {
     margin-bottom: 30px;
     position: relative;
 }
 
-.UserID_input input,
+.UserEmail_input input,
 .Password_input input {
     width: 350px;
     padding: 15px;
@@ -37,13 +37,13 @@
     outline: none;
 }
 
-.UserID_input input::placeholder,
+.UserEmail_input input::placeholder,
 .Password_input input::placeholder {
     color: #d2d2d2;
     font-size: 16px;
 }
 
-.UserID_input::before {
+.UserEmail_input::before {
     content: 'User ID';
     position: absolute;
     top: -10px;
