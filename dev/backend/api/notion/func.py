@@ -262,7 +262,7 @@ if __name__ == "__main__":
         res = notion_api.search_database_id()
         pprint(res)
     elif run_test_num == 3:
-        print("■ test 2 : get_page_url")
+        print("■ test 3 : get_page_url")
         test_access_token = input("access_token: ")
         test_page_id = input("page_id: ")
         notion_item = NotionItem(access_token=test_access_token)
