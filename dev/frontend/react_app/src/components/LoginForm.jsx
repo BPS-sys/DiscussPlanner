@@ -46,8 +46,8 @@ export default function LoginForm() {
         <div className="Login_container">
             <h1 className="Login_title">Login</h1>
             <div className="Login_form">
-                <div className="UserID_input">
-                    <input type="text" placeholder="Enter your user ID" value={UserEmail} onChange={(e) => setUserEmail(e.target.value)} />
+                <div className="UserEmail_input">
+                    <input type="text" placeholder="Enter your user Email" value={UserEmail} onChange={(e) => setUserEmail(e.target.value)} />
                 </div>
                 <div className="Password_input">
                     <input type="password" placeholder="Enter your password" value={PassWord} onChange={(e) => setPassWord(e.target.value)} />
