@@ -204,7 +204,6 @@ class NotionAPI:
 
         if status_code != 200:
             # urlの内容が取得できない場合はエラーコードを返す
-            pprint(res)
             return None, status_code
 
         page_url = response["url"]
