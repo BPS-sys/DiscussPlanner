@@ -44,7 +44,7 @@
 }
 
 .UserEmail_input::before {
-    content: 'User ID';
+    content: 'User Email';
     position: absolute;
     top: -10px;
     left: 18px;
