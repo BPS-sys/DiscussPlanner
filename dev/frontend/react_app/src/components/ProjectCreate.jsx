@@ -4,8 +4,8 @@ import "./ProjectCreate.css"; // CSSファイルをインポート
 
 export default function ProjectCreate() {
     const navigate = useNavigate();
-    const GotoDiscussPage = () => {
-        navigate("/DiscussPage")
+    const GotoMeetingPage = () => {
+        navigate("/MeetingPage")
     }
     const [percentage1, setPercentage1] = useState(50);
     const [percentage2, setPercentage2] = useState(50);
@@ -79,7 +79,7 @@ export default function ProjectCreate() {
                         />
                     </div>
                     <div>
-                        <button className="create-button" onClick={GotoDiscussPage}>会議室を作成</button>
+                        <button className="create-button" onClick={GotoMeetingPage}>会議室を作成</button>
                     </div>
                 </div>
             </div>

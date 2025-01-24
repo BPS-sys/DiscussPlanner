@@ -8,6 +8,7 @@ import HomePage from './pages/HomePage';
 import NotionCallbackHandler from './pages/auth/notion/Callback';
 import NotionSuccess from './pages/auth/notion/Success';
 import ProjectPage from './pages/ProjectPage';
+import MeetingPage from './pages/MeetingPage';
 import LoginPage from './pages/LoginPage';
 
 import { MicProvider } from './components/MicContext';
@@ -39,6 +40,7 @@ function App() {
               <Routes>
                 <Route path={`/`} element={<HomePage />} />
                 <Route path={`/LoginPage`} element={<LoginPage />} />
+                <Route path={`/MeetingPage`} element={<MeetingPage />} />
                 <Route path={`/ProjectPage`} element={<ProjectPage />} />
                 <Route path={`/DiscussPage`} element={<DiscussPage />} />
                 <Route path="/auth/notion/callback" element={<NotionCallbackHandler />} />
