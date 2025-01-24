@@ -206,3 +206,18 @@ class UserItem(BaseModel):
         BaseModel (_type_): ベースモデル
     """
     user_id: str
+
+class RequestUserId(BaseModel):
+    """
+    ユーザーIDをリクエストするスキーマ
+    """
+    user_id: str
+
+
+class RequestUserIdAndProjectId(BaseModel):
+    """
+    ユーザーIDとプロジェクトIDをリクエストするスキーマ
+    """
+    user_id: str
+    project_id: str
+

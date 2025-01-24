@@ -314,8 +314,8 @@ async def FBWriteMeetingId(meeting_item: MeetingItem):
                                     meeting_name=meeting_name,
                                     meeting_description=meeting_description)
         
-@app.get("/FB/GetALLProjectId")
-async def FBALLProjectId(user_id: str):
+@app.post("/FB/GetALLProjectId")
+async def FBALLProjectId(request: RequestUserId):
     """
     FireStoreからユーザーIDに対応した、全プロジェクトIDを返すエンドポイント
 
@@ -325,13 +325,14 @@ async def FBALLProjectId(user_id: str):
     returns:
         (dict) :全プロジェクトID
     """
+    user_id = request.user_id
     docs = firestore_api.get_allproject_id(user_id=user_id)
     l = []
     for doc in docs:
         l.append(doc.id)
     return {"ALLProjectId":l}
 
-@app.get("/FB/GetALLMeetingId")
+@app.post("/FB/GetALLMeetingId")
 async def FBALLMeetingId(user_id: str, project_id: str):
     """
     FireStoreからプロジェクトIDに対応した、全ミーティングIDを返すエンドポイント
@@ -350,7 +351,7 @@ async def FBALLMeetingId(user_id: str, project_id: str):
     return {"ALLMeetingId":l}
 
 @app.post("/FB/GetProjectInfoFromId")
-async def FBGetProjectInfoFromId(user_id: str, project_id: str):
+async def FBGetProjectInfoFromId(request: RequestUserIdAndProjectId):
     """
     ユーザーIDとプロジェクトIDからプロジェクト情報を取得するためのエンドポイント
 
@@ -361,6 +362,8 @@ async def FBGetProjectInfoFromId(user_id: str, project_id: str):
     returns:
         (dict): プロジェクト情報一覧
     """
+    user_id = request.user_id
+    project_id = request.project_id
     docs = firestore_api.get_project_info_from_id(user_id=user_id, project_id=project_id)
     return docs.to_dict()
 
