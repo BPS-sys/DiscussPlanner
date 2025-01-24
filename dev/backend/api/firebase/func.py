@@ -103,4 +103,14 @@ class FirestoreAPI:
         data = {"start_time":datetime.datetime.now(), "end_time":None, "meeting_name":meeting_name, "meeting_description":meeting_description}
         self.db.collection("Users").document(user_id).collection("Projects").document(project_id).collection("Meetings").document(meeting_id).set(data)
 
+    def get_allproject_id(self, user_id: str):
+        return self.db.collection("Users").document(user_id).collection("Projects").get()
+        
+    def get_allmeeting_id(self, user_id: str, project_id: str):
+        return self.db.collection("Users").document(user_id).collection("Projects").document(project_id).collection("Meetings").get()
     
+    def get_project_info_from_id(self, user_id: str, project_id: str):
+        return self.db.collection("Users").document(user_id).collection("Projects").document(project_id).get()
+    
+    def get_meeting_info_from_id(self, user_id: str, project_id: str, meeting_id):
+        return self.db.collection("Users").document(user_id).collection("Projects").document(project_id).collection("Meetings").document(meeting_id).get()
