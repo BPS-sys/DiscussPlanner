@@ -7,6 +7,7 @@ from typing import List
 from pprint import pprint
 import firebase_admin
 from firebase_admin import credentials, firestore
+import datetime
 
 # local
 sys.path.append(os.path.join(os.path.dirname(__file__), "../.."))  # 2つ上の階層を指定
@@ -90,3 +91,26 @@ class FirestoreAPI:
         
         return res, 200
     
+    def setup_user_account(self, user_id: str):
+        data = {"user_type":"User"}
+        self.db.collection("Users").document(user_id).set(data)
+
+    def setup_project(self, user_id:str, project_id: str, project_name: str, project_description: str):
+        data = {"project_name":project_name, "project_description":project_description}
+        self.db.collection("Users").document(user_id).collection("Projects").document(project_id).set(data)
+
+    def setup_meeting(self, user_id: str, project_id: str, meeting_id: str, meeting_name: str, meeting_description: str):
+        data = {"start_time":datetime.datetime.now(), "end_time":None, "meeting_name":meeting_name, "meeting_description":meeting_description}
+        self.db.collection("Users").document(user_id).collection("Projects").document(project_id).collection("Meetings").document(meeting_id).set(data)
+
+    def get_allproject_id(self, user_id: str):
+        return self.db.collection("Users").document(user_id).collection("Projects").get()
+        
+    def get_allmeeting_id(self, user_id: str, project_id: str):
+        return self.db.collection("Users").document(user_id).collection("Projects").document(project_id).collection("Meetings").get()
+    
+    def get_project_info_from_id(self, user_id: str, project_id: str):
+        return self.db.collection("Users").document(user_id).collection("Projects").document(project_id).get()
+    
+    def get_meeting_info_from_id(self, user_id: str, project_id: str, meeting_id):
+        return self.db.collection("Users").document(user_id).collection("Projects").document(project_id).collection("Meetings").document(meeting_id).get()
