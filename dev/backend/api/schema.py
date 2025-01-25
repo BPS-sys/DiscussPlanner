@@ -173,6 +173,7 @@ class InsertDataSchema(BaseModel):
     # contents
     minutes: MinutesContentsElement = Field(..., description="議事録の要素")
 
+
 class ProjectItem(BaseModel):
     """
     projectItem
@@ -180,10 +181,12 @@ class ProjectItem(BaseModel):
     Args:
         BaseModel (_type_): ベースモデル
     """
+
     user_id: str
     project_id: str
     project_name: str
     project_description: str
+
 
 class MeetingItem(BaseModel):
     """
@@ -192,11 +195,13 @@ class MeetingItem(BaseModel):
     Args:
         BaseModel (_type_): ベースモデル
     """
+
     user_id: str
     project_id: str
     meeting_id: str
     meeting_name: str
     meeting_description: str
+
 
 class UserItem(BaseModel):
     """
@@ -205,12 +210,15 @@ class UserItem(BaseModel):
     Args:
         BaseModel (_type_): ベースモデル
     """
+
     user_id: str
+
 
 class RequestUserId(BaseModel):
     """
     ユーザーIDをリクエストするスキーマ
     """
+
     user_id: str
 
 
@@ -218,6 +226,16 @@ class RequestUserIdAndProjectId(BaseModel):
     """
     ユーザーIDとプロジェクトIDをリクエストするスキーマ
     """
+
     user_id: str
     project_id: str
 
+
+class RequestUserAllItem(BaseModel):
+    """
+    ユーザーIDとプロジェクトIDとミーティングIDをリクエストするスキーマ
+    """
+
+    user_id: str
+    project_id: str
+    meeting_id: str
