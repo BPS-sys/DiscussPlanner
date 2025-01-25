@@ -163,6 +163,14 @@ class FirestoreAPI:
             project_id
         ).collection("Meetings").document(meeting_id).set(data)
 
+    def setup_notion_page_id(
+        self, user_id: str, project_id: str, meeting_id: str, page_id: str
+    ):
+        data = {"notion_page_id": page_id}
+        self.db.collection("Users").document(user_id).collection("Projects").document(
+            project_id
+        ).collection("Meetings").document(meeting_id).set(data)
+
     def get_allproject_id(self, user_id: str):
         return (
             self.db.collection("Users").document(user_id).collection("Projects").get()

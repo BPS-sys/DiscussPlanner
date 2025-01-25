@@ -297,12 +297,11 @@ async def test_notion_write_db(
         print("notion_page_id", res["id"])  # notionのページを取得
 
         # TODO firestoreにpage_idを保存
-        firestore_api.setup_meeting(
+        firestore_api.setup_notion_page_id(
             user_id=user_id,
             project_id=project_id,
             meeting_id=meeting_id,
-            meeting_name=minutes_data.title,
-            meeting_description=minutes_data.summary,
+            page_id=res["id"],
         )
 
     return {"message": "Operation completed"}
