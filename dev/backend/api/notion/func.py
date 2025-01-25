@@ -3,7 +3,7 @@ import os
 import sys
 from datetime import datetime
 from pprint import pprint
-from typing import Any, List, Tuple
+from typing import List, Optional, Tuple
 
 import requests
 from dotenv import load_dotenv
@@ -268,6 +268,23 @@ class NotionAPI:
 
         return data, status
 
+    def search_page_url(self, page_id: str) -> Tuple[Optional[str], int]:
+        """
+        page_idを基にNotion APIを用いてpageのurlを取得する
+        """
+        url = f"{self.url}/pages/{page_id}/"
+        response = requests.request("GET", url, headers=self.headers, timeout=30)
+        status_code = response.status_code
+        response = response.json()
+
+        if status_code != 200:
+            # urlの内容が取得できない場合はエラーコードを返す
+            return None, status_code
+
+        page_url = response["url"]
+
+        return page_url, status_code
+
 
 if __name__ == "__main__":
     # テスト用
@@ -319,4 +336,12 @@ if __name__ == "__main__":
         )
         notion_api = NotionAPI(notion_item=notion_item)
         res = notion_api.search_database_id()
+        pprint(res)
+    elif run_test_num == 3:
+        print("■ test 3 : get_page_url")
+        test_access_token = input("access_token: ")
+        test_page_id = input("page_id: ")
+        notion_item = NotionItem(access_token=test_access_token)
+        notion_api = NotionAPI(notion_item=notion_item)
+        res = notion_api.search_page_url(page_id=test_page_id)
         pprint(res)
