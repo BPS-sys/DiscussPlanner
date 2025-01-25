@@ -7,7 +7,6 @@ export const DrawerProvider = ({ children }) => {
     const [ responsecheck, SetResponseCheck ] = useState(false);
     const toggleDrawer = (newOpen) => () => {
         setOpen(newOpen);
-        console.log(chatopen);
     };
     return (
         <DrawerContext.Provider value={{ chatopen, toggleDrawer, responsecheck, SetResponseCheck}}>

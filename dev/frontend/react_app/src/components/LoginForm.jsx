@@ -20,7 +20,7 @@ export default function LoginForm() {
     const Clicklogin = async () => {
         try {
             // Firebase Authentication を使ってサインアップ
-            await setPersistence(auth, browserSessionPersistence);
+            await setPersistence(auth, inMemoryPersistence);
             await signInWithEmailAndPassword(auth, UserEmail, PassWord);
             SetUserID(auth.currentUser.uid);
             alert("Login successful!"); // 成功時の通知
