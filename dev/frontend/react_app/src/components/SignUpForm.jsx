@@ -29,7 +29,7 @@ export default function SignUpForm() {
         <div className="Login_container">
             <h1 className="Login_title">Sign Up</h1>
             <div className="Login_form">
-                <div className="UserID_input">
+                <div className="UserEmail_input">
                     <input
                         type="text"
                         placeholder="Enter your email"
