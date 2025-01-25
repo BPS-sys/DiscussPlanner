@@ -41,7 +41,7 @@ function App() {
               <Routes>
                 <Route path={`/`} element={<HomePage />} />
                 <Route path={`/LoginPage`} element={<LoginPage />} />
-                <Route path={`/SignUpPage`} element={<SignUpPage />} />
+                <Route path={`/MeetingPage`} element={<MeetingPage />} />
                 <Route path={`/ProjectPage`} element={<ProjectPage />} />
                 <Route path={`/DiscussPage`} element={<DiscussPage />} />
                 <Route path="/auth/notion/callback" element={<NotionCallbackHandler />} />
