@@ -1,15 +1,17 @@
+import json
 import os
 import sys
-from dotenv import load_dotenv
-import requests
-import json
-from typing import List
+from datetime import datetime
 from pprint import pprint
+from typing import Any, List, Tuple
+
+import requests
+from dotenv import load_dotenv
 
 # local
 sys.path.append(os.path.join(os.path.dirname(__file__), "../.."))  # 2つ上の階層を指定
-from api.schema import *
 from api.notion.schema import PageModel
+from api.schema import *
 
 load_dotenv("../../../backend/.env")  # 環境変数をロード
 
@@ -32,7 +34,7 @@ class NotionAPI:
         }
         # ["title", "RNFf", "%3AUvN"]
 
-    def add_database_contents(self, insert_data: InsertDataSchema):
+    def add_database_contents(self, insert_data: InsertDataSchema) -> Tuple[dict, int]:
         """
         データベースに対して新規のコンテンツを追加する（議事録の内容を追加する）
 
@@ -45,9 +47,13 @@ class NotionAPI:
             insert_data.properties_name.summary,
         ]
         database_id, status_code = self.search_database_id()
+        print("!!!")
+        print(database_id)
+        print("!!!")
         database_properties_id, status_code = self.search_database_properties_id(
             database_id, properties_keys
         )
+        print(database_properties_id)
         res, status_code = self.create_page(
             database_id=database_id,
             database_properties_id=database_properties_id,
@@ -192,6 +198,76 @@ class NotionAPI:
         # self.database_properties_id = properties_id  # プロパティIDを更新
         return list(properties_id.values()), status_code
 
+    def overwrite_property(
+        self, page_id: str, minutes_data: MinutesContentsElement
+    ) -> Tuple[dict, int]:
+        """
+        page_idを基にnotionページのプロパティを上書きする
+        """
+        current_date = datetime.now().strftime("%Y-%m-%d")
+
+        payload = json.dumps(
+            {
+                "properties": {
+                    "Summary": {
+                        "rich_text": [{"text": {"content": minutes_data.summary}}]
+                    },
+                    "議題": {"rich_text": [{"text": {"content": minutes_data.agenda}}]},
+                    "日付": {"date": {"start": current_date, "end": None}},
+                    "タイトル": {"title": [{"text": {"content": minutes_data.title}}]},
+                }
+            }
+        )
+
+        url = f"{self.url}/pages/{page_id}"
+
+        response = requests.request("PATCH", url, headers=self.headers, data=payload)
+
+        status_code = response.status_code
+
+        pprint(response)
+        return response.json(), status_code
+
+    def get_all_blocks(self, page_id: str) -> Tuple[List[dict], int]:
+        """
+        page_idを基にnotionページ内の全てのblock情報を取得する
+        """
+
+        url = f"{self.url}/blocks/{page_id}/children"
+        blocks = []
+        params = {"page_size": 100}
+
+        while True:
+            response = requests.request("GET", url, headers=self.headers, params=params)
+            data = response.json()
+            status = response.status_code
+            if status != 200:
+                break
+            blocks.extend(data.get("results", []))
+
+            if data.get("has_more"):
+                params["start_cursor"] = data["next_cursor"]
+            else:
+                break
+
+        return blocks, status
+
+    def delete_all_blocks(self, blocks: List[dict]) -> Tuple[dict, int]:
+        """
+        blocks内のblock_idを基にnotionページ内のblockを全て消す
+        """
+
+        for block in blocks:
+            block_id = block["id"]
+            url = f"{self.url}/blocks/{block_id}"
+            response = requests.request("DELET", url, headers=self.headers)
+            data = response.json()
+            status = response.status_code
+            if status != 200:
+                break
+
+        return data, status
+
 
 if __name__ == "__main__":
     # テスト用
@@ -217,6 +293,7 @@ if __name__ == "__main__":
         # 2. DB内にページを作成
         notion_item = NotionItem(access_token=test_access_token)
         notion_api = NotionAPI(notion_item=notion_item)
+        print(test_database_id)
         print(
             notion_api.create_page(
                 database_id=test_database_id,  # データベースID
