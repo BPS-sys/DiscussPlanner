@@ -77,7 +77,7 @@ services:
       - "3000:3000"
     environment:
       <<: *langfuse-worker-env
-      NEXTAUTH_URL: http://0.0.0.0:3000
+      NEXTAUTH_URL: http://localhost:3000
       NEXTAUTH_SECRET: mysecret
       LANGFUSE_INIT_ORG_ID: ${LANGFUSE_INIT_ORG_ID:-}
       LANGFUSE_INIT_ORG_NAME: ${LANGFUSE_INIT_ORG_NAME:-}

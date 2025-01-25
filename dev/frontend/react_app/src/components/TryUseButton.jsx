@@ -1,14 +1,20 @@
 
 import { Button } from "@mui/material";
 import { useNavigate } from "react-router-dom";
+import { useUserAuthContext } from "./UserAuthContext";
 
 export const TryUseButton = () => {
   const navigate = useNavigate();
-  const GotoDiscussPage = () => {
-    navigate("/LoginPage")
-    // navigate("/ProjectPage")
+  const GotoNextPage = () => {
+    if (CurrentUser) {
+      navigate("/ProjectPage")
+    }
+    else {
+      navigate("/LoginPage")
+    }
     // navigate("/DiscussPage")
   }
+  const { CurrentUser } = useUserAuthContext();
   const Buttonstyle = {
     width: "30%",
     height: "100%",
@@ -23,7 +29,7 @@ export const TryUseButton = () => {
 
   return (
     <div>
-      <Button variant="contained" sx={Buttonstyle} onClick={GotoDiscussPage}            >
+      <Button variant="contained" sx={Buttonstyle} onClick={GotoNextPage}            >
         使ってみる
       </Button>
     </div>
