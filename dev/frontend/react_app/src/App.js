@@ -8,6 +8,7 @@ import HomePage from './pages/HomePage';
 import NotionCallbackHandler from './pages/auth/notion/Callback';
 import NotionSuccess from './pages/auth/notion/Success';
 import ProjectPage from './pages/ProjectPage';
+import MeetingPage from './pages/MeetingPage';
 import LoginPage from './pages/LoginPage';
 import SignUpPage from './pages/SignUpPage';
 
@@ -44,6 +45,7 @@ function App() {
                   <Route path={`/LoginPage`} element={<LoginPage />} />
                   <Route path={`/SignUpPage`} element={<SignUpPage />} />
                   <Route path={`/ProjectPage`} element={<ProjectPage />} />
+                  <Route path={`/MeetingPage`} element={<MeetingPage />} />
                   <Route path={`/DiscussPage`} element={<DiscussPage />} />
                   <Route path="/auth/notion/callback" element={<NotionCallbackHandler />} />
                   <Route path="/auth/notion/success" element={<NotionSuccess />} />

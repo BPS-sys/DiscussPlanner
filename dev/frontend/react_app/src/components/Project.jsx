@@ -4,8 +4,8 @@ import "./Project.css";
 
 export default function Project() {
     const navigate = useNavigate();
-    const GotoDiscussPage = () => {
-        navigate("/DiscussPage")
+    const GotoMeetingPage = () => {
+        navigate("/MeetingPage")
     }
     return (
         <div className="Project_container">
@@ -22,7 +22,7 @@ export default function Project() {
 
                 <div className="card_under">
                     <div className="button_group">
-                        <button className="primary_button" onClick={GotoDiscussPage} >
+                        <button className="primary_button" onClick={GotoMeetingPage} >
                             会議を開始する
                         </button>
                         <button className="secondary_button">
