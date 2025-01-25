@@ -18,6 +18,11 @@ export default function MainAppBar() {
 };
   const { loginUser, logout } = useUserAuthContext();
 
+  const Userlogot = () => {
+    logout();
+    GotoHomePage();
+  }
+
   return (
     <Box sx={{ flexGrow: 1}}>
       <AppBar position="fixed" style={{ background: '#2463eb', zIndex:30 }}>
@@ -33,7 +38,7 @@ export default function MainAppBar() {
             color="inherit"
             aria-label="menu"
             sx={{ mr: 2 }}
-            onClick={logout}
+            onClick={Userlogot}
           >
             <AccountCircleIcon />
           </IconButton>
