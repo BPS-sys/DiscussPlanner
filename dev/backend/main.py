@@ -242,15 +242,6 @@ async def test_notion_write_db(
         dict: Notion APIのレスポンス
     """
 
-    # テスト用
-    # notion_item = NotionItem(
-    #     access_token="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",  # アクセストークン
-    #     duplicated_template_id="184c5dbe3ed3811dae19c0a9a2b3d5b2",  # 複製されたテンプレートのID
-    # )
-    # notion_page_id = "1843338a59a6814585c0d19b656c2303"
-    notion_block_id = "1853338a-59a6-81b9-b39a-e4c62c1c059f"
-    # is_exists = True
-
     # firestoreからnotionの認証情報を取得
     notion_item = firestore_api.get_notion_api_data(
         user_id=user_id, project_id=project_id
@@ -277,6 +268,8 @@ async def test_notion_write_db(
         blocks, status = notion_api.get_all_blocks(notion_page_id)
         if status != 200:  # エラー
             return {"message": "Error when getting blocks", "blocks": blocks}, status
+        print("=" * 20)
+        pprint(blocks)
 
         # 全てのblockを削除
         res, status = notion_api.delete_all_blocks(blocks)
@@ -286,14 +279,14 @@ async def test_notion_write_db(
             return {"message": "Error when overwriting properties", "res": res}, status
 
         # 本文にblockを追加
-        res, status = notion_api.overwrite_body(notion_block_id, minutes_data)
+        res, status = notion_api.wright_body(notion_page_id, minutes_data)
         if status != 200:  # エラー
             return {"message": "Error when overwriting body", "res": res}, status
         print("=" * 20)
         pprint(res)
     else:
         # Notionに新たなページの作成
-        res, status_code = notion_api.add_database_contents(
+        res, status = notion_api.add_database_contents(
             insert_data=InsertDataSchema(
                 properties_name=MinutesPropertiesNameElement(),  # プロパティ名（固定値）
                 minutes=minutes_data,
@@ -301,12 +294,16 @@ async def test_notion_write_db(
         )
         if status != 200:  # エラー
             return {"message": "Error when creating notion page", "res": res}, status
-        print(
-            "Notion API: ", status_code
-        )  # データが書き込めたかどうかのステータスコードを表示
         print("notion_page_id", res["id"])  # notionのページを取得
 
-    # TODO firestoreにpage_idとblock_idを保存
+        # TODO firestoreにpage_idを保存
+        firestore_api.setup_meeting(
+            user_id=user_id,
+            project_id=project_id,
+            meeting_id=meeting_id,
+            meeting_name=minutes_data.title,
+            meeting_description=minutes_data.summary,
+        )
 
     return {"message": "Operation completed"}
 

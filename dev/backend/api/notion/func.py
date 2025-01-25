@@ -1,5 +1,6 @@
 import json
 import os
+import re
 import sys
 from datetime import datetime
 from pprint import pprint
@@ -260,13 +261,33 @@ class NotionAPI:
         for block in blocks:
             block_id = block["id"]
             url = f"{self.url}/blocks/{block_id}"
-            response = requests.request("DELET", url, headers=self.headers)
+            response = requests.request("DELETE", url, headers=self.headers)
             data = response.json()
             status = response.status_code
             if status != 200:
                 break
 
         return data, status
+
+    def wright_body(
+        self, page_id: str, minutes_data: MinutesContentsElement
+    ) -> Tuple[str, int]:
+        """
+        page_idを基にNotionのページにblockを追加する
+        """
+        body = minutes_data.body
+        markdown_list = body.split("\n")
+        blocks = []
+
+        for line in markdown_list:
+            block = self._markdown_to_block(line)
+            blocks.append(block)
+
+        payload = json.dumps({"children": blocks})
+        url = f"{self.url}/blocks/{page_id}/children"
+        response = requests.request("PATCH", url, headers=self.headers, data=payload)
+
+        return response.json(), response.status_code
 
     def search_page_url(self, page_id: str) -> Tuple[Optional[str], int]:
         """
@@ -284,6 +305,79 @@ class NotionAPI:
         page_url = response["url"]
 
         return page_url, status_code
+
+    def _markdown_to_block(self, line: str) -> dict:
+        """
+        markdownをnotion用のblockに変換する
+        """
+
+        # 見出し
+        if re.match(r"^#\s+", line):
+            return {
+                "object": "block",
+                "type": "heading_1",
+                "heading_1": {"rich_text": [{"text": {"content": line[2:]}}]},
+            }
+        elif re.match(r"^##\s+", line):
+            return {
+                "object": "block",
+                "type": "heading_2",
+                "heading_2": {"rich_text": [{"text": {"content": line[3:]}}]},
+            }
+        elif re.match(r"^###\s+", line):
+            return {
+                "object": "block",
+                "type": "heading_3",
+                "heading_3": {"rich_text": [{"text": {"content": line[4:]}}]},
+            }
+
+        # 水平線
+        elif re.match(r"^---$", line):
+            return {"object": "block", "type": "divider", "divider": {}}
+
+        # 引用
+        elif re.match(r"^>\s+", line):
+            return {
+                "object": "block",
+                "type": "quote",
+                "quote": {"rich_text": [{"text": {"content": line[2:]}}]},
+            }
+
+        # 番号付きリスト
+        elif re.match(r"^\d+\.\s+", line):
+            return {
+                "object": "block",
+                "type": "numbered_list_item",
+                "numbered_list_item": {"rich_text": [{"text": {"content": line[3:]}}]},
+            }
+
+        # 箇条書きリスト
+        elif re.match(r"^-\s+", line):
+            return {
+                "object": "block",
+                "type": "bulleted_list_item",
+                "bulleted_list_item": {"rich_text": [{"text": {"content": line[2:]}}]},
+            }
+
+        # リンク
+        elif re.match(r"\[.*?\]\(.*?\)", line):
+            match = re.search(r"\[(.*?)\]\((.*?)\)", line)
+            text, url = match.groups()
+            return {
+                "object": "block",
+                "type": "paragraph",
+                "paragraph": {
+                    "rich_text": [{"text": {"content": text, "link": {"url": url}}}]
+                },
+            }
+
+        # テキスト（段落）
+        else:
+            return {
+                "object": "block",
+                "type": "paragraph",
+                "paragraph": {"rich_text": [{"text": {"content": line}}]},
+            }
 
 
 if __name__ == "__main__":
@@ -345,3 +439,20 @@ if __name__ == "__main__":
         notion_api = NotionAPI(notion_item=notion_item)
         res = notion_api.search_page_url(page_id=test_page_id)
         pprint(res)
+    elif run_test_num == 4:
+        notion_item = NotionItem(access_token="test_access_token")
+        notion_api = NotionAPI(notion_item=notion_item)
+        md_lines = [
+            "# 見出し1",
+            "## 見出し2",
+            "### 見出し3",
+            "---",
+            "> これは引用です",
+            "1. 番号付きリスト",
+            "- 箇条書きリスト",
+            "[リンク](https://www.notion.so/)",
+            "普通のテキスト",
+        ]
+
+        for line in md_lines:
+            pprint(notion_api._markdown_to_block(line))
