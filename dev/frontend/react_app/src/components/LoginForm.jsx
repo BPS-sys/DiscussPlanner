@@ -1,4 +1,4 @@
-import { React, useEffect } from "react";
+import { React, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "./LoginForm.css";
 import { useUserAuthContext } from "./UserAuthContext";
@@ -16,51 +16,26 @@ export default function LoginForm() {
     const GotoSignUpPage = () => {
         navigate("/SignUpPage");
     };
-    const { UserEmail, setUserEmail, PassWord, setPassWord, UserID, SetUserID } = useUserAuthContext();
-
+    const [password, setPassWord] = useState("");
+    const [email, setEmail] = useState("");
+    
+    const { loginUser, login_google, login_email, logout } = useUserAuthContext();
+    
     const Clicklogin = async () => {
         try {
             // Firebase Authentication を使ってサインアップ
-            await setPersistence(auth, inMemoryPersistence);
-            await signInWithEmailAndPassword(auth, UserEmail, PassWord);
-            SetUserID(auth.currentUser.uid);
-            alert("Login successful!"); // 成功時の通知
+            login_email(email, password);
             SendUserId();
-            GotoProjectPage();
         } catch (error) {
             console.error("Error during sign-up:", error);
             alert(error.message); // エラー時の通知
         }
     };
 
+
     const ClickGoogleImage = () => {
-        const provider = new GoogleAuthProvider();
-        const auth = getAuth();
-    
-        // リダイレクトを開始
-        signInWithRedirect(auth, provider);
-    
-        // リダイレクト後の結果を取得
-        getRedirectResult(auth)
-            .then((result) => {
-                if (result) {
-                    // Google認証の結果を取得
-                    const credential = GoogleAuthProvider.credentialFromResult(result);
-                    // const token = credential.accessToken; // 必要なら使用
-                    const user = result.user; // 認証されたユーザー情報
-                    SetUserID(user.uid); // ユーザーIDをセット
-                    console.log(user.uid);
-                    alert("Login successful!"); // 成功時の通知
-                }
-            })
-            .catch((error) => {
-                // エラーハンドリング
-                const errorCode = error.code;
-                const errorMessage = error.message;
-                const email = error.customData?.email;
-                const credential = GoogleAuthProvider.credentialFromError(error);
-                console.error("Error during login:", errorCode, errorMessage);
-            });
+        // Firebase Authentication を使ってサインアップ
+        login_google();
     };
 
     const SendUserId = async() => {
@@ -71,7 +46,7 @@ export default function LoginForm() {
                     "Content-Type": "application/json",
                 },
                 body: JSON.stringify({
-                        "user_id": auth.currentUser.uid
+                        "user_id": loginUser.uid
                 }),
             });
 
@@ -86,16 +61,13 @@ export default function LoginForm() {
         }
     };
 
-    // UserID が更新されたときに実行
+    //　ログイン情報が更新
     useEffect(() => {
-        if (UserID) {
-            console.log("Updated UserID:", UserID);
+        // ログインユーザーがいる場合ページ遷移
+        if (loginUser) {
+            GotoProjectPage();
         }
-        else {
-            console.log("empty useid!");
-        };
-        
-    }, [UserID]);
+    }, [loginUser]);
 
 
 
@@ -104,10 +76,10 @@ export default function LoginForm() {
             <h1 className="Login_title">Login</h1>
             <div className="Login_form">
                 <div className="UserEmail_input">
-                    <input type="text" placeholder="Enter your user Email" value={UserEmail} onChange={(e) => setUserEmail(e.target.value)} />
+                    <input type="text" placeholder="Enter your user Email" value={email} onChange={(e) => setEmail(e.target.value)} />
                 </div>
                 <div className="Password_input">
-                    <input type="password" placeholder="Enter your password" value={PassWord} onChange={(e) => setPassWord(e.target.value)} />
+                    <input type="password" placeholder="Enter your password" value={password} onChange={(e) => setPassWord(e.target.value)} />
                 </div>
                 <button className="Login_button" onClick={Clicklogin}>
                     login

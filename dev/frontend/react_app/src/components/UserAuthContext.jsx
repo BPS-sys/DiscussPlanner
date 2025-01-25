@@ -1,40 +1,88 @@
-import { useContext, useState, createContext, useEffect } from "react";
-import { onAuthStateChanged } from "firebase/auth";
+"user client"
+import { useState, useEffect, createContext, useContext } from "react";
 import { auth } from "../firebase"; // Firebase Authenticationをインポート
+import { 
+    browserLocalPersistence, 
+    browserSessionPersistence, 
+    inMemoryPersistence, 
+    setPersistence, 
+    signInWithEmailAndPassword,  
+    signInWithPopup, 
+    signOut,
+    signInWithRedirect, 
+    getRedirectResult, 
+    GoogleAuthProvider } from "firebase/auth";
 
 const UserAuthContext = createContext();
 
+const provider = new GoogleAuthProvider();
+
 export const UserAuthProvider = ({ children }) => {
-    const [UserEmail, setUserEmail] = useState('');
-    const [PassWord, setPassWord] = useState('');
-    const [UserID, setUserID] = useState('');
-    const SetUserID = async(id) => {
-        await setUserID(id);
-    };
     
-    const [CurrentUser, setCurrentUser] = useState(null);
-    const SetCurrentUser = async(data) => {
-        await setCurrentUser(data);
-    };
-    // const [loading, setLoading] = useState(true);
+    const [loginUser, setLoginUser] = useState(null);
 
+    // 認証情報の監視および更新
     useEffect(() => {
-        const unsubscribe = onAuthStateChanged(auth, (user) => {
-            SetCurrentUser(user); // ユーザー情報をセット
+        const unsubscribe = auth.onAuthStateChanged((user) => {
+            setLoginUser(user);
         });
-
-        return () => unsubscribe(); // クリーンアップ
+        return () => unsubscribe();
     }, []);
 
+    // google認証 
+    const login_google = async () => {
+        try {
+            const result = await signInWithPopup(auth, provider);
+            setLoginUser(result.user);
+            const user = result.user
+        } catch (error) {
+            console.error('Login error:', error);
+        }
+    };
+
+    // email認証
+    const login_email = async (UserEmail, PassWord) => {
+        console.log(UserEmail)
+        try {
+            await setPersistence(auth, inMemoryPersistence);
+            await signInWithEmailAndPassword(auth, UserEmail, PassWord);
+            setLoginUser(auth.currentUser);
+            alert("Login successful!");
+        } catch (error) {
+            console.error("Error during sign-up:", error);
+            alert(error.message); // エラー時の通知
+        }
+    };
+
+    // ログアウト
+    const logout = async () => {
+        try {
+            await signOut(auth);
+            setLoginUser(null);
+            alert("Logout successful!");
+        } catch (error) {
+            console.error('Logout error:', error);
+        }
+    };
+
+    const value = {
+        loginUser,
+        login_google,
+        login_email,
+        logout,
+    };
+
     return (
-        <UserAuthContext.Provider value={{ UserEmail, setUserEmail, PassWord, setPassWord, UserID, SetUserID, CurrentUser }}>
-            {children}
-        </UserAuthContext.Provider >
+        <UserAuthContext.Provider value={value}>
+             {children}
+        </UserAuthContext.Provider>
     );
 };
 
-// Context を利用するカスタムフック
 export const useUserAuthContext = () => {
-    return useContext(UserAuthContext);
+    const context = useContext(UserAuthContext);
+    if (!context) {
+        throw new Error('useAuthContext must be used within an AuthContextProvider');
+    }
+    return context;
 };
-
