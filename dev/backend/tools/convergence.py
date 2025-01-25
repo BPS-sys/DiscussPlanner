@@ -35,8 +35,8 @@ class ConvergenceIdea(BaseModel):
     converged_ideas: list = Field([""], description="収束済みアイデアのリスト")
 
 
-@tool("ConvergenceIdea", args_schema=ConvergenceIdea, return_direct=True)
-def query_convergenceidea(converged_ideas: list) -> str:
+@tool("ConvergenceIdea", args_schema=ConvergenceIdea, return_direct=False)
+def query_convergenceidea(converged_ideas: list) -> list:
     """
     アイデアの収束をするツール
 

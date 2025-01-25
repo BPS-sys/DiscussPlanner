@@ -22,30 +22,41 @@ class ChoiceIntent(BaseModel):
 
     Args:
         BaseModel(_type_): ベースモデル(Pydantic)
-   
+
     """
+
     divergence_idea: bool = Field(False, description="アイデアの発散の場合はTrueが入る")
-    convergence_idea: bool = Field(False, description="アイデアの収束の場合はTrueが入る")
+    convergence_idea: bool = Field(
+        False, description="アイデアの収束の場合はTrueが入る"
+    )
     summary: bool = Field(False, description="要約の場合はTrueが入る")
-    answer_to_question: bool = Field(False, description="質問への回答の場合はTrueが入る")
+    answer_to_question: bool = Field(
+        False, description="質問への回答の場合はTrueが入る"
+    )
 
 
-@tool("ChoiceIntent", args_schema=ChoiceIntent, return_direct=True)
+@tool("ChoiceIntent", args_schema=ChoiceIntent, return_direct=False)
 def query_category(
     divergence_idea: bool = False,
     convergence_idea: bool = False,
     summary: bool = False,
-    answer_to_question: bool = False
-    ) -> str:
+    answer_to_question: bool = False,
+) -> str:
     """
     カテゴリ情報から適切なプロンプトを返す
     """
     print("カテゴリ情報")
-    
-    from tools.tools import DivergenceIdeaTools, ConvergenceIdeaTools, SummaryInformationTools, AnswerToQuestionTools
+
+    from tools.tools import (
+        DivergenceIdeaTools,
+        ConvergenceIdeaTools,
+        SummaryInformationTools,
+        AnswerToQuestionTools,
+    )
+
     print("発散：", divergence_idea)
     print("収束：", convergence_idea)
-    print('要約：', summary)
+    print("要約：", summary)
     print("回答：", answer_to_question)
     if divergence_idea:
         prompt = "与えられた情報から考えられるアイデアを発散し、カンマ区切りで出力してください"
@@ -59,5 +70,5 @@ def query_category(
     elif answer_to_question:
         prompt = "これまでの情報を加味して、もっとも最善だと考えられる回答を出力せよ"
         tool = AnswerToQuestionTools()
-    
-    return {"prompt":prompt, "tool":tool}
+
+    return {"prompt": prompt, "tool": tool}

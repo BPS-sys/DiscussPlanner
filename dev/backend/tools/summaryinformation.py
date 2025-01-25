@@ -23,7 +23,7 @@ class SummaryInformation(BaseModel):
     summary: str = Field(..., description="要約済みの文章")
 
 
-@tool("SummaryInformation", args_schema=SummaryInformation, return_direct=True)
+@tool("SummaryInformation", args_schema=SummaryInformation, return_direct=False)
 def query_summaryinformation(summary: str) -> str:
     """
     与えられた情報を要約するツール

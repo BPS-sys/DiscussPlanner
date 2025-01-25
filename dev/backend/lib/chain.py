@@ -85,8 +85,8 @@ class LangchainBot:
             {prompt}
             
             以下の`context`の情報に基づいて、質問に回答してください。
+            必ずチャット形式（口語調）で回答してください。
             
-
             context:
             {context}
             """
@@ -127,6 +127,10 @@ class LangchainBot:
         ideas: str,
         prompt: ChatPromptTemplate,
         tools_model: BaseModel,
+        prompt_args: dict = {
+            "prompt": "",
+            "context": "",
+        },
     ) -> dict:
         """
         回答前に用意する必要があるデータを生成、処理する
@@ -143,20 +147,27 @@ class LangchainBot:
 
         llm_with_tools = self.compose_llm.bind_tools(tools_model.tools)
 
-        # contextとpromptを追加
-        compose_prompt = ChatPromptTemplate.from_messages(
-            [
-                SystemMessagePromptTemplate.from_template(
-                    "質問に対する適切なコンテキストと説明を生成してください。"
-                ),
-                HumanMessagePromptTemplate.from_template("{question}"),
-            ]
+        chain: Runnable = (
+            {
+                "question": lambda x: x["question"],
+                "meeting_id": lambda x: x["meeting_id"],
+                "ideas": lambda x: x["ideas"],
+                "prompt": lambda x: x["prompt"],
+                "context": lambda x: x["context"],
+            }
+            | prompt
+            | llm_with_tools
         )
 
-        chain = compose_prompt | llm_with_tools
-
         try:
-            chain_res = chain.invoke({"question": question}).additional_kwargs
+            input_data = {
+                "question": question,
+                "meeting_id": meeting_id,
+                "ideas": ideas,
+                "prompt": prompt_args.get("prompt", ""),
+                "context": prompt_args.get("context", ""),
+            }
+            chain_res = chain.invoke(input_data).additional_kwargs
 
             jsonpath_expr = parse("$..function")
             res = [match.value for match in jsonpath_expr.find(chain_res)]
@@ -218,8 +229,8 @@ class LangchainBot:
                     question=x["question"],
                     meeting_id=x["meeting_id"],
                     ideas=x["ideas"],
-                    prompt=self.compose_llm_prompt,
                     tools_model=self.compose_tools,
+                    prompt=self.compose_llm_prompt,
                 ),
             }
             | RunnableParallel(
@@ -239,6 +250,14 @@ class LangchainBot:
                     tools_model=x["composed_data"]
                     .get("ChoiceIntent", {})
                     .get("tool", None),  # ここでtoolを指定！！
+                    prompt_args={
+                        "prompt": x["composed_data"]
+                        .get("ChoiceIntent", {})
+                        .get("prompt", ""),  # カテゴリに対応する追加プロンプト
+                        "context": x["composed_data"].get(
+                            "QueryVectorstore", ""
+                        ),  # VectorStore 検索結果
+                    },
                 ),
             )
             | RunnableParallel(
