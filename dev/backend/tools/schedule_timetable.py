@@ -37,5 +37,18 @@ def schedule_timetable(timetable: list[ScheduleConetnts] = None) -> str:
     Returns:
         str: コンテキスト
     """
+    
+    # 構造を整形
+    output = {
+        "TaskList": [
+            {
+                "name": item.topic,
+                "description": item.description,
+                "metadata": {
+                    "time": item.duration_minutes * 60 # minutes to seconds
+                }
+            } for item in timetable
+        ]
+    }
 
-    return timetable
+    return output
