@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "./LoginForm.css";
 import { useUserAuthContext } from "./UserAuthContext";
@@ -10,13 +10,16 @@ export default function SignUpForm() {
     const GotoLoginPage = () => {
         navigate("/LoginPage");
     };
+    const [userEmail, setUserEmail] = useState("")
+    const [password, setPassword] = useState("")
 
-    const { UserEmail, setUserEmail, PassWord, setPassWord } = useUserAuthContext();
+    const { loginUser, login_google, login_email, logout } = useUserAuthContext();
+
 
     const Clicksignup = async () => {
         try {
             // Firebase Authentication を使ってサインアップ
-            await createUserWithEmailAndPassword(auth, UserEmail, PassWord);
+            await createUserWithEmailAndPassword(auth, userEmail, password);
             alert("Sign-up successful!"); // 成功時の通知
             GotoLoginPage();
         } catch (error) {
@@ -33,7 +36,7 @@ export default function SignUpForm() {
                     <input
                         type="text"
                         placeholder="Enter your email"
-                        value={UserEmail}
+                        value={userEmail}
                         onChange={(e) => setUserEmail(e.target.value)}
                     />
                 </div>
@@ -41,8 +44,8 @@ export default function SignUpForm() {
                     <input
                         type="password"
                         placeholder="Enter your password"
-                        value={PassWord}
-                        onChange={(e) => setPassWord(e.target.value)}
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
                     />
                 </div>
                 <button className="Login_button" onClick={Clicksignup}>
