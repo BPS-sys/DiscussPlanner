@@ -28,6 +28,12 @@ export default function SignUpForm() {
         }
     };
 
+    const ClickGoogleImage = () => {
+        // Firebase Authentication を使ってサインアップ
+        login_google();
+        GotoLoginPage();
+    };
+
     return (
         <div className="Login_container">
             <h1 className="Login_title">Sign Up</h1>
@@ -52,7 +58,7 @@ export default function SignUpForm() {
                     Sign Up
                 </button>
                 <div className="SVG_container">
-                    <img src="/google_icon.svg" alt="Google Icon" width="50px" height="50px" />
+                    <img src="/google_icon.svg" alt="Google Icon" width="50px" height="50px"  onClick={ClickGoogleImage} />
                 </div>
                 <br></br>
                 <br></br>
