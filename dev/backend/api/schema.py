@@ -31,6 +31,8 @@ class AssistantState(BaseModel):
 #
 # /chat/ に対するリクエストの入力データのスキーマ
 #
+
+
 class Chat(BaseModel):
     """
     '{host}/chat/' に対するチャットに対するリクエストの入力データのスキーマ
@@ -60,6 +62,22 @@ class Idea(BaseModel):
     ideas: list = Field(default=[], description="アイデアのリスト")
 
 
+class MeetingProperties(BaseModel):
+    """
+    会議開始時、会議中に利用するデータのスキーマ
+
+    Args:
+        BaseModel (_type_): ベースモデル（Pydantic）
+    """
+
+    project_name: str = Field("", description="プロジェクト名")
+    project_description: str = Field("", description="プロジェクトの説明")
+    meeting_name: str = Field("", description="会議名")
+    meeting_description: str = Field("", description="会議の説明")
+    ai_role: str = Field("", description="AIの役割")
+    maximum_time: int = Field(0, description="会議の最大時間")
+
+
 class InputChatItem(BaseModel):
     """
     '{host}/chat/' に対するリクエストの入力データのスキーマ
@@ -70,6 +88,9 @@ class InputChatItem(BaseModel):
 
     chat: Chat
     details: Idea = Field(default=Idea(), description="アイデア")
+    propaties: MeetingProperties = Field(
+        default=MeetingProperties(), description="会議のプロパティ"
+    )
 
 
 class OutputChatItem(BaseModel):

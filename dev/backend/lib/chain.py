@@ -34,6 +34,9 @@ from lib.vectorstore import VectorStore
 # tools
 from tools.tools import QandATools
 
+# api
+from api.schema import MeetingProperties  # 会議進行に利用するプロパティ
+
 # load environment variables
 load_dotenv("../.env")
 
@@ -89,6 +92,16 @@ class LangchainBot:
             
             context:
             {context}
+            
+            // メタデータ //
+            1. プロジェクトの説明: 
+            {project_description}
+                    
+            2. 会議の説明: 
+            {meeting_description}
+            
+            3. 途中回答:
+            {tool_result}
             """
         )
         self.human_prompt = HumanMessagePromptTemplate.from_template("{question}")
@@ -101,19 +114,21 @@ class LangchainBot:
             [
                 SystemMessagePromptTemplate.from_template(
                     """
+                    現在会議を進行中です。
                     メタデータと質問からユーザーの意図を汲み取って、適切な回答を生成してください。
-                    
                     質問からコンテキストを検索するための文章を提供してください。
-                    コンテキストに含まれる文章は説明調の文章であるる為、下記の例を参考にしてください。
-                    
-                    下記に例を示します。
-                    例: 
-                    質問: `A`とは何のことを示しますか？
-                    output: `A`はBBBのことを示します。BBBはCCCの事です。
                     
                     // メタデータ //
-                    meeting_id: {meeting_id}
-                    ideas: {ideas}
+                    1. プロジェクトの説明: 
+                    {project_description}
+                    
+                    2. 会議の説明: 
+                    {meeting_description}
+                    
+                    3. meeting_id: {meeting_id}
+                    
+                    4. 現在のアイデア: 
+                    {ideas}
                     """
                 ),
                 HumanMessagePromptTemplate.from_template("{question}"),
@@ -130,7 +145,9 @@ class LangchainBot:
         prompt_args: dict = {
             "prompt": "",
             "context": "",
+            "propaties": MeetingProperties(),
         },
+        tool_result: dict = {},  # 前回のツールの結果
     ) -> dict:
         """
         回答前に用意する必要があるデータを生成、処理する
@@ -145,8 +162,13 @@ class LangchainBot:
         if tools_model is None:
             return {}
 
-        llm_with_tools = self.compose_llm.bind_tools(tools_model.tools)
+        # tool_resultの辞書が空の場合は、空文字列に変換
+        if tool_result == {}:
+            tool_result = ""
+        else:
+            tool_result = json.dumps(tool_result)  # 辞書を文字列に変換
 
+        llm_with_tools = self.compose_llm.bind_tools(tools_model.tools)
         chain: Runnable = (
             {
                 "question": lambda x: x["question"],
@@ -154,18 +176,26 @@ class LangchainBot:
                 "ideas": lambda x: x["ideas"],
                 "prompt": lambda x: x["prompt"],
                 "context": lambda x: x["context"],
+                "project_description": lambda x: x["project_description"],
+                "meeting_description": lambda x: x["meeting_description"],
+                "tool_result": lambda x: x["tool_result"],
             }
             | prompt
             | llm_with_tools
         )
 
         try:
+            meeting_properties = prompt_args.get("propaties")
+
             input_data = {
                 "question": question,
                 "meeting_id": meeting_id,
                 "ideas": ideas,
                 "prompt": prompt_args.get("prompt", ""),
                 "context": prompt_args.get("context", ""),
+                "project_description": meeting_properties.project_description,  # プロジェクトの説明
+                "meeting_description": meeting_properties.meeting_description,  # 会議の説明
+                "tool_result": tool_result,  # 前回のツールの結果
             }
             chain_res = chain.invoke(input_data).additional_kwargs
 
@@ -199,11 +229,60 @@ class LangchainBot:
             print(f"Error in compose_data: {e}")
             return {"context": "", "prompt": ""}
 
+    def chat(
+        self,
+        question: str,
+        context: str,
+        prompt: str,
+        tool_result: dict,  # ツールの結果
+        meeting_properties: MeetingProperties = MeetingProperties(),
+    ) -> str:
+        """
+        チャットボットの応答を生成する
+
+        Args:
+            response (str): チャットボットの応答
+            metadata (dict): メタデータ
+
+        Returns:
+            str: チャットボットの応答
+        """
+        chain: Runnable = (
+            {
+                "question": lambda x: x["question"],
+                "tool_result": lambda x: x[
+                    "tool_result"
+                ],  # ツールの結果 dict -> str に変換した後
+                "context": lambda x: x.get("context", ""),
+                "prompt": lambda x: x.get("prompt", ""),
+                "project_description": lambda x: x[
+                    "project_description"
+                ],  # プロジェクトの説明
+                "meeting_description": lambda x: x["meeting_description"],  # 会議の説明
+            }
+            | self.prompt
+            | self.stream_llm
+            | StrOutputParser()
+        )
+
+        chat_response = chain.invoke(
+            {
+                "question": question,
+                "tool_result": str(tool_result),
+                "context": context,
+                "prompt": prompt,
+                "project_description": meeting_properties.project_description,
+                "meeting_description": meeting_properties.meeting_description,
+            }
+        )
+        return chat_response
+
     def invoke(
         self,
         question: str = "こんにちは",
         meeting_id: Optional[str] = "111",
         ideas: Optional[list] = ["idea a", "idea b"],
+        meeting_properties: Optional[MeetingProperties] = MeetingProperties(),
     ) -> str:
         """
         チャットボットを起動する
@@ -225,12 +304,16 @@ class LangchainBot:
                 "question": lambda x: x["question"],
                 "meeting_id": lambda x: x["meeting_id"],
                 "ideas": lambda x: x["ideas"],
+                "meeting_properties": lambda x: x["meeting_properties"],
                 "composed_data": lambda x: self.compose_data(
                     question=x["question"],
                     meeting_id=x["meeting_id"],
                     ideas=x["ideas"],
                     tools_model=self.compose_tools,
                     prompt=self.compose_llm_prompt,
+                    prompt_args={
+                        "propaties": x["meeting_properties"],
+                    },
                 ),
             }
             | RunnableParallel(
@@ -257,19 +340,32 @@ class LangchainBot:
                         "context": x["composed_data"].get(
                             "QueryVectorstore", ""
                         ),  # VectorStore 検索結果
+                        "propaties": x["meeting_properties"],
                     },
                 ),
+                meeting_properties=lambda x: x["meeting_properties"],
             )
             | RunnableParallel(
                 context=lambda x: x["context"],
                 prompt=lambda x: x["prompt"],
-                text_response=(self.prompt | self.stream_llm | StrOutputParser()),
+                text_response=lambda x: self.chat(
+                    question=x["question"],
+                    context=x["context"],
+                    prompt=x["prompt"],
+                    tool_result=x["tool_result"],
+                    meeting_properties=x["meeting_properties"],
+                ),
                 tool_result=RunnableLambda(lambda x: x["tool_result"]),
             )
         )
 
         result = chain.invoke(
-            {"question": question, "meeting_id": meeting_id, "ideas": ideas},
+            {
+                "question": question,
+                "meeting_id": meeting_id,
+                "ideas": ideas,
+                "meeting_properties": meeting_properties,
+            },
             config={"callbacks": [self.langfuse_handler]},
         )
 

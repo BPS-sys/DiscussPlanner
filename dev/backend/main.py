@@ -50,6 +50,7 @@ async def create_chat(meeting_id: str, input_item: InputChatItem) -> OutputChatI
         question=str(input_item.chat.message),
         meeting_id=meeting_id,
         ideas=input_item.details.ideas,
+        meeting_properties=input_item.propaties,
     )
     output_item = OutputChatItem(chat=Chat(message=ans), metadata=metadata)
     print(output_item)
