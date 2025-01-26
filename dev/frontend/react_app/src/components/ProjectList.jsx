@@ -19,10 +19,10 @@ export default function ProjectList() {
         GetALLProjectId({user_id: UserID});
     }
 
-    // useEffect(() => {
-    //     console.log("RUN UPDATE");
-    //     update();
-    // }, [ALLProjectIdList]);
+    useEffect(() => {
+        console.log("RUN UPDATE");
+        update();
+    }, []);
 
     return (
         <div>
@@ -33,7 +33,7 @@ export default function ProjectList() {
 
             {/* ポップアップを表示するボタン */}
             <button className="Create_button" onClick={togglePopup}>新しいプロジェクトを作成</button>
-            <button onClick={update}>更新</button>
+            {/* <button onClick={update}>更新</button> */}
 
             {/* ポップアップ */}
             {isPopupVisible && (

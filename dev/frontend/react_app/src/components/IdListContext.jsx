@@ -5,6 +5,8 @@ const IdListContext = createContext();
 export const IdListProvider = ({ children }) => {
     const [ALLProjectIdList, setALLProjectIdList] = useState([]);
     const [ALLMeetingIdList, setALLMeetingIdList] = useState([]);
+    const [CurrentProjectID, setCurrentProjectID] = useState("");
+    const [CurrentMeetingID, setCurrentMeetingID] = useState("");
 
     // setするだけ
     const SetALLProjectIdList = (new_project) => {
@@ -16,9 +18,9 @@ export const IdListProvider = ({ children }) => {
         setALLMeetingIdList(new_meeting);
     };
 
+
     // ユーザーIDを基に全プロジェクトIDを取得する
     const GetALLProjectId = async({user_id}) => {
-        console.log("GetALLProjectId:");
         console.log(user_id);
         
         try {
@@ -34,7 +36,6 @@ export const IdListProvider = ({ children }) => {
 
             if (response.ok) {
                 const data = await response.json();
-                console.log(data.ALLProjectId);
                 SetALLProjectIdList([data.ALLProjectId]);
             } else {
                 throw new Error(`Error: ${response.status}`);
@@ -71,7 +72,7 @@ export const IdListProvider = ({ children }) => {
 
 
     return (
-        <IdListContext.Provider value={{ ALLProjectIdList, ALLMeetingIdList, GetALLMeetingId, GetALLProjectId }}>
+        <IdListContext.Provider value={{ ALLProjectIdList, ALLMeetingIdList, GetALLMeetingId, GetALLProjectId, CurrentProjectID, setCurrentProjectID, CurrentMeetingID, setCurrentMeetingID }}>
             {children}
         </IdListContext.Provider>
     );

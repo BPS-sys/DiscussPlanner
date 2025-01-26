@@ -33,7 +33,7 @@ export default function ProjectCreate() {
     const [ProjectName, setProjectName] = useState("");
     const [ProjectDescription, setProjectDescription] = useState("");
     const [AIsRole, setAIsRole] = useState("");
-    const { GetALLProjectId } = useIdListContext();
+    const { GetALLProjectId, setCurrentProjectID } = useIdListContext();
 
     const ClickedCreateProject = async() => {
         const { v4: uuidv4 } = require('uuid');

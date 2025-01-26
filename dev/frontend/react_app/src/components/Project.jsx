@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "./Project.css";
 import { useUserAuthContext } from "./UserAuthContext";
+import { useIdListContext } from "./IdListContext";
 
 export default function Project({ project_id }) {
     const navigate = useNavigate();
@@ -9,9 +10,16 @@ export default function Project({ project_id }) {
     const { UserID } = useUserAuthContext();
     const [ProjectName, setProjectName] = useState("");
     const [ProjectDescription, setProjectDescription] = useState("");
+    const {setCurrentProjectID} = useIdListContext();
 
     const GotoMeetingPage = () => {
-        navigate("/MeetingPage");
+        setCurrentProjectID(project_id);
+        navigate("/MeetingPage", {
+            state: {
+                projectName: ProjectName,
+                projectDescription: ProjectDescription,
+            },
+        });
     }
 
     // プロジェクト情報を取得する関数
