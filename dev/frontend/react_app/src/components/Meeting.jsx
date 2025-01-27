@@ -18,7 +18,7 @@ export default function Meeting({meeting_id}) {
     const [MeetingName, setMeetingName] = useState("");
     const [MeetingDescription, setMeetingDescription] = useState("");
     const { CurrentProjectID } = useIdListContext();
-    const {UserID} = useUserAuthContext();
+    const {loginUser} = useUserAuthContext();
     
 
     // プロジェクト情報を取得する関数
@@ -30,7 +30,7 @@ export default function Meeting({meeting_id}) {
                     "Content-Type": "application/json",
                 },
                 body: JSON.stringify({
-                    "user_id": UserID,
+                    "user_id": loginUser.uid,
                     "project_id": CurrentProjectID,
                     "meeting_id": meeting_id
                 }),
@@ -51,11 +51,11 @@ export default function Meeting({meeting_id}) {
 
     // コンポーネントの初回レンダリング時にGetProjectInfoFromIdを実行
     useEffect(() => {
-        if (meeting_id && UserID) {
+        if (meeting_id && loginUser.uid) {
             console.log("update meeting info");
             GetMeetingInfoFromId();
         }
-    }, [CurrentProjectID, UserID]); // project_id または UserID が変更されたときにも再実行
+    }, [CurrentProjectID, loginUser.uid]); // project_id または UserID が変更されたときにも再実行
 
     return (
         <div className="MeetingList_container">

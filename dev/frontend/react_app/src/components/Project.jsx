@@ -9,7 +9,7 @@ import { useActionState } from "react";
 export default function Project({ project_id }) {
     const navigate = useNavigate();
 
-    const { UserID } = useUserAuthContext();
+    const { loginUser } = useUserAuthContext();
     const [ProjectName, setProjectName] = useState("");
     const [ProjectDescription, setProjectDescription] = useState("");
     const {setCurrentProjectID} = useIdListContext();
@@ -31,7 +31,7 @@ export default function Project({ project_id }) {
                     "Content-Type": "application/json",
                 },
                 body: JSON.stringify({
-                    "user_id": UserID,
+                    "user_id": loginUser.uid,
                     "project_id": project_id,
                 }),
             });
@@ -53,11 +53,11 @@ export default function Project({ project_id }) {
 
     // コンポーネントの初回レンダリング時にGetProjectInfoFromIdを実行
     useEffect(() => {
-        if (project_id && UserID) {
+        if (project_id && loginUser.uid) {
             console.log("update project info");
             GetProjectInfoFromId();
         }
-    }, [project_id, UserID]); // project_id または UserID が変更されたときにも再実行
+    }, [project_id, loginUser.uid]); // project_id または UserID が変更されたときにも再実行
 
     return (
         <div className="Project_container">
