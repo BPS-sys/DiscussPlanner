@@ -8,7 +8,7 @@ import { useChatPropatiesContext } from "./ChatPropatiesContext";
 
 export default function MeetingPopup() {
     const navigate = useNavigate();
-    const {UserID} = useUserAuthContext();
+    const {loginUser} = useUserAuthContext();
     const [MeetingName, setMeetingName] = useState("");
     const [MeetingDescription, setMeetingDescription] = useState("");
     const [MeetingTime, setMeetingTime] = useState("");
@@ -25,7 +25,7 @@ export default function MeetingPopup() {
                     "Content-Type": "application/json",
                 },
                 body: JSON.stringify({
-                        "user_id": UserID,
+                        "user_id": loginUser.uid,
                         "project_id": CurrentProjectID,
                         "meeting_id": meeting_id,
                         "meeting_name": MeetingName,
@@ -38,7 +38,7 @@ export default function MeetingPopup() {
                 setCurrentMeetingID(meeting_id);
                 set_meeting_name(MeetingName);
                 set_meeting_description(MeetingDescription);
-                GetALLMeetingId({user_id: UserID, project_id: CurrentProjectID});
+                GetALLMeetingId({user_id: loginUser.uid, project_id: CurrentProjectID});
                 set_maximum_time(MeetingTime);
                 navigate("/DiscussPage");
             } else {

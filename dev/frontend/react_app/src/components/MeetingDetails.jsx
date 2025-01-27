@@ -10,7 +10,7 @@ export default function MeetingDetails() {
     const [ProjectName, setProjectName] = useState("");
     const [ProjectDescription, setProjectDescription] = useState("");
 
-    const { UserID } = useUserAuthContext();
+    const { loginUser } = useUserAuthContext();
     const { CurrentProjectID } = useIdListContext();
 
     // プロジェクト情報を取得する関数
@@ -22,7 +22,7 @@ export default function MeetingDetails() {
                     "Content-Type": "application/json",
                 },
                 body: JSON.stringify({
-                    "user_id": UserID,
+                    "user_id": loginUser.uid,
                     "project_id": CurrentProjectID,
                 }),
             });

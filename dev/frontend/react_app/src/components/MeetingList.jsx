@@ -13,10 +13,10 @@ export default function MeetingList() {
     };
 
     const { ALLMeetingIdList, GetALLMeetingId, CurrentProjectID } = useIdListContext();
-    const { UserID } = useUserAuthContext();
+    const { loginUser } = useUserAuthContext();
 
     const update = () => {
-        GetALLMeetingId({user_id: UserID, project_id: CurrentProjectID});
+        GetALLMeetingId({user_id: loginUser.uid, project_id: CurrentProjectID});
     };
     useEffect(() => {
         update();
