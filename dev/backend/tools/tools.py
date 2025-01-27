@@ -35,6 +35,17 @@ class QandATools(BaseModel):
     )
 
 
+class ScheduleTimeTableTools(BaseModel):
+    """
+    ミーティングで話し合う内容をスケジュールを作成するツール
+    """
+
+    tools: list = Field([ScheduleTimeTable], description="ツールのリスト")
+    functions: dict = Field(
+        {"ScheduleTimeTable": schedule_timetable}, description="ツールの関数"
+    )
+
+
 class DivergenceIdeaTools(BaseModel):
     """
     アイデアの発散

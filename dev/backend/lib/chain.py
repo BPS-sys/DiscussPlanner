@@ -148,6 +148,9 @@ class LangchainBot:
             "propaties": MeetingProperties(),
         },
         tool_result: dict = {},  # 前回のツールの結果
+        settings: dict = {
+            "langfuse": False,
+        },
     ) -> dict:
         """
         回答前に用意する必要があるデータを生成、処理する
@@ -176,8 +179,12 @@ class LangchainBot:
                 "ideas": lambda x: x["ideas"],
                 "prompt": lambda x: x["prompt"],
                 "context": lambda x: x["context"],
+                "project_name": lambda x: x["project_name"],
                 "project_description": lambda x: x["project_description"],
+                "meeting_name": lambda x: x["meeting_name"],
                 "meeting_description": lambda x: x["meeting_description"],
+                "ai_role": lambda x: x["ai_role"],
+                "maximum_time": lambda x: x["maximum_time"],
                 "tool_result": lambda x: x["tool_result"],
             }
             | prompt
@@ -193,11 +200,19 @@ class LangchainBot:
                 "ideas": ideas,
                 "prompt": prompt_args.get("prompt", ""),
                 "context": prompt_args.get("context", ""),
+                "project_name": meeting_properties.project_name,  # プロジェクト名
                 "project_description": meeting_properties.project_description,  # プロジェクトの説明
+                "meeting_name": meeting_properties.meeting_name,  # 会議名
                 "meeting_description": meeting_properties.meeting_description,  # 会議の説明
+                "ai_role": meeting_properties.ai_role,  # AIの役割
+                "maximum_time": meeting_properties.maximum_time,  # 会議の最大時間
                 "tool_result": tool_result,  # 前回のツールの結果
             }
-            chain_res = chain.invoke(input_data).additional_kwargs
+            
+            if settings["langfuse"]:
+                chain_res = chain.invoke(input_data, config={"callbacks": [self.langfuse_handler]},).additional_kwargs
+            else:
+                chain_res = chain.invoke(input_data).additional_kwargs
 
             jsonpath_expr = parse("$..function")
             res = [match.value for match in jsonpath_expr.find(chain_res)]

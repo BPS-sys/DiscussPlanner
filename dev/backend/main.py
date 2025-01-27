@@ -9,6 +9,13 @@ from typing import Optional, Union
 import uvicorn
 from logging import getLogger
 
+# langchain prompts
+from langchain.prompts.chat import (
+    ChatPromptTemplate,
+    SystemMessagePromptTemplate,
+    HumanMessagePromptTemplate,
+)
+
 # local
 from lib.vectorstore import VectorStore, VectorStoreQdrant
 from lib.chain import LangchainBot
@@ -17,6 +24,7 @@ from api.schema import *
 from api.notion.schema import *
 from api.notion.func import NotionAPI
 from api.firebase.func import FirestoreAPI
+from tools.tools import QandATools, ScheduleTimeTableTools, DivergenceIdeaTools, ConvergenceIdeaTools, SummaryInformationTools, AnswerToQuestionTools
 
 load_dotenv()
 app = FastAPI()
@@ -404,13 +412,10 @@ async def FBGetMeetingInfoFromId(request: RequestUserAllItem):
     return docs.to_dict()
 
 
-@app.post("/InitializeMeeting")
+@app.post("/InitializeMeeting/{meeting_id}")
 async def InitializeMeeting(
-    project_name: str,
-    project_description: str,
-    meeting_name: str,
-    meeting_description: str,
-    AIsRole: str,
+    meeting_id: str,
+    meeting_properties: MeetingProperties = MeetingProperties()
 ):
     """
     会議のスケジュールを組むためのエンドポイント
@@ -425,12 +430,60 @@ async def InitializeMeeting(
     returns:
         (dict): タスクリストと時間
     """
-    return {
-        "TaskList": [
-            {"name": "aaa", "metadata": {"time": 300}},
-            {"name": "aaa", "metadata": {"time": 300}},
+    
+    # compose_llm prompt
+    schedule_agenda_prompt = ChatPromptTemplate.from_messages(
+        [
+            SystemMessagePromptTemplate.from_template(
+                """
+                これから会議を開始します。
+                以下の会議情報から適切なミーティングのスケジュール（アジェンダ）を組んでください。
+                
+                対応関係は以下の通りです。
+                ```
+                プロジェクト
+                └─ ミーティング（これから始める会議はここ）
+                ```
+                
+                // 会議情報 //
+                プロジェクト名: {project_name}
+                プロジェクトの説明: {project_description}
+                ミーティング名: {meeting_name}
+                ミーティングの説明: {meeting_description}
+                AIの役割: {ai_role}
+                最大時間: {maximum_time}
+                """
+            ),
+            HumanMessagePromptTemplate.from_template("{question}"),
         ]
-    }
+    )
+    
+    bot = LangchainBot(
+        compose_tools=ScheduleTimeTableTools(),
+        stream_tools=ScheduleTimeTableTools()
+    )
+    
+    res = bot.compose_data(
+        question="これから会議を開始します。以下の会議情報から適切なミーティングのスケジュール（アジェンダ）を組んでください。",
+        meeting_id=meeting_id,
+        ideas=[],
+        prompt=schedule_agenda_prompt,
+        prompt_args={
+            "propaties": meeting_properties
+        },
+        tools_model=ScheduleTimeTableTools(),
+        settings={
+            "langfuse" : True,
+        },
+    )
+    return res.get("ScheduleTimeTable", [])
+
+    # return {
+    #     "TaskList": [
+    #         {"name": "aaa", "metadata": {"time": 300}},
+    #         {"name": "aaa", "metadata": {"time": 300}},
+    #     ]
+    # }
 
 
 if __name__ == "__main__":
