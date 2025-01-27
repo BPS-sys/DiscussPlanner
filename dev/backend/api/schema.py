@@ -231,6 +231,7 @@ class ProjectItem(BaseModel):
     project_id: str
     project_name: str
     project_description: str
+    ai_role: str
 
 
 class MeetingItem(BaseModel):

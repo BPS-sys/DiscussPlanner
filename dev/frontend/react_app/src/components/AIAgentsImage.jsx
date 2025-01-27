@@ -8,6 +8,7 @@ import { useMicContext } from "./MicContext";
 import ChatDrawer from './ChatDrawer';
 import { useDrawerContext } from './DrawerContext';
 import { useFastAPIContext } from "./FastAPIContext";
+import { useChatPropatiesContext } from "./ChatPropatiesContext";
 
 export default function AIAgentsImage() {
     const { micmute, SetMute, toggleListening, questionstartListening, stopListening } = useMicContext();
@@ -16,12 +17,13 @@ export default function AIAgentsImage() {
     const { AIMessage, SetAIMessage, addDocuments } = useFastAPIContext();
     const [finalTranscript, setFinalTranscript] = useState(""); // 確定した文章
     const timerRef = useRef(null); // タイマーを格納
+    const {  project_name, project_description, meeting_name, meeting_description, ai_role, maximum_time, OnBoardIdea, SetGotIdea } = useChatPropatiesContext();
 
     const imgstyle = {
-        display:'flex',
-        width:'180px',
-        marginTop:'40px',
-        marginLeft:'40px'
+        display: 'flex',
+        width: '180px',
+        marginTop: '40px',
+        marginLeft: '40px'
     };
     const {
         transcript,
@@ -41,11 +43,13 @@ export default function AIAgentsImage() {
     };
 
     const currentHost = window.location.hostname;  // ホスト名（ドメイン名）
-
+    
+    
     const UseFastAPITosendUserMessage = async (message) => {
         try {
-            console.log(`hossssssssssssssssssssssssssssssssssst${currentHost}`);
-            const response = await fetch(`https://${currentHost}/api/chat/111`, {
+
+            // const response = await fetch(`https://${currentHost}/api/chat/111`, {
+            const response = await fetch(`http://${currentHost}:8080/chat/111`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
@@ -53,12 +57,31 @@ export default function AIAgentsImage() {
                 body: JSON.stringify({
                     "chat": {
                         "message": message
+                    },
+                    "details": {
+                        "ideas": OnBoardIdea
+                    },
+                    "propaties": {
+                        "project_name": project_name,
+                        "project_description": project_description,
+                        "meeting_name": meeting_name,
+                        "meeting_description": meeting_description,
+                        "ai_role": ai_role,
+                        "maximum_time": parseInt(maximum_time, 10)
                     }
                 }),
             });
 
             if (response.ok) {
                 const data = await response.json();
+                if (data.metadata.hasOwnProperty("DivergenceIdea")) {
+                    const ResponseIdea = data.metadata.DivergenceIdea;
+                    SetGotIdea(ResponseIdea);
+                }
+                else if (data.metadata.hasOwnProperty("ConvergenceIdea")) {
+                    const ResponseIdea = data.metadata.ConvergenceIdea;
+                    SetGotIdea(ResponseIdea);
+                }
                 const ResponseMessage = data.chat.message;
                 console.log(data);
                 SetResponseCheck(true);
@@ -142,7 +165,7 @@ export default function AIAgentsImage() {
                     setFinalTranscript(transcript); // 確定した文章を保存
                     UseFastAPITosendMinutes(finalTranscript);
                     resetTranscript(); // transcriptをリセット
-                }, 1000); // 3秒
+                }, 2000); // 3秒
             };
         }
     }, [transcript, resetTranscript]);

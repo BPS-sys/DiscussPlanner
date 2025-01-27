@@ -95,8 +95,8 @@ class FirestoreAPI:
         data = {"user_type":"User"}
         self.db.collection("Users").document(user_id).set(data)
 
-    def setup_project(self, user_id:str, project_id: str, project_name: str, project_description: str):
-        data = {"project_name":project_name, "project_description":project_description}
+    def setup_project(self, user_id:str, project_id: str, project_name: str, project_description: str, ai_role: str):
+        data = {"project_name":project_name, "project_description":project_description, "ais_role": ai_role}
         self.db.collection("Users").document(user_id).collection("Projects").document(project_id).set(data)
 
     def setup_meeting(self, user_id: str, project_id: str, meeting_id: str, meeting_name: str, meeting_description: str):

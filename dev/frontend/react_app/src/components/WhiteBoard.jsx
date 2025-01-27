@@ -1,19 +1,43 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
+import { useChatPropatiesContext } from "./ChatPropatiesContext";
 
 export const Whiteboard = () => {
   const [cards, setCards] = React.useState({
-    id0: { text: "ID0message", x: 100, y: 100, backgroundColor:"yellow" },
-    id1: { text: "ID1message", x: 200, y: 300, backgroundColor:"yellow" },
   });
   const updateCard = (cardId, cardData) => setCards({ ...cards, [cardId]: cardData });
   const addCard = () => {
-    const newid = `id${Object.keys(cards).length}`
-    setCards({...cards, [newid]: { text: `${newid}message`, x: 300, y: 300, backgroundColor:"yellow"  }});
+    const { v4: uuidv4 } = require('uuid');
+    const newid = uuidv4();
+    setCards({ ...cards, [newid]: { text: "新規", x: 300, y: 300, backgroundColor: "yellow" } });
     console.log(cards)
   };
+  
 
   const [draggingCard, setDraggingCard] = React.useState({ id: "", offsetX: 0, offsetY: 0 });
   const [editMode, setEditMode] = React.useState({ id: "" });
+  const { GotIdea, OnBoardIdea, setIdeaOnBoard } = useChatPropatiesContext();
+  const ReDraw = async() => {
+    if (GotIdea.length !== 0) {
+      for (const text of GotIdea.flat()) {
+        const { v4: uuidv4 } = require("uuid");
+        const newid = uuidv4();
+        setCards((prevCards) => ({
+          ...prevCards,
+          [newid]: { text: text, x: 300, y: 300, backgroundColor: "yellow" },
+        }));
+      }
+    };
+  };
+
+  useEffect(() => {
+    ReDraw();
+  }, [GotIdea]);
+
+  useEffect(() => {
+    const texts = Object.values(cards).map((card) => card.text);
+    console.log("textsss", {texts});
+    setIdeaOnBoard(texts);
+  }, [cards]);
 
   return (
     <div
@@ -55,7 +79,7 @@ export const Whiteboard = () => {
             textAlign: "center",
             overflow: "hidden",
             boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1), 0 1px 3px rgba(0, 0, 0, 0.08)"
-  
+
           }}
           draggable={true}
           onDragStart={(e) =>
@@ -65,7 +89,7 @@ export const Whiteboard = () => {
               offsetY: e.clientY - cards[cardId].y,
             })
           }
-        >         
+        >
           {editMode.id === cardId ? (
             <textarea
               onBlur={() => setEditMode({ id: "" })}
@@ -77,7 +101,7 @@ export const Whiteboard = () => {
           )}
         </div>
       ))}
-      <button onClick={addCard} style={{fontSize:'40px', position:'absolute', left:0, width: '50px', height:'50px'}}>+</button>
+      <button onClick={addCard} style={{ fontSize: '40px', position: 'absolute', left: 0, width: '50px', height: '50px' }}>+</button>
     </div>
   );
 };

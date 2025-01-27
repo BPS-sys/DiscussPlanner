@@ -291,12 +291,14 @@ async def FBWriteProjectId(project_item: ProjectItem):
     project_id = project_item.project_id
     project_name = project_item.project_name
     project_description = project_item.project_description
+    ai_role = project_item.ai_role
     if project_id:
         firestore_api.setup_project(
             user_id=user_id,
             project_id=project_id,
             project_name=project_name,
             project_description=project_description,
+            ai_role=ai_role
         )
 
 

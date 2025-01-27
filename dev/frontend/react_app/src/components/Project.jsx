@@ -3,6 +3,8 @@ import { useNavigate } from "react-router-dom";
 import "./Project.css";
 import { useUserAuthContext } from "./UserAuthContext";
 import { useIdListContext } from "./IdListContext";
+import { useChatPropatiesContext } from "./ChatPropatiesContext";
+import { useActionState } from "react";
 
 export default function Project({ project_id }) {
     const navigate = useNavigate();
@@ -11,15 +13,13 @@ export default function Project({ project_id }) {
     const [ProjectName, setProjectName] = useState("");
     const [ProjectDescription, setProjectDescription] = useState("");
     const {setCurrentProjectID} = useIdListContext();
+    const { set_project_name, set_project_description, set_ai_role } = useChatPropatiesContext();
 
     const GotoMeetingPage = () => {
         setCurrentProjectID(project_id);
-        navigate("/MeetingPage", {
-            state: {
-                projectName: ProjectName,
-                projectDescription: ProjectDescription,
-            },
-        });
+        set_project_name(ProjectName);
+        set_project_description(ProjectDescription);
+        navigate("/MeetingPage");
     }
 
     // プロジェクト情報を取得する関数
@@ -40,6 +40,7 @@ export default function Project({ project_id }) {
                 const data = await response.json();
                 setProjectName(data.project_name);
                 setProjectDescription(data.project_description);
+                set_ai_role(data.ai_role)
                 console.log("Project Info:", { ProjectName, ProjectDescription });
             } else {
                 throw new Error(`Error: ${response.status}`);

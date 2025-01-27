@@ -17,6 +17,7 @@ import { DrawerProvider } from './components/DrawerContext';
 import { FastAPIProvider } from './components/FastAPIContext';
 import { UserAuthProvider } from './components/UserAuthContext';
 import { IdListProvider } from './components/IdListContext';
+import { ChatPropatiesProvider } from './components/ChatPropatiesContext';
 
 function App() {
   return (
@@ -42,16 +43,18 @@ function App() {
             <FastAPIProvider>
               <BrowserRouter>
                 <IdListProvider>
-                  <Routes>
-                    <Route path={`/`} element={<HomePage />} />
-                    <Route path={`/LoginPage`} element={<LoginPage />} />
-                    <Route path={`/SignUpPage`} element={<SignUpPage />} />
-                    <Route path={`/ProjectPage`} element={<ProjectPage />} />
-                    <Route path={`/MeetingPage`} element={<MeetingPage />} />
-                    <Route path={`/DiscussPage`} element={<DiscussPage />} />
-                    <Route path="/auth/notion/callback" element={<NotionCallbackHandler />} />
-                    <Route path="/auth/notion/success" element={<NotionSuccess />} />
-                  </Routes>
+                  <ChatPropatiesProvider>
+                    <Routes>
+                      <Route path={`/`} element={<HomePage />} />
+                      <Route path={`/LoginPage`} element={<LoginPage />} />
+                      <Route path={`/SignUpPage`} element={<SignUpPage />} />
+                      <Route path={`/ProjectPage`} element={<ProjectPage />} />
+                      <Route path={`/MeetingPage`} element={<MeetingPage />} />
+                      <Route path={`/DiscussPage`} element={<DiscussPage />} />
+                      <Route path="/auth/notion/callback" element={<NotionCallbackHandler />} />
+                      <Route path="/auth/notion/success" element={<NotionSuccess />} />
+                    </Routes>
+                  </ChatPropatiesProvider>
                 </IdListProvider>
               </BrowserRouter>
             </FastAPIProvider>
