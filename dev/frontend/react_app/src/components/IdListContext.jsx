@@ -21,7 +21,6 @@ export const IdListProvider = ({ children }) => {
 
     // ユーザーIDを基に全プロジェクトIDを取得する
     const GetALLProjectId = async({user_id}) => {
-        console.log(user_id);
         
         try {
             const response = await fetch("http://localhost:8080/FB/GetALLProjectId", {

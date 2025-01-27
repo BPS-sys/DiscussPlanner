@@ -25,7 +25,6 @@ export default function LoginForm() {
         try {
             // Firebase Authentication を使ってサインアップ
             login_email(email, password);
-            SendUserId();
 
         } catch (error) {
             console.error("Error during sign-up:", error);
@@ -33,33 +32,9 @@ export default function LoginForm() {
         }
     };
 
-
     const ClickGoogleImage = () => {
         // Firebase Authentication を使ってサインアップ
         login_google();
-    };
-
-    const SendUserId = async() => {
-        try {
-            const response = await fetch("http://localhost:8080/FB/WriteUserId", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify({
-                        "user_id": loginUser.uid
-                }),
-            });
-
-            if (response.ok) {
-                console.log("Success send userid");
-            } else {
-                alert("Fail");
-                throw new Error(`Error: ${response.status}`);
-            }
-        } catch (error) {
-            console.error("Failed to send transcript to API:", error);
-        }
     };
 
     //　ログイン情報が更新

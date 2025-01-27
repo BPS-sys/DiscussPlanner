@@ -19,12 +19,37 @@ export default function SignUpForm() {
     const Clicksignup = async () => {
         try {
             // Firebase Authentication を使ってサインアップ
-            await createUserWithEmailAndPassword(auth, userEmail, password);
+            const userCredential = await createUserWithEmailAndPassword(auth, userEmail, password);
+            const userId = userCredential.user.uid;
             alert("Sign-up successful!"); // 成功時の通知
+            await SendUserId(userId);
             GotoLoginPage();
         } catch (error) {
             console.error("Error during sign-up:", error);
             alert(error.message); // エラー時の通知
+        }
+    };
+
+    const SendUserId = async(userId) => {
+        try {
+            const response = await fetch("http://localhost:8080/FB/WriteUserId", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                        "user_id": userId
+                }),
+            });
+
+            if (response.ok) {
+                console.log("Success send userid");
+            } else {
+                alert("Fail");
+                throw new Error(`Error: ${response.status}`);
+            }
+        } catch (error) {
+            console.error("Failed to send transcript to API:", error);
         }
     };
 

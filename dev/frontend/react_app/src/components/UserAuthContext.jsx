@@ -46,6 +46,7 @@ export const UserAuthProvider = ({ children }) => {
         try {
             await setPersistence(auth, inMemoryPersistence);
             await signInWithEmailAndPassword(auth, UserEmail, PassWord);
+            console.log(auth.currentUser)
             setLoginUser(auth.currentUser);
             alert("Login successful!");
         } catch (error) {
