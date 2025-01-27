@@ -48,8 +48,8 @@ export default function AIAgentsImage() {
     const UseFastAPITosendUserMessage = async (message) => {
         try {
 
-            // const response = await fetch(`https://${currentHost}/api/chat/111`, {
-            const response = await fetch(`http://${currentHost}:8080/chat/111`, {
+            const response = await fetch(`https://${currentHost}/api/chat/111`, {
+            // const response = await fetch(`http://${currentHost}:8080/chat/111`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
@@ -161,11 +161,11 @@ export default function AIAgentsImage() {
             if (!faceclicked) {
                 // 3秒間何も発言がなければ実行
                 timerRef.current = setTimeout(() => {
-                    console.log("3秒間発言がなかったので確定:", transcript);
+                    console.log("議事録を送信:", transcript);
                     setFinalTranscript(transcript); // 確定した文章を保存
                     UseFastAPITosendMinutes(finalTranscript);
                     resetTranscript(); // transcriptをリセット
-                }, 2000); // 3秒
+                }, 2000); // 2秒
             };
         }
     }, [transcript, resetTranscript]);
