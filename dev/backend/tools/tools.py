@@ -7,6 +7,11 @@ from langchain_core.tools import tool
 
 # --- tool functions import ---
 from tools.query import QueryVectorstore, query_vectorstore
+from tools.schedule_timetable import (
+    ScheduleConetnts,
+    ScheduleTimeTable,
+    schedule_timetable,
+)
 
 from tools.category import ChoiceIntent, query_category
 from tools.divergence import DivergenceIdea, query_divergenceidea
@@ -27,6 +32,17 @@ class QandATools(BaseModel):
     functions: dict = Field(
         {"QueryVectorstore": query_vectorstore, "ChoiceIntent": query_category},
         description="ツールの関数",
+    )
+
+
+class ScheduleTimeTableTools(BaseModel):
+    """
+    ミーティングで話し合う内容をスケジュールを作成するツール
+    """
+
+    tools: list = Field([ScheduleTimeTable], description="ツールのリスト")
+    functions: dict = Field(
+        {"ScheduleTimeTable": schedule_timetable}, description="ツールの関数"
     )
 
 
@@ -72,4 +88,20 @@ class AnswerToQuestionTools(BaseModel):
     tools: str = Field([AnswerToQuestion], description="回答")
     functions: dict = Field(
         {"AnswerToQuestion": query_answertoquestion}, description="質問へ回答する関数"
+    )
+
+    tools: list = Field([QueryVectorstore], description="ツールのリスト")
+    functions: dict = Field(
+        {"QueryVectorstore": query_vectorstore}, description="ツールの関数"
+    )
+
+
+class ScheduleTimeTableTools(BaseModel):
+    """
+    ミーティングで話し合う内容をスケジュールを作成するツール
+    """
+
+    tools: list = Field([ScheduleTimeTable], description="ツールのリスト")
+    functions: dict = Field(
+        {"ScheduleTimeTable": schedule_timetable}, description="ツールの関数"
     )
