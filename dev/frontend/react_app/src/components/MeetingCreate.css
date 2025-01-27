@@ -1,0 +1,42 @@
+.MeetingCreate_container {
+    width: 600px;
+    height: 60px;
+    background-color: rgb(255, 255, 255);
+    display: flex;
+    justify-content: flex-end;
+}
+
+.MeetingCreate_container button {
+    margin-right: 20px;
+}
+
+.Pen_button {
+    width: 60px;
+    background: linear-gradient(90deg, rgb(34, 102, 235) 0%, rgb(2, 203, 254) 100%);
+    border: none;
+    border-radius: 50px;
+    color: white;
+    font-size: 24px;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.Pen_button:hover {
+    filter: brightness(0.8);
+}
+
+
+.MeetingCreate_button {
+    width: 250px;
+    background: linear-gradient(90deg, rgb(34, 102, 235) 0%, rgb(2, 203, 254) 100%);
+    border: none;
+    border-radius: 50px;
+    color: white;
+    font-size: 24px;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.MeetingCreate_button:hover {
+    filter: brightness(0.8);
+}

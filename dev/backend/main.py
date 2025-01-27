@@ -35,7 +35,7 @@ firestore_api = FirestoreAPI()
 
 
 @app.post("/chat/{meeting_id}")
-async def create_chat(meeting_id: str, input_item: ChatItem) -> ChatItem:
+async def create_chat(meeting_id: str, input_item: InputChatItem) -> OutputChatItem:
     """
     質問に対してチャットボットが応答するエンドポイント
 
@@ -48,10 +48,13 @@ async def create_chat(meeting_id: str, input_item: ChatItem) -> ChatItem:
     print("session: ", meeting_id)
 
     bot = LangchainBot()
-    input_message = str(input_item.chat.message)
-    ans = bot.invoke(input_message)
-
-    output_item = ChatItem(chat=Chat(message=ans))
+    ans, metadata = bot.invoke(
+        question=str(input_item.chat.message),
+        meeting_id=meeting_id,
+        ideas=input_item.details.ideas,
+        meeting_properties=input_item.propaties,
+    )
+    output_item = OutputChatItem(chat=Chat(message=ans), metadata=metadata)
     print(output_item)
     return output_item
 

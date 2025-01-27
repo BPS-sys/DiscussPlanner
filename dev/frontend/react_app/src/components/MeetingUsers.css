@@ -1,0 +1,56 @@
+.MeetingUsers_container {
+    width: 560px;
+    height: 540px;
+    padding-left: 60px;
+    background-color: rgb(255, 255, 255);
+}
+
+.MeetingUsers_top {
+    margin-top: 40px;
+    display: flex;
+    justify-content: space-between;
+}
+
+.MeetingUsers_title {
+    color: #2463eb;
+    font-size: 40px;
+
+}
+
+.MeetingUsers_add {
+    background-color: #ffffff;
+    color: #bababa;
+    border: none;
+    width: 80px;
+    height: 80px;
+    text-align: center;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+.MeetingUsers_add :hover {
+    background-color: #f0f0f0;
+}
+
+.MeetingUsers_add img {
+    transition: 0.2s;
+    border-radius: 4px;
+    padding: 10px;
+}
+
+.User_content {
+    display: flex;
+    align-items: center;
+    margin-top: 10px;
+    margin-left: 30px;
+    padding: 10px;
+    width: 460px;
+    border-radius: 12px;
+    background-color: #ededed;
+}
+
+.User_content p {
+    font-size: 30px;
+    margin-left: 20px;
+    color: #8e8e8e;
+}

@@ -1,33 +1,76 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "./Project.css";
+import { useUserAuthContext } from "./UserAuthContext";
+import { useIdListContext } from "./IdListContext";
 
-export default function Project() {
+export default function Project({ project_id }) {
     const navigate = useNavigate();
-    const GotoDiscussPage = () => {
-        navigate("/DiscussPage")
+
+    const { UserID } = useUserAuthContext();
+    const [ProjectName, setProjectName] = useState("");
+    const [ProjectDescription, setProjectDescription] = useState("");
+    const {setCurrentProjectID} = useIdListContext();
+
+    const GotoMeetingPage = () => {
+        setCurrentProjectID(project_id);
+        navigate("/MeetingPage", {
+            state: {
+                projectName: ProjectName,
+                projectDescription: ProjectDescription,
+            },
+        });
     }
+
+    // プロジェクト情報を取得する関数
+    const GetProjectInfoFromId = async () => {
+        try {
+            const response = await fetch("http://localhost:8080/FB/GetProjectInfoFromId", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    "user_id": UserID,
+                    "project_id": project_id,
+                }),
+            });
+
+            if (response.ok) {
+                const data = await response.json();
+                setProjectName(data.project_name);
+                setProjectDescription(data.project_description);
+                console.log("Project Info:", { ProjectName, ProjectDescription });
+            } else {
+                throw new Error(`Error: ${response.status}`);
+            }
+        } catch (error) {
+            console.error("Failed to send transcript to API:", error);
+        }
+    };
+
+
+    // コンポーネントの初回レンダリング時にGetProjectInfoFromIdを実行
+    useEffect(() => {
+        if (project_id && UserID) {
+            console.log("update project info");
+            GetProjectInfoFromId();
+        }
+    }, [project_id, UserID]); // project_id または UserID が変更されたときにも再実行
+
     return (
         <div className="Project_container">
             <div className="card">
-                <h3 className="card_title">プロジェクトタイトル</h3>
+                <h3 className="card_title">{ProjectName}</h3>
                 <div className="card_content">
-                    <p>
-                        プロジェクトの説明
-                    </p>
-                    <p>
-                        この会議では、AIに関する新たなソリューション開発を行います。
-                    </p>
+                    <p>{ProjectDescription}</p>
                 </div>
-
                 <div className="card_under">
                     <div className="button_group">
-                        <button className="primary_button" onClick={GotoDiscussPage} >
-                            会議を開始する
+                        <button className="primary_button" onClick={GotoMeetingPage} >
+                            開く
                         </button>
-                        <button className="secondary_button">
-                            Details
-                        </button>
+                        <button className="secondary_button">Option</button>
                     </div>
                     <div className="icon_container">
                         <div className="icon">1</div>

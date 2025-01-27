@@ -31,8 +31,6 @@ class TextSplitConfig(BaseModel):
     chunk_overlap: int = 0
 
 
-# tool用のスキーマ
-
 class RetrieverConfig(BaseModel):
     """
     リトリーバの設定

@@ -8,6 +8,7 @@ import HomePage from './pages/HomePage';
 import NotionCallbackHandler from './pages/auth/notion/Callback';
 import NotionSuccess from './pages/auth/notion/Success';
 import ProjectPage from './pages/ProjectPage';
+import MeetingPage from './pages/MeetingPage';
 import LoginPage from './pages/LoginPage';
 import SignUpPage from './pages/SignUpPage';
 
@@ -15,6 +16,7 @@ import { MicProvider } from './components/MicContext';
 import { DrawerProvider } from './components/DrawerContext';
 import { FastAPIProvider } from './components/FastAPIContext';
 import { UserAuthProvider } from './components/UserAuthContext';
+import { IdListProvider } from './components/IdListContext';
 
 function App() {
   return (
@@ -39,15 +41,18 @@ function App() {
           <DrawerProvider>
             <FastAPIProvider>
               <BrowserRouter>
-                <Routes>
-                  <Route path={`/`} element={<HomePage />} />
-                  <Route path={`/LoginPage`} element={<LoginPage />} />
-                  <Route path={`/SignUpPage`} element={<SignUpPage />} />
-                  <Route path={`/ProjectPage`} element={<ProjectPage />} />
-                  <Route path={`/DiscussPage`} element={<DiscussPage />} />
-                  <Route path="/auth/notion/callback" element={<NotionCallbackHandler />} />
-                  <Route path="/auth/notion/success" element={<NotionSuccess />} />
-                </Routes>
+                <IdListProvider>
+                  <Routes>
+                    <Route path={`/`} element={<HomePage />} />
+                    <Route path={`/LoginPage`} element={<LoginPage />} />
+                    <Route path={`/SignUpPage`} element={<SignUpPage />} />
+                    <Route path={`/ProjectPage`} element={<ProjectPage />} />
+                    <Route path={`/MeetingPage`} element={<MeetingPage />} />
+                    <Route path={`/DiscussPage`} element={<DiscussPage />} />
+                    <Route path="/auth/notion/callback" element={<NotionCallbackHandler />} />
+                    <Route path="/auth/notion/success" element={<NotionSuccess />} />
+                  </Routes>
+                </IdListProvider>
               </BrowserRouter>
             </FastAPIProvider>
           </DrawerProvider>
