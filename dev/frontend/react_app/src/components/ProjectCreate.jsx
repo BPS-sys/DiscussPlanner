@@ -6,10 +6,6 @@ import { useUserAuthContext } from "./UserAuthContext";
 
 
 export default function ProjectCreate() {
-    const navigate = useNavigate();
-    const GotoMeetingPage = () => {
-        navigate("/MeetingPage")
-    }
     const [percentage1, setPercentage1] = useState(50);
     const [percentage2, setPercentage2] = useState(50);
     const [percentage3, setPercentage3] = useState(50);
@@ -48,7 +44,8 @@ export default function ProjectCreate() {
                         "user_id": UserID,
                         "project_id": project_id,
                         "project_name": ProjectName,
-                        "project_description": ProjectDescription
+                        "project_description": ProjectDescription,
+                        "ai_role": AIsRole
                 }),
             });
 

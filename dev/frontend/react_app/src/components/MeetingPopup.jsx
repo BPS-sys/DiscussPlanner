@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import "./ProjectCreate.css"; // CSSファイルをインポート
 import { useIdListContext } from "./IdListContext";
 import { useUserAuthContext } from "./UserAuthContext";
+import { useChatPropatiesContext } from "./ChatPropatiesContext";
 
 
 export default function MeetingPopup() {
@@ -12,6 +13,7 @@ export default function MeetingPopup() {
     const [MeetingDescription, setMeetingDescription] = useState("");
     const [MeetingTime, setMeetingTime] = useState("");
     const { GetALLMeetingId, CurrentProjectID, setCurrentProjectID, CurrentMeetingID, setCurrentMeetingID } = useIdListContext();
+    const { set_meeting_name, set_meeting_description, set_maximum_time } = useChatPropatiesContext();
 
     const ClickedCreateProject = async() => {
         const { v4: uuidv4 } = require('uuid');
@@ -34,7 +36,10 @@ export default function MeetingPopup() {
             if (response.ok) {
                 // alert("Success create meeting");
                 setCurrentMeetingID(meeting_id);
+                set_meeting_name(MeetingName);
+                set_meeting_description(MeetingDescription);
                 GetALLMeetingId({user_id: UserID, project_id: CurrentProjectID});
+                set_maximum_time(MeetingTime);
                 navigate("/DiscussPage");
             } else {
                 alert("Fail create project");

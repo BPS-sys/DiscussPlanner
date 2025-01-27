@@ -19,6 +19,7 @@ export default function Meeting({meeting_id}) {
     const [MeetingDescription, setMeetingDescription] = useState("");
     const { CurrentProjectID } = useIdListContext();
     const {UserID} = useUserAuthContext();
+    
 
     // プロジェクト情報を取得する関数
     const GetMeetingInfoFromId = async () => {
