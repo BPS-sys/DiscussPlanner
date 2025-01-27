@@ -25,7 +25,7 @@ export default function ProjectCreate() {
         setPercentage4(e.target.value);
     };
 
-    const {UserID} = useUserAuthContext();
+    const {loginUser} = useUserAuthContext();
     const [ProjectName, setProjectName] = useState("");
     const [ProjectDescription, setProjectDescription] = useState("");
     const [AIsRole, setAIsRole] = useState("");
@@ -41,7 +41,7 @@ export default function ProjectCreate() {
                     "Content-Type": "application/json",
                 },
                 body: JSON.stringify({
-                        "user_id": UserID,
+                        "user_id": loginUser.uid,
                         "project_id": project_id,
                         "project_name": ProjectName,
                         "project_description": ProjectDescription,
@@ -51,7 +51,7 @@ export default function ProjectCreate() {
 
             if (response.ok) {
                 alert("Success create project");
-                GetALLProjectId({user_id: UserID});
+                GetALLProjectId({user_id: loginUser.uid});
             } else {
                 alert("Fail create project");
                 throw new Error(`Error: ${response.status}`);
