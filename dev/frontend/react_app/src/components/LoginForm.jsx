@@ -20,27 +20,16 @@ export default function LoginForm() {
     const Clicklogin = async () => {
         try {
             // Firebase Authentication を使ってサインアップ
-            await setPersistence(auth, browserSessionPersistence);
+            await setPersistence(auth, inMemoryPersistence);
             await signInWithEmailAndPassword(auth, UserEmail, PassWord);
             SetUserID(auth.currentUser.uid);
-            alert("Login successful!"); // 成功時の通知
+            // alert("Login successful!"); // 成功時の通知
             GotoProjectPage();
         } catch (error) {
             console.error("Error during sign-up:", error);
             alert(error.message); // エラー時の通知
         }
     };
-
-    // UserID が更新されたときに実行
-    useEffect(() => {
-        if (UserID) {
-            console.log("Updated UserID:", UserID);
-        }
-        else {
-            console.log("empty useid!");
-        };
-        
-    }, [UserID]);
 
     return (
         <div className="Login_container">

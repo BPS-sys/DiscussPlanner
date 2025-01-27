@@ -16,6 +16,7 @@ import { MicProvider } from './components/MicContext';
 import { DrawerProvider } from './components/DrawerContext';
 import { FastAPIProvider } from './components/FastAPIContext';
 import { UserAuthProvider } from './components/UserAuthContext';
+import { IdListProvider } from './components/IdListContext';
 
 function App() {
   return (
@@ -40,16 +41,18 @@ function App() {
           <DrawerProvider>
             <FastAPIProvider>
               <BrowserRouter>
-                <Routes>
-                  <Route path={`/`} element={<HomePage />} />
-                  <Route path={`/LoginPage`} element={<LoginPage />} />
-                  <Route path={`/SignUpPage`} element={<SignUpPage />} />
-                  <Route path={`/ProjectPage`} element={<ProjectPage />} />
-                  <Route path={`/MeetingPage`} element={<MeetingPage />} />
-                  <Route path={`/DiscussPage`} element={<DiscussPage />} />
-                  <Route path="/auth/notion/callback" element={<NotionCallbackHandler />} />
-                  <Route path="/auth/notion/success" element={<NotionSuccess />} />
-                </Routes>
+                <IdListProvider>
+                  <Routes>
+                    <Route path={`/`} element={<HomePage />} />
+                    <Route path={`/LoginPage`} element={<LoginPage />} />
+                    <Route path={`/SignUpPage`} element={<SignUpPage />} />
+                    <Route path={`/ProjectPage`} element={<ProjectPage />} />
+                    <Route path={`/MeetingPage`} element={<MeetingPage />} />
+                    <Route path={`/DiscussPage`} element={<DiscussPage />} />
+                    <Route path="/auth/notion/callback" element={<NotionCallbackHandler />} />
+                    <Route path="/auth/notion/success" element={<NotionSuccess />} />
+                  </Routes>
+                </IdListProvider>
               </BrowserRouter>
             </FastAPIProvider>
           </DrawerProvider>

@@ -8,8 +8,8 @@ export const UserAuthProvider = ({ children }) => {
     const [UserEmail, setUserEmail] = useState('');
     const [PassWord, setPassWord] = useState('');
     const [UserID, setUserID] = useState('');
-    const SetUserID = async(id) => {
-        await setUserID(id);
+    const SetUserID = (id) => {
+        setUserID(id);
     };
     
     const [CurrentUser, setCurrentUser] = useState(null);

@@ -1,6 +1,9 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import "./MeetingList.css";
+import Meeting from "./Meeting";
+import { useIdListContext } from "./IdListContext";
+import { useUserAuthContext } from "./UserAuthContext";
 
 export default function MeetingList() {
 
@@ -9,123 +12,22 @@ export default function MeetingList() {
         time: '11:30~12:00'
     };
 
-    const [isPlaying, setIsPlaying] = useState(false);
-    const togglePlayPause = () => {
-        setIsPlaying(!isPlaying);
+    const { ALLMeetingIdList, GetALLMeetingId, CurrentProjectID } = useIdListContext();
+    const { UserID } = useUserAuthContext();
+
+    const update = () => {
+        GetALLMeetingId({user_id: UserID, project_id: CurrentProjectID});
     };
+    useEffect(() => {
+        update();
+        console.log("get all meeting id");
+    }, []);
 
     return (
-        <div className="MeetingList_container">
-
-            <div className="Meeting_content">
-                <div className="Meeting_days">
-                    <h5 className="Meeting_date">{Times.day}</h5>
-                    <p className="Meeting_time">{Times.time}</p>
-                </div>
-                <div className="Meeting_buttons">
-                    <button onClick={togglePlayPause}>
-                        <img 
-                            src={isPlaying ? "/images/Pause.svg" : "/images/Play.svg"} 
-                            alt="Play/Pause Icon" 
-                            height="40" 
-                        />
-                        <p>{isPlaying ? "Pause" : "Play"}</p>
-                    </button>
-                    <button>
-                        <img src="/images/minutes.svg" alt="DiscussPlanner Logo" height="40" />
-                        <p>議事録</p>
-                    </button>
-                </div>
-            </div>
-
-            <div className="Meeting_content">
-                <div className="Meeting_days">
-                    <h5 className="Meeting_date">{Times.day}</h5>
-                    <p className="Meeting_time">{Times.time}</p>
-                </div>
-                <div className="Meeting_buttons">
-                    <button onClick={togglePlayPause}>
-                        <img 
-                            src={isPlaying ? "/images/Pause.svg" : "/images/Play.svg"} 
-                            alt="Play/Pause Icon" 
-                            height="40" 
-                        />
-                        <p>{isPlaying ? "Pause" : "Play"}</p>
-                    </button>
-                    <button>
-                        <img src="/images/minutes.svg" alt="DiscussPlanner Logo" height="40" />
-                        <p>議事録</p>
-                    </button>
-                </div>
-            </div>
-
-
-            <div className="Meeting_content">
-                <div className="Meeting_days">
-                    <h5 className="Meeting_date">{Times.day}</h5>
-                    <p className="Meeting_time">{Times.time}</p>
-                </div>
-                <div className="Meeting_buttons">
-                    <button onClick={togglePlayPause}>
-                        <img 
-                            src={isPlaying ? "/images/Pause.svg" : "/images/Play.svg"} 
-                            alt="Play/Pause Icon" 
-                            height="40" 
-                        />
-                        <p>{isPlaying ? "Pause" : "Play"}</p>
-                    </button>
-                    <button>
-                        <img src="/images/minutes.svg" alt="DiscussPlanner Logo" height="40" />
-                        <p>議事録</p>
-                    </button>
-                </div>
-            </div>
-
-
-
-            <div className="Meeting_content">
-                <div className="Meeting_days">
-                    <h5 className="Meeting_date">{Times.day}</h5>
-                    <p className="Meeting_time">{Times.time}</p>
-                </div>
-                <div className="Meeting_buttons">
-                    <button onClick={togglePlayPause}>
-                        <img 
-                            src={isPlaying ? "/images/Pause.svg" : "/images/Play.svg"} 
-                            alt="Play/Pause Icon" 
-                            height="40" 
-                        />
-                        <p>{isPlaying ? "Pause" : "Play"}</p>
-                    </button>
-                    <button>
-                        <img src="/images/minutes.svg" alt="DiscussPlanner Logo" height="40" />
-                        <p>議事録</p>
-                    </button>
-                </div>
-            </div>
-
-
-            <div className="Meeting_content">
-                <div className="Meeting_days">
-                    <h5 className="Meeting_date">{Times.day}</h5>
-                    <p className="Meeting_time">{Times.time}</p>
-                </div>
-                <div className="Meeting_buttons">
-                    <button onClick={togglePlayPause}>
-                        <img 
-                            src={isPlaying ? "/images/Pause.svg" : "/images/Play.svg"} 
-                            alt="Play/Pause Icon" 
-                            height="40" 
-                        />
-                        <p>{isPlaying ? "Pause" : "Play"}</p>
-                    </button>
-                    <button>
-                        <img src="/images/minutes.svg" alt="DiscussPlanner Logo" height="40" />
-                        <p>議事録</p>
-                    </button>
-                </div>
-            </div>
-
+        <div>
+            {ALLMeetingIdList.flat().map((meeting_id) => (
+                            <Meeting meeting_id={meeting_id} />
+            ))}
         </div>
     );
 }
