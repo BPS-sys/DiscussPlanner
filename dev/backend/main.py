@@ -1,13 +1,18 @@
-import os
-from dotenv import load_dotenv
-import requests
 import base64
-from fastapi import FastAPI, HTTPException
-from starlette.middleware.cors import CORSMiddleware
-from pydantic import BaseModel
-from typing import Optional, Union
-import uvicorn
+import os
 from logging import getLogger
+from typing import Optional, Union
+
+import requests
+import uvicorn
+from api.firebase.func import FirestoreAPI
+from api.notion.func import NotionAPI
+from api.notion.schema import *
+from api.schema import *
+from dotenv import load_dotenv
+from fastapi import FastAPI, HTTPException
+from lib.chain import LangchainBot
+from lib.schema import FilePath, TextSplitConfig
 
 # langchain prompts
 from langchain.prompts.chat import (
@@ -25,6 +30,8 @@ from api.notion.schema import *
 from api.notion.func import NotionAPI
 from api.firebase.func import FirestoreAPI
 from tools.tools import QandATools, ScheduleTimeTableTools, DivergenceIdeaTools, ConvergenceIdeaTools, SummaryInformationTools, AnswerToQuestionTools
+from pydantic import BaseModel
+from starlette.middleware.cors import CORSMiddleware
 
 load_dotenv()
 app = FastAPI()
@@ -239,7 +246,7 @@ async def test_cors():
 
 @app.post("/test/notion/write_db/{user_id}/{project_id}")
 async def test_notion_write_db(
-    minutes_data: MinutesContentsElement, user_id: str, project_id: str
+    minutes_data: MinutesContentsElement, user_id: str, project_id: str, meeting_id: str
 ) -> dict:
     """
     Notionのデータをデータベースに書き込むエンドポイント
@@ -251,8 +258,8 @@ async def test_notion_write_db(
     Returns:
         dict: Notion APIのレスポンス
     """
-    print(minutes_data)
-    # b01ADn1oC6B41T57lqP6
+
+    # firestoreからnotionの認証情報を取得
     notion_item = firestore_api.get_notion_api_data(
         user_id=user_id, project_id=project_id
     )  # project_idを用いてFirestoreからNotionの認証データを取得
@@ -261,18 +268,60 @@ async def test_notion_write_db(
 
     notion_api = NotionAPI(notion_item=notion_item)
 
-    # Notionにデータを送信
-    res, status_code = notion_api.add_database_contents(
-        insert_data=InsertDataSchema(
-            properties_name=MinutesPropertiesNameElement(),  # プロパティ名（固定値）
-            minutes=minutes_data,
-        )
+    # page_idがFirebaseに存在しているかどうか TODO ここでblock_idを取得する
+    notion_page_id, is_exists = firestore_api.search_page_id(
+        user_id, project_id, meeting_id
     )
-    print(
-        "Notion API: ", status_code
-    )  # データが書き込めたかどうかのステータスコードを表示
+    print(notion_page_id)
+    if is_exists:  # page_idが存在する場合
+        # プロパティの上書き
+        res, status = notion_api.overwrite_property(notion_page_id, minutes_data)
+        print("=" * 20)
+        pprint(res)
+        if status != 200:  # エラー
+            return {"message": "Error when overwriting properties", "res": res}, status
 
-    return res
+        # 本文内のblockを全て取得
+        blocks, status = notion_api.get_all_blocks(notion_page_id)
+        if status != 200:  # エラー
+            return {"message": "Error when getting blocks", "blocks": blocks}, status
+        print("=" * 20)
+        pprint(blocks)
+
+        # 全てのblockを削除
+        res, status = notion_api.delete_all_blocks(blocks)
+        print("=" * 20)
+        pprint(res)
+        if status != 200:  # エラー
+            return {"message": "Error when overwriting properties", "res": res}, status
+
+        # 本文にblockを追加
+        res, status = notion_api.wright_body(notion_page_id, minutes_data)
+        if status != 200:  # エラー
+            return {"message": "Error when overwriting body", "res": res}, status
+        print("=" * 20)
+        pprint(res)
+    else:
+        # Notionに新たなページの作成
+        res, status = notion_api.add_database_contents(
+            insert_data=InsertDataSchema(
+                properties_name=MinutesPropertiesNameElement(),  # プロパティ名（固定値）
+                minutes=minutes_data,
+            )
+        )
+        if status != 200:  # エラー
+            return {"message": "Error when creating notion page", "res": res}, status
+        print("notion_page_id", res["id"])  # notionのページを取得
+
+        # TODO firestoreにpage_idを保存
+        firestore_api.setup_notion_page_id(
+            user_id=user_id,
+            project_id=project_id,
+            meeting_id=meeting_id,
+            page_id=res["id"],
+        )
+
+    return {"message": "Operation completed"}
 
 
 @app.post("/FB/WriteUserId")
