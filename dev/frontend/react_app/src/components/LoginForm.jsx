@@ -26,6 +26,7 @@ export default function LoginForm() {
             // Firebase Authentication を使ってサインアップ
             login_email(email, password);
             SendUserId();
+
         } catch (error) {
             console.error("Error during sign-up:", error);
             alert(error.message); // エラー時の通知

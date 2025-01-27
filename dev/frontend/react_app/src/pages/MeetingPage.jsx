@@ -11,7 +11,7 @@ const MeetingPage = () => {
             <MainAppBar></MainAppBar>
             <div style={{ display: "flex" }}>
                 <div>
-                    <MeetingDetails></MeetingDetails>
+                    <MeetingDetails ></MeetingDetails>
                     <MeetingList></MeetingList>
                 </div>
                 <div>
