@@ -11,12 +11,12 @@ export default function ProjectList() {
     const togglePopup = () => {
         setPopupVisible(!isPopupVisible);
     };
-    const {UserID} = useUserAuthContext();
+    const {loginUser} = useUserAuthContext();
 
     const { ALLProjectIdList, GetALLProjectId } = useIdListContext();
 
     const update = () => {
-        GetALLProjectId({user_id: UserID});
+        GetALLProjectId({user_id: loginUser.uid});
     }
 
     useEffect(() => {

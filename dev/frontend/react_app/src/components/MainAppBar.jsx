@@ -9,12 +9,20 @@ import MenuIcon from '@mui/icons-material/Menu';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import { useNavigate } from "react-router-dom";
 
+import { useUserAuthContext } from './UserAuthContext';
 
 export default function MainAppBar() {
   const navigate = useNavigate();
   const GotoHomePage = () => {
     navigate("/");
 };
+  const { loginUser, logout } = useUserAuthContext();
+
+  const Userlogot = () => {
+    logout();
+    GotoHomePage();
+  }
+
   return (
     <Box sx={{ flexGrow: 1}}>
       <AppBar position="fixed" style={{ background: '#2463eb', zIndex:30 }}>
@@ -30,6 +38,7 @@ export default function MainAppBar() {
             color="inherit"
             aria-label="menu"
             sx={{ mr: 2 }}
+            onClick={Userlogot}
           >
             <AccountCircleIcon />
           </IconButton>

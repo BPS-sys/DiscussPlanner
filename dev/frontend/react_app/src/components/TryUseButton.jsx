@@ -1,12 +1,13 @@
 
 import { Button } from "@mui/material";
 import { useNavigate } from "react-router-dom";
+// import { useUserAuthContext } from "./UserAuthContext";
 import { useUserAuthContext } from "./UserAuthContext";
 
 export const TryUseButton = () => {
   const navigate = useNavigate();
   const GotoNextPage = () => {
-    if (CurrentUser) {
+    if (loginUser) {
       navigate("/ProjectPage")
     }
     else {
@@ -14,7 +15,7 @@ export const TryUseButton = () => {
     }
     // navigate("/DiscussPage")
   }
-  const { CurrentUser } = useUserAuthContext();
+  const { loginUser } = useUserAuthContext();
   const Buttonstyle = {
     width: "30%",
     height: "100%",

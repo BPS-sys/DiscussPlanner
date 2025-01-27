@@ -1,4 +1,4 @@
-import { React, useEffect } from "react";
+import { React, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "./LoginForm.css";
 import { useUserAuthContext } from "./UserAuthContext";
@@ -6,6 +6,7 @@ import { useUserAuthContext } from "./UserAuthContext";
 import { browserLocalPersistence, browserSessionPersistence, inMemoryPersistence, setPersistence, signInWithEmailAndPassword } from "firebase/auth";
 import { auth } from "../firebase"; // Firebase Authenticationをインポート
 import { convertLength } from "@mui/material/styles/cssUtils";
+import { getAuth, signInWithPopup, signInWithRedirect, getRedirectResult, GoogleAuthProvider } from "firebase/auth";
 
 export default function LoginForm() {
     const navigate = useNavigate();
@@ -15,31 +16,46 @@ export default function LoginForm() {
     const GotoSignUpPage = () => {
         navigate("/SignUpPage");
     };
-    const { UserEmail, setUserEmail, PassWord, setPassWord, UserID, SetUserID } = useUserAuthContext();
-
+    const [password, setPassWord] = useState("");
+    const [email, setEmail] = useState("");
+    
+    const { loginUser, login_google, login_email, logout } = useUserAuthContext();
+    
     const Clicklogin = async () => {
         try {
             // Firebase Authentication を使ってサインアップ
-            await setPersistence(auth, inMemoryPersistence);
-            await signInWithEmailAndPassword(auth, UserEmail, PassWord);
-            SetUserID(auth.currentUser.uid);
-            // alert("Login successful!"); // 成功時の通知
-            GotoProjectPage();
+            login_email(email, password);
+
         } catch (error) {
             console.error("Error during sign-up:", error);
             alert(error.message); // エラー時の通知
         }
     };
 
+    const ClickGoogleImage = () => {
+        // Firebase Authentication を使ってサインアップ
+        login_google();
+    };
+
+    //　ログイン情報が更新
+    useEffect(() => {
+        // ログインユーザーがいる場合ページ遷移
+        if (loginUser) {
+            GotoProjectPage();
+        }
+    }, [loginUser]);
+
+
+
     return (
         <div className="Login_container">
             <h1 className="Login_title">Login</h1>
             <div className="Login_form">
                 <div className="UserEmail_input">
-                    <input type="text" placeholder="Enter your user Email" value={UserEmail} onChange={(e) => setUserEmail(e.target.value)} />
+                    <input type="text" placeholder="Enter your user Email" value={email} onChange={(e) => setEmail(e.target.value)} />
                 </div>
                 <div className="Password_input">
-                    <input type="password" placeholder="Enter your password" value={PassWord} onChange={(e) => setPassWord(e.target.value)} />
+                    <input type="password" placeholder="Enter your password" value={password} onChange={(e) => setPassWord(e.target.value)} />
                 </div>
                 <button className="Login_button" onClick={Clicklogin}>
                     login
@@ -48,7 +64,7 @@ export default function LoginForm() {
                     sign up
                 </button>
                 <div className="SVG_container">
-                    <img src="/google_icon.svg" alt="Google Icon" width="50px" height="50px" />
+                    <img src="/google_icon.svg" alt="Google Icon" width="50px" height="50px" onClick={ClickGoogleImage} />
                 </div>
             </div>
         </div>
