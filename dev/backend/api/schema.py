@@ -247,6 +247,7 @@ class MeetingItem(BaseModel):
     meeting_id: str
     meeting_name: str
     meeting_description: str
+    
 
 
 class UserItem(BaseModel):

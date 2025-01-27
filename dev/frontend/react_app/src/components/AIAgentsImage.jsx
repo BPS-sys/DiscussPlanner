@@ -17,14 +17,20 @@ export default function AIAgentsImage() {
     const { AIMessage, SetAIMessage, addDocuments } = useFastAPIContext();
     const [finalTranscript, setFinalTranscript] = useState(""); // 確定した文章
     const timerRef = useRef(null); // タイマーを格納
-    const {  project_name, project_description, meeting_name, meeting_description, ai_role, maximum_time, OnBoardIdea, SetGotIdea } = useChatPropatiesContext();
+    const { project_name, project_description, meeting_name, meeting_description, ai_role, maximum_time, OnBoardIdea, SetGotIdea } = useChatPropatiesContext();
 
     const imgstyle = {
+        position: 'absolute',
+        top: '15vh',
+        left: '-3vw',
+        width: '25vw',
+        height: '25vh',
         display: 'flex',
-        width: '180px',
-        marginTop: '40px',
-        marginLeft: '40px'
+        justifyContent: 'center',
+        alignItems: 'center',
+        flexDirection: 'column',
     };
+
     const {
         transcript,
         listening,
@@ -43,13 +49,13 @@ export default function AIAgentsImage() {
     };
 
     const currentHost = window.location.hostname;  // ホスト名（ドメイン名）
-    
-    
+
+
     const UseFastAPITosendUserMessage = async (message) => {
         try {
 
             const response = await fetch(`https://${currentHost}/api/chat/111`, {
-            // const response = await fetch(`http://${currentHost}:8080/chat/111`, {
+                // const response = await fetch(`http://${currentHost}:8080/chat/111`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",

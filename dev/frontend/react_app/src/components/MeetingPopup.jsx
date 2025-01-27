@@ -13,7 +13,7 @@ export default function MeetingPopup() {
     const [MeetingDescription, setMeetingDescription] = useState("");
     const [MeetingTime, setMeetingTime] = useState("");
     const { GetALLMeetingId, CurrentProjectID, setCurrentProjectID, CurrentMeetingID, setCurrentMeetingID } = useIdListContext();
-    const { set_meeting_name, set_meeting_description, set_maximum_time } = useChatPropatiesContext();
+    const {  set_meeting_name, set_meeting_description, set_maximum_time, project_name, project_description, meeting_name, meeting_description, ai_role, maximum_time } = useChatPropatiesContext();
 
     const ClickedCreateProject = async() => {
         const { v4: uuidv4 } = require('uuid');
@@ -40,9 +40,35 @@ export default function MeetingPopup() {
                 set_meeting_description(MeetingDescription);
                 GetALLMeetingId({user_id: loginUser.uid, project_id: CurrentProjectID});
                 set_maximum_time(MeetingTime);
-                navigate("/DiscussPage");
             } else {
                 alert("Fail create project");
+                throw new Error(`Error: ${response.status}`);
+            }
+        } catch (error) {
+            console.error("Failed to send transcript to API:", error);
+        }
+        // スケジュール作成
+        try {
+            const response = await fetch("http://localhost:8080/InitializeMeeting/111", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    "project_name": project_name,
+                    "project_description": project_description,
+                    "meeting_name": MeetingName,
+                    "meeting_description": MeetingDescription,
+                    "ai_role": ai_role,
+                    "maximum_time": parseInt(MeetingTime, 10)
+                  }),
+            });
+
+            if (response.ok) {
+                const data = await response.json();
+                navigate("/DiscussPage", { state: { data } });
+            } else {
+                alert("Fail initialize");
                 throw new Error(`Error: ${response.status}`);
             }
         } catch (error) {

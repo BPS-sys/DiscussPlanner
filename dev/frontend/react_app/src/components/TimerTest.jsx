@@ -2,17 +2,13 @@ import React, { useState, useEffect } from 'react';
 import './TimerTest_01.css';
 import './TimerTest_02.css';
 
-export function TimerTest() {
+export function TimerTest({ timelist }) {
   const [mode, setMode] = useState('pomo');
-  const [isTimerRunning, setIsTimerRunning] = useState(false);
-  const [timeLeft, setTimeLeft] = useState(25 * 60);
+  const [timeLeft, setTimeLeft] = useState(timelist[0] || 0);
+  const [currentIndex, setCurrentIndex] = useState(0);
   const [circleDashOffset, setCircleDashOffset] = useState(0);
 
-  const totalTime = mode === 'pomo' ? 25 * 60 : mode === 'short' ? 5 * 60 : 15 * 60;
-
-  const toggleTimer = () => {
-    setIsTimerRunning(prevState => !prevState);
-  };
+  const totalTime = timeLeft;
 
   const handleModeChange = (event) => {
     setMode(event.target.value);
@@ -28,54 +24,55 @@ export function TimerTest() {
   };
 
   useEffect(() => {
-    if (isTimerRunning && timeLeft > 0) {
-      const timerId = setInterval(() => {
+    const timerId = setInterval(() => {
+      if (timeLeft > 0) {
         setTimeLeft(prevTime => prevTime - 1);
-      }, 1000);
-      return () => clearInterval(timerId);
-    }
-  }, [isTimerRunning, timeLeft]);
+      } else if (timeLeft === 0 && currentIndex < timelist.length - 1) {
+        setCurrentIndex(prevIndex => prevIndex + 1);
+        setTimeLeft(timelist[currentIndex + 1]);
+      }
+    }, 1000);
+
+    return () => clearInterval(timerId);
+  }, [timeLeft, currentIndex, timelist]);
 
   useEffect(() => {
     const offset = (1 - timeLeft / totalTime) * 301.593;
     setCircleDashOffset(offset);
   }, [timeLeft]);
 
+  const containerStyle = {
+    position: 'absolute',
+    top: '50vh',
+    left: '1vw',
+    width: '15vw',
+    height: '15vh',
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+    flexDirection: 'column',
+  };
+
   return (
-    <div className="pomodoro-app">
-      <form className="controls">
-        <input
-          type="radio"
-          id="pomo"
-          name="mode"
-          value="pomo"
-          checked={mode === 'pomo'}
-          onChange={handleModeChange}
-        />
-        <label htmlFor="pomo" className="controls__button">Pomodoro</label>
+    <div className="pomodoro-app" style={{ position: 'relative' }}>
+      <div style={{
+        position: 'absolute',
+        top: '40vh',
+        left: '1vw',
+        width: '15vw',
+        height: '10vh',
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        flexDirection: 'column',
+        fontSize: '36px',
+        color: '#4a90e2',
+        fontWeight: 'bold'
+      }}>
+        Step {currentIndex + 1} of {timelist.length}
+      </div>
 
-        <input
-          type="radio"
-          id="short"
-          name="mode"
-          value="short"
-          checked={mode === 'short'}
-          onChange={handleModeChange}
-        />
-        <label htmlFor="short" className="controls__button">Short Break</label>
-
-        <input
-          type="radio"
-          id="long"
-          name="mode"
-          value="long"
-          checked={mode === 'long'}
-          onChange={handleModeChange}
-        />
-        <label htmlFor="long" className="controls__button">Long Break</label>
-      </form>
-
-      <div className="timer" onClick={toggleTimer}>
+      <div className="timer" style={containerStyle}>
         <div className="timer__display">
           <div data-test-id="CircularProgressbarWithChildren">
             <div style={{ position: 'relative', width: '100%', height: '100%' }}>
@@ -111,7 +108,7 @@ export function TimerTest() {
                   className="CircularProgressbar-text"
                   x="50"
                   y="50"
-                  style={{ fill:'#000000' , fontSize: '28px' }}
+                  style={{ fill: '#000000', fontSize: '28px' }}
                 >
                   {formatTime(timeLeft)}
                 </text>
@@ -134,6 +131,7 @@ export function TimerTest() {
                   className="display__mute"
                   id="muteButton"
                   title="mute button"
+                  disabled
                 >
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
@@ -150,8 +148,8 @@ export function TimerTest() {
                   </svg>
                 </button>
 
-                <button className="display__start-pause">
-                  {isTimerRunning ? 'PAUSE' : 'START'}
+                <button className="display__start-pause" disabled>
+                  START
                 </button>
               </div>
             </div>
