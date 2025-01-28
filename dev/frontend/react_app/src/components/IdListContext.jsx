@@ -18,12 +18,14 @@ export const IdListProvider = ({ children }) => {
         setALLMeetingIdList(new_meeting);
     };
 
+    const currentHost = window.location.hostname;  // ホスト名（ドメイン名）
 
     // ユーザーIDを基に全プロジェクトIDを取得する
     const GetALLProjectId = async({user_id}) => {
         
         try {
-            const response = await fetch("http://localhost:8080/FB/GetALLProjectId", {
+            const response = await fetch(`https://${currentHost}/api/FB/GetALLProjectId`, {
+            // const response = await fetch("http://localhost:8080/FB/GetALLProjectId", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
@@ -47,7 +49,8 @@ export const IdListProvider = ({ children }) => {
     // 2つのIDを基に全ミーティングIDを取得する
     const GetALLMeetingId = async({user_id, project_id}) => {
         try {
-            const response = await fetch("http://localhost:8080/FB/GetALLMeetingId", {
+            const response = await fetch(`https://${currentHost}/api/FB/GetALLMeetingId`, {
+            // const response = await fetch("http://localhost:8080/FB/GetALLMeetingId", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",

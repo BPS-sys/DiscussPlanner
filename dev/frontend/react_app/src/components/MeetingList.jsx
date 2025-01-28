@@ -16,7 +16,7 @@ export default function MeetingList() {
     const { loginUser } = useUserAuthContext();
 
     const update = () => {
-        GetALLMeetingId({user_id: loginUser.uid, project_id: CurrentProjectID});
+        GetALLMeetingId({ user_id: loginUser.uid, project_id: CurrentProjectID });
     };
     useEffect(() => {
         update();
@@ -24,9 +24,9 @@ export default function MeetingList() {
     }, []);
 
     return (
-        <div>
+        <div style={{ maxHeight: '60vh', overflowY: 'auto' }}>
             {ALLMeetingIdList.flat().map((meeting_id) => (
-                            <Meeting meeting_id={meeting_id} />
+                <Meeting key={meeting_id} meeting_id={meeting_id} />
             ))}
         </div>
     );

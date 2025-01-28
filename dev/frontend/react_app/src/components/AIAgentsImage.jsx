@@ -9,6 +9,7 @@ import ChatDrawer from './ChatDrawer';
 import { useDrawerContext } from './DrawerContext';
 import { useFastAPIContext } from "./FastAPIContext";
 import { useChatPropatiesContext } from "./ChatPropatiesContext";
+import { useIdListContext } from "./IdListContext";
 
 export default function AIAgentsImage() {
     const { micmute, SetMute, toggleListening, questionstartListening, stopListening } = useMicContext();
@@ -17,14 +18,21 @@ export default function AIAgentsImage() {
     const { AIMessage, SetAIMessage, addDocuments } = useFastAPIContext();
     const [finalTranscript, setFinalTranscript] = useState(""); // 確定した文章
     const timerRef = useRef(null); // タイマーを格納
-    const {  project_name, project_description, meeting_name, meeting_description, ai_role, maximum_time, OnBoardIdea, SetGotIdea } = useChatPropatiesContext();
+    const { CurrentProjectID, CurrentMeetingID } = useIdListContext();
+    const { project_name, project_description, meeting_name, meeting_description, ai_role, maximum_time, OnBoardIdea, SetGotIdea } = useChatPropatiesContext();
 
     const imgstyle = {
+        position: 'absolute',
+        top: '15vh',
+        left: '-3vw',
+        width: '25vw',
+        height: '25vh',
         display: 'flex',
-        width: '180px',
-        marginTop: '40px',
-        marginLeft: '40px'
+        justifyContent: 'center',
+        alignItems: 'center',
+        flexDirection: 'column',
     };
+
     const {
         transcript,
         listening,
@@ -43,13 +51,13 @@ export default function AIAgentsImage() {
     };
 
     const currentHost = window.location.hostname;  // ホスト名（ドメイン名）
-    
-    
+
+
     const UseFastAPITosendUserMessage = async (message) => {
         try {
 
-            const response = await fetch(`https://${currentHost}/api/chat/111`, {
-            // const response = await fetch(`http://${currentHost}:8080/chat/111`, {
+            const response = await fetch(`https://${currentHost}/api/chat/${CurrentMeetingID}`, {
+                // const response = await fetch(`http://${currentHost}:8080/chat/111`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
@@ -83,7 +91,6 @@ export default function AIAgentsImage() {
                     SetGotIdea(ResponseIdea);
                 }
                 const ResponseMessage = data.chat.message;
-                console.log(data);
                 SetResponseCheck(true);
                 SetAIMessage(ResponseMessage);
                 console.log('Response from API:', ResponseMessage);
@@ -103,7 +110,7 @@ export default function AIAgentsImage() {
 
     const UseFastAPITosendMinutes = async (message) => {
         try {
-            const response = await fetch(`https://${currentHost}/api/minutes/111`, {
+            const response = await fetch(`https://${currentHost}/api/minutes/${CurrentMeetingID}`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",

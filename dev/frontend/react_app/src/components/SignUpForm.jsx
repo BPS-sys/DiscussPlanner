@@ -14,7 +14,7 @@ export default function SignUpForm() {
     const [password, setPassword] = useState("")
 
     const { loginUser, login_google, login_email, logout } = useUserAuthContext();
-
+    const currentHost = window.location.hostname;  // ホスト名（ドメイン名）
 
     const Clicksignup = async () => {
         try {
@@ -32,7 +32,9 @@ export default function SignUpForm() {
 
     const SendUserId = async(userId) => {
         try {
-            const response = await fetch("http://localhost:8080/FB/WriteUserId", {
+            const response = await fetch(`https://${currentHost}/api/FB/WriteUserId`, {
+            // const response = await fetch("http://localhost:8080/FB/WriteUserId", {
+            
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",

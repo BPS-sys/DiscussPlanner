@@ -19,12 +19,14 @@ export default function Meeting({meeting_id}) {
     const [MeetingDescription, setMeetingDescription] = useState("");
     const { CurrentProjectID } = useIdListContext();
     const {loginUser} = useUserAuthContext();
+    const currentHost = window.location.hostname;  // ホスト名（ドメイン名）
     
 
     // プロジェクト情報を取得する関数
     const GetMeetingInfoFromId = async () => {
         try {
-            const response = await fetch("http://localhost:8080/FB/GetMeetingInfoFromId", {
+            const response = await fetch(`https://${currentHost}/api/FB/GetMeetingInfoFromId`, {
+            // const response = await fetch("http://localhost:8080/FB/GetMeetingInfoFromId", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
