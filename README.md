@@ -8,7 +8,7 @@
 [![Open in Visual Studio Code](https://img.shields.io/static/v1?logo=visualstudiocode&label=&message=Open%20in%20Visual%20Studio%20Code&labelColor=2c2c32&color=007acc&logoColor=007acc)](https://github.dev/BPS-sys/DiscussPlanner)  
 [![GitHub stars](https://img.shields.io/github/stars/BPS-sys/DiscussPlanner?style=social)](https://github.com/BPS-sys/DiscussPlanner)
 [![GitHub forks](https://img.shields.io/github/forks/BPS-sys/DiscussPlanner?style=social)](https://github.com/BPS-sys/DiscussPlanner)  
-
+[![Docusaurus](https://img.shields.io/badge/Docusaurus-2E8555?style=for-the-badge&logo=docusaurus&logoColor=white)](https://discussplanner.netlify.app/)
 
 
 
