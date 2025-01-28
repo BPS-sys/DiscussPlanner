@@ -1,14 +1,85 @@
 # DiscussPlanner
+
 [![Netlify Status](https://api.netlify.com/api/v1/badges/57eb4dea-9994-45f4-9e97-6a9026413134/deploy-status)](https://app.netlify.com/sites/discussplanner/deploys)
 [![Open in Visual Studio Code](https://img.shields.io/static/v1?logo=visualstudiocode&label=&message=Open%20in%20Visual%20Studio%20Code&labelColor=2c2c32&color=007acc&logoColor=007acc)](https://github.dev/BPS-sys/DiscussPlanner)
 
+🎉 **Welcome to DiscussPlanner!** 🎉
 
-We can easily discussion to use this "DiscussPlanner"!!!
+DiscussPlanner is your go-to platform for efficient and streamlined discussions. Whether you're managing a team meeting, brainstorming ideas, or planning events, DiscussPlanner helps you organize and execute discussions effectively.
 
-## Documents site
-サーバーの起動等の詳細情報は下記ドキュメントサイトにて記載しています。
+---
 
-[https://discussplanner.netlify.app/](https://discussplanner.netlify.app/)
+## 🌟 Features
 
-### システム構成図
-![システム構成図](https://github.com/nogikun/Docs-DiscussPlanner/blob/main/docs/%E4%BB%95%E6%A7%98%E6%9B%B8/img/system_structure.drawio.svg)
+- **Intuitive Interface**: Simple and user-friendly design for hassle-free use.
+- **Real-Time Collaboration**: Engage with participants instantly and seamlessly.
+- **Customizable Agendas**: Tailor your discussion plans to suit your needs.
+- **Cross-Platform Support**: Access DiscussPlanner anytime, anywhere.
+- **Secure and Reliable**: Your data is protected with robust security measures.
+
+---
+
+## 🚀 Getting Started
+
+1. **Visit the App**: [DiscussPlanner](https://discussplanner.netlify.app/)
+2. **Clone the Repository**:
+   ```bash
+   git clone https://github.com/BPS-sys/DiscussPlanner.git
+   ```
+3. **Install Dependencies**:
+   ```bash
+   npm install
+   ```
+4. **Start the Development Server**:
+   ```bash
+   npm start
+   ```
+5. **Enjoy Planning!** 🎉
+
+---
+
+## 📚 Documentation
+
+Check out our detailed [documentation site](https://discussplanner.netlify.app/) for guidance on setup, usage, and advanced features.
+
+---
+
+## 🛠️ Tech Stack
+
+- **Frontend**: React, TailwindCSS
+- **Backend**: Node.js, Express
+- **Database**: MongoDB
+- **Hosting**: Netlify
+
+---
+
+## 🖥️ System Architecture
+
+![System Architecture](https://github.com/nogikun/Docs-DiscussPlanner/blob/main/docs/%E4%BB%95%E6%A7%98%E6%9B%B8/img/system_structure.drawio.svg)
+
+---
+
+## 📣 Contributing
+
+We love contributions! Here's how you can help:
+
+1. Fork the repository
+2. Create a new branch (`git checkout -b feature/YourFeature`)
+3. Commit your changes (`git commit -m 'Add YourFeature'`)
+4. Push to the branch (`git push origin feature/YourFeature`)
+5. Open a Pull Request
+
+---
+
+## 📧 Contact
+
+For questions or feedback, feel free to reach out:
+
+- **Email**: support@discussplanner.com
+- **GitHub Issues**: [Report a Bug](https://github.com/BPS-sys/DiscussPlanner/issues)
+
+---
+
+## 💖 Support Us
+
+If you love DiscussPlanner, consider giving us a ⭐ on GitHub!
