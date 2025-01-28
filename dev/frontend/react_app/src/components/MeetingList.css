@@ -1,6 +1,6 @@
 .MeetingList_container {
     width: 900px;
-    height: 410px;
+    height: 160px;
     background-color: rgb(255, 255, 255);
     overflow-y: auto;
     scrollbar-width: none;
