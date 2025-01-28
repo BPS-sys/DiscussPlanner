@@ -30,12 +30,16 @@ export default function ProjectCreate() {
     const [ProjectDescription, setProjectDescription] = useState("");
     const [AIsRole, setAIsRole] = useState("");
     const { GetALLProjectId, setCurrentProjectID } = useIdListContext();
+    const currentHost = window.location.hostname;  // ホスト名（ドメイン名）
+
 
     const ClickedCreateProject = async() => {
         const { v4: uuidv4 } = require('uuid');
         const project_id = uuidv4();
         try {
-            const response = await fetch("http://localhost:8080/FB/WriteProjectId", {
+            const response = await fetch(`https://${currentHost}/api/FB/WriteProjectId`, {
+            // const response = await fetch("http://localhost:8080/FB/WriteProjectId", {
+            
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",

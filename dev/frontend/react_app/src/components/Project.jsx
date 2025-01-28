@@ -14,6 +14,8 @@ export default function Project({ project_id }) {
     const [ProjectDescription, setProjectDescription] = useState("");
     const {setCurrentProjectID} = useIdListContext();
     const { set_project_name, set_project_description, set_ai_role } = useChatPropatiesContext();
+    const currentHost = window.location.hostname;  // ホスト名（ドメイン名）
+
 
     const GotoMeetingPage = () => {
         setCurrentProjectID(project_id);
@@ -25,7 +27,9 @@ export default function Project({ project_id }) {
     // プロジェクト情報を取得する関数
     const GetProjectInfoFromId = async () => {
         try {
-            const response = await fetch("http://localhost:8080/FB/GetProjectInfoFromId", {
+            const response = await fetch(`https://${currentHost}/api/FB/GetProjectInfoFromId`, {
+            // const response = await fetch("http://localhost:8080/FB/GetProjectInfoFromId", {
+            
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",

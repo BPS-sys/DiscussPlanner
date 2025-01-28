@@ -9,8 +9,6 @@ import { useLocation } from "react-router-dom";
 import { DrawSchedule } from "../components/DrawSchedule";
 
 
-
-
 const DiscussPage = () =>{
     const location = useLocation();
     const data = location.state?.data; // 渡されたデータを取得
