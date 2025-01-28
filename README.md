@@ -6,4 +6,9 @@
 We can easily discussion to use this "DiscussPlanner"!!!
 
 ## Documents site
-https://discussplanner.netlify.app/
+サーバーの起動等の詳細情報は下記ドキュメントサイトにて記載しています。
+
+[https://discussplanner.netlify.app/](https://discussplanner.netlify.app/)
+
+### システム構成図
+![システム構成図](https://github.com/nogikun/Docs-DiscussPlanner/blob/main/docs/%E4%BB%95%E6%A7%98%E6%9B%B8/img/system_structure.drawio.svg)
