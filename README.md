@@ -86,7 +86,7 @@ We love contributions! Here's how you can help:
 
 For questions or feedback, feel free to reach out:
 
-- **Email**: support@discussplanner.com
+- **Email**: discussplanner@gmail.com
 - **GitHub Issues**: [Report a Bug](https://github.com/BPS-sys/DiscussPlanner/issues)
 
 ---
