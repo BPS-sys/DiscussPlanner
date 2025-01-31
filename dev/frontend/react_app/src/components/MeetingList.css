@@ -1,0 +1,63 @@
+.MeetingList_container {
+    width: 900px;
+    height: 160px;
+    background-color: rgb(255, 255, 255);
+    overflow-y: auto;
+    scrollbar-width: none;
+}
+
+.Meeting_content {
+    width: 800px;
+    height: 120px;
+    border-radius: 10px;
+    background-color: #ffffff;
+    display: flex;
+    justify-content: space-between;
+    margin-left: 30px;
+    margin-top: 20px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+}
+
+.Meeting_days {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    margin: 10px 0 0 30px;
+}
+
+.Meeting_date {
+    font-size: 30px;
+    font-weight: 600;
+    color: #bababa;
+}
+
+.Meeting_time {
+    font-size: 24px;
+    font-weight: 600;
+    color: #bababa;
+    
+}
+
+.Meeting_buttons {
+    display: flex;
+}
+
+.Meeting_buttons button {
+    background-color: #ffffff;
+    color: #bababa;
+    border: none;
+    margin: 16px 10px 0 0;
+    width: 80px;
+    height: 80px;
+    text-align: center;
+    font-size: 16px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: 0.1s;
+}
+
+
+.Meeting_buttons button:hover {
+    background-color: #f0f0f0;
+}
+

@@ -8,6 +8,8 @@ import { useMicContext } from "./MicContext";
 import ChatDrawer from './ChatDrawer';
 import { useDrawerContext } from './DrawerContext';
 import { useFastAPIContext } from "./FastAPIContext";
+import { useChatPropatiesContext } from "./ChatPropatiesContext";
+import { useIdListContext } from "./IdListContext";
 
 export default function AIAgentsImage() {
     const { micmute, SetMute, toggleListening, questionstartListening, stopListening } = useMicContext();
@@ -16,13 +18,21 @@ export default function AIAgentsImage() {
     const { AIMessage, SetAIMessage, addDocuments } = useFastAPIContext();
     const [finalTranscript, setFinalTranscript] = useState(""); // 確定した文章
     const timerRef = useRef(null); // タイマーを格納
+    const { CurrentProjectID, CurrentMeetingID } = useIdListContext();
+    const { project_name, project_description, meeting_name, meeting_description, ai_role, maximum_time, OnBoardIdea, SetGotIdea } = useChatPropatiesContext();
 
     const imgstyle = {
-        display:'flex',
-        width:'16vw',
-        marginTop:'2vw',
-        marginLeft:'2vw'
+        position: 'absolute',
+        top: '15vh',
+        left: '-3vw',
+        width: '25vw',
+        height: '25vh',
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        flexDirection: 'column',
     };
+
     const {
         transcript,
         listening,
@@ -40,9 +50,14 @@ export default function AIAgentsImage() {
         await resetTranscript();
     };
 
+    const currentHost = window.location.hostname;  // ホスト名（ドメイン名）
+
+
     const UseFastAPITosendUserMessage = async (message) => {
         try {
-            const response = await fetch("http://127.0.0.1:8080/chat/111", {
+
+            const response = await fetch(`https://${currentHost}/api/chat/${CurrentMeetingID}`, {
+                // const response = await fetch(`http://${currentHost}:8080/chat/111`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
@@ -50,14 +65,32 @@ export default function AIAgentsImage() {
                 body: JSON.stringify({
                     "chat": {
                         "message": message
+                    },
+                    "details": {
+                        "ideas": OnBoardIdea
+                    },
+                    "propaties": {
+                        "project_name": project_name,
+                        "project_description": project_description,
+                        "meeting_name": meeting_name,
+                        "meeting_description": meeting_description,
+                        "ai_role": ai_role,
+                        "maximum_time": parseInt(maximum_time, 10)
                     }
                 }),
             });
 
             if (response.ok) {
                 const data = await response.json();
+                if (data.metadata.hasOwnProperty("DivergenceIdea")) {
+                    const ResponseIdea = data.metadata.DivergenceIdea;
+                    SetGotIdea(ResponseIdea);
+                }
+                else if (data.metadata.hasOwnProperty("ConvergenceIdea")) {
+                    const ResponseIdea = data.metadata.ConvergenceIdea;
+                    SetGotIdea(ResponseIdea);
+                }
                 const ResponseMessage = data.chat.message;
-                console.log(data);
                 SetResponseCheck(true);
                 SetAIMessage(ResponseMessage);
                 console.log('Response from API:', ResponseMessage);
@@ -77,14 +110,14 @@ export default function AIAgentsImage() {
 
     const UseFastAPITosendMinutes = async (message) => {
         try {
-            const response = await fetch("http://127.0.0.1:8080/minutes/111", {
+            const response = await fetch(`https://${currentHost}/api/minutes/${CurrentMeetingID}`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
                 },
                 body: JSON.stringify({
                     "text": message
-                  }),
+                }),
             });
 
             if (response.ok) {
@@ -135,11 +168,11 @@ export default function AIAgentsImage() {
             if (!faceclicked) {
                 // 3秒間何も発言がなければ実行
                 timerRef.current = setTimeout(() => {
-                    console.log("3秒間発言がなかったので確定:", transcript);
+                    console.log("議事録を送信:", transcript);
                     setFinalTranscript(transcript); // 確定した文章を保存
                     UseFastAPITosendMinutes(finalTranscript);
                     resetTranscript(); // transcriptをリセット
-                }, 1000); // 3秒
+                }, 2000); // 2秒
             };
         }
     }, [transcript, resetTranscript]);

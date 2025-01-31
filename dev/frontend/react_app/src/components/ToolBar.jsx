@@ -41,7 +41,7 @@ export default function ToolBar() {
                 direction="row"
                 divider={<Divider orientation="vertical" flexItem />}
 
-                style={{ position: 'absolute', bottom: 10, right: 200, background: "linear-gradient(90deg, rgb(34, 102, 235) 0%, rgb(2, 203, 254) 100%)", borderRadius: 100 }}
+                style={{ position: 'absolute', bottom: 10, right: 200, background: "linear-gradient(90deg, rgb(34, 102, 235) 0%, rgb(2, 203, 254) 100%)", borderRadius: 100, zIndex:10 }}
             >
                 <Item style={{ backgroundColor: 'transparent', boxShadow: 'None', marginLeft: '10px' }}><IconButton onClick={toggleMute}>
                     {micmute ?  <MicOffIcon style={{ color: 'white' }} /> : <MicIcon style={{ color: 'white' }} />}
@@ -72,8 +72,6 @@ export default function ToolBar() {
                     <SettingsIcon style={{ color: 'white' }} />
                 </IconButton></Item>
             </Stack>
-            {/* 議事録 */}
-            <p>{transcript}</p>
         </div>
     );
 };

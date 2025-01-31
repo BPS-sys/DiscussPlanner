@@ -24,9 +24,15 @@ main.pyと同一ディレクトリに.envを作成。
 内容は下記の通り。
 
 ```bash
+# LLM
 AZURE_OPENAI_ENDPOINT = "xxxxxxxxxx"
 AZURE_OPENAI_API_KEY = "xxxxxxxxxx"
 AZURE_OPENAI_API_VERSION = "xxxxxxxxxx"
+
+# Langfuse
+LANGFUSE_PUBLIC_KEY = "pk-lf-xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx" # 任意に発行したキー
+LANGFUSE_SECRET_KEY = "sk-lf-xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx" # 任意に発行したキー
+LANGFUSE_ENDPOINT = "http://langfuse-web:3000" # Dockerを使用しない場合 `http://localhost:3000`
 
 OPENAI_API_KEY = "xxxxxxxxxx" # なくてもOK
 ```

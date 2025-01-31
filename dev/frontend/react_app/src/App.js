@@ -1,12 +1,23 @@
 import logo from './logo.svg';
 import './App.css';
 import { BrowserRouter, Routes, Route } from "react-router-dom";
+
+// components
 import DiscussPage from './pages/DiscussPage';
 import HomePage from './pages/HomePage';
+import NotionCallbackHandler from './pages/auth/notion/Callback';
+import NotionSuccess from './pages/auth/notion/Success';
+import ProjectPage from './pages/ProjectPage';
+import MeetingPage from './pages/MeetingPage';
+import LoginPage from './pages/LoginPage';
+import SignUpPage from './pages/SignUpPage';
 
 import { MicProvider } from './components/MicContext';
 import { DrawerProvider } from './components/DrawerContext';
 import { FastAPIProvider } from './components/FastAPIContext';
+import { UserAuthProvider } from './components/UserAuthContext';
+import { IdListProvider } from './components/IdListContext';
+import { ChatPropatiesProvider } from './components/ChatPropatiesContext';
 
 function App() {
   return (
@@ -26,18 +37,30 @@ function App() {
         </a>
       </header>
        */}
-      <MicProvider>
-        <DrawerProvider>
-          <FastAPIProvider>
-            <BrowserRouter>
-              <Routes>
-                <Route path={`/`} element={<HomePage />} />
-                <Route path={`/DiscussPage`} element={<DiscussPage />} />
-              </Routes>
-            </BrowserRouter>
-          </FastAPIProvider>
-        </DrawerProvider>
-      </MicProvider>
+      <UserAuthProvider>
+        <MicProvider>
+          <DrawerProvider>
+            <FastAPIProvider>
+              <BrowserRouter>
+                <IdListProvider>
+                  <ChatPropatiesProvider>
+                    <Routes>
+                      <Route path={`/`} element={<HomePage />} />
+                      <Route path={`/LoginPage`} element={<LoginPage />} />
+                      <Route path={`/SignUpPage`} element={<SignUpPage />} />
+                      <Route path={`/ProjectPage`} element={<ProjectPage />} />
+                      <Route path={`/MeetingPage`} element={<MeetingPage />} />
+                      <Route path={`/DiscussPage`} element={<DiscussPage />} />
+                      <Route path="/auth/notion/callback" element={<NotionCallbackHandler />} />
+                      <Route path="/auth/notion/success" element={<NotionSuccess />} />
+                    </Routes>
+                  </ChatPropatiesProvider>
+                </IdListProvider>
+              </BrowserRouter>
+            </FastAPIProvider>
+          </DrawerProvider>
+        </MicProvider>
+      </UserAuthProvider>
     </div>
   );
 }

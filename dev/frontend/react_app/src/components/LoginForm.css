@@ -1,0 +1,106 @@
+.Login_container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 90vh;
+}
+
+.Login_title {
+    font-weight: 500;
+    color: gray;
+    margin-bottom: 30px;
+}
+
+.Login_form {
+    width: 400px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.UserEmail_input,
+.Password_input {
+    margin-bottom: 30px;
+    position: relative;
+}
+
+.UserEmail_input input,
+.Password_input input {
+    width: 350px;
+    padding: 15px;
+    border: 2px solid transparent;
+    border-image: linear-gradient(90deg, rgb(34, 102, 235) 0%, rgb(2, 203, 254) 100%);
+    border-image-slice: 1;
+    border-radius: 10px;
+    font-size: 18px;
+    outline: none;
+}
+
+.UserEmail_input input::placeholder,
+.Password_input input::placeholder {
+    color: #d2d2d2;
+    font-size: 16px;
+}
+
+.UserEmail_input::before {
+    content: 'User Email';
+    position: absolute;
+    top: -10px;
+    left: 18px;
+    padding: 0 8px;
+    background-color: #ffffff;
+    color: #2266eb;
+    font-size: 14px;
+    z-index: 10;
+    font-weight: 600;
+}
+
+.Password_input::before {
+    content: 'Password';
+    position: absolute;
+    top: -10px;
+    left: 18px;
+    padding: 0 8px;
+    background-color: #ffffff;
+    color: #2266eb;
+    font-size: 14px;
+    z-index: 10;
+    font-weight: 600;
+}
+
+.Login_form button {
+    margin-bottom: 15px;
+}
+
+.Login_button {
+    width: 250px;
+    padding: 15px;
+    background: linear-gradient(90deg, rgb(34, 102, 235) 0%, rgb(2, 203, 254) 100%);
+    border: none;
+    border-radius: 10px;
+    color: white;
+    font-size: 20px;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.Login_button:hover {
+    filter: brightness(0.8);
+}
+
+.Signup_button {
+    width: 250px;
+    padding: 15px;
+    border: none;
+    border-radius: 10px;
+    background-color: #ffffff;
+    color: #2266eb;
+    font-size: 20px;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.Signup_button:hover {
+    filter: brightness(0.9);
+}
