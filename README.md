@@ -49,6 +49,13 @@ DiscussPlanner is your go-to platform for efficient and streamlined discussions.
 
 ---
 
+## 🖼️ Screenshots See DiscussPlanner in action! 
+![画像](https://github.com/user-attachments/assets/c9e9750c-56fe-4a7c-8e3b-940d2ac5e0ff)
+![スクリーンショット 2025-02-03 025700](https://github.com/user-attachments/assets/382c7f0d-e97c-4965-90c1-69cf2059a6b5)
+
+
+---
+
 ## 📚 Documentation
 
 Check out our detailed [documentation site](https://discussplanner.netlify.app/) for guidance on setup, usage, and advanced features.
